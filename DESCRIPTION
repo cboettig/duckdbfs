@@ -1,0 +1,18 @@
+Package: duckdbfs
+Title: duckdb filesystem wrappers
+Version: 0.0.0.9000
+Authors@R: 
+  person("Carl", "Boettiger", , "cboettig@gmail.com", c("aut", "cre"),
+         comment = c(ORCID = "0000-0002-1642-628X"))
+Description: Provides friendly wrappers for creating duckdb-backed connections
+  to tabular datasets (csv, tsv, parquet, etc) on local or remote (http or S3-based)
+  filesystems. This mimics the behaviour of "open_dataset" in the arrow package, 
+  but also generalizes to vector of http urls.
+License: MIT + file LICENSE
+Encoding: UTF-8
+Roxygen: list(markdown = TRUE)
+RoxygenNote: 7.2.3
+Imports: 
+    DBI,
+    dbplyr,
+    duckdb
