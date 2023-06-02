@@ -1,25 +1,64 @@
 
 
 
-
+#' Open a dataset from a variety of sources
+#'
+#' This function opens a dataset from a variety of sources, including Parquet,
+#' CSV, etc, using either local filesystem paths, URLs, or S3 bucket URI notation.
+#'
+#' @param sources A character vector of paths to the dataset files.
+#' @param schema The schema for the dataset. If NULL, the schema will be inferred from
+#' the dataset files.
+#' @param hive_style A logical value indicating whether to the dataset uses
+#' Hive-style partitioning.
+#' @param unify_schemas A logical value indicating whether to unify the schemas of
+#' the dataset files. If TRUE, the function will create a single schema for the
+#' dataset. If FALSE, the function will create a separate schema for each dataset
+#' file.
+#' @param format The format of the dataset files. One of `"parquet"`, `"csv"`,
+#' `"tsv"`, or `"text"`.
+#' @param conn A connection to a database.
+#' @param tblname The name of the table to create in the database.
+#' @param mode The mode to create the table in. One of `"VIEW"` or `"TABLE"`.
+#' @param filename A logical value indicating whether to include the filename in
+#' the table name.
+#' @param endpoint optionally, an alternative endpoint for the S3 object store.
+#'
+#' @return A lazy `dplyr::tbl` object representing the opened dataset backed
+#' by a duckdb SQL connection.  Most `dplyr` (and some `tidyr`) verbs can be
+#' used directly on this object, as they can be translated into SQL commands
+#' automatically via `dbplyr`.  Generic R commands require using
+#' `dplyr::collect()` on the table, which forces evaluation and reading the
+#' resulting data into memory.
+#'
+#' @examplesIf duckdbfs:::example_safe()
+#' # Open a remote, hive-partitioned Parquet dataset
+#' base <- paste0("https://github.com/duckdb/duckdb/raw/master/",
+#'              "data/parquet-testing/hive-partitioning/union_by_name/")
+#' f1 <- paste0(base, "x=1/f1.parquet")
+#' f2 <- paste0(base, "x=1/f2.parquet")
+#' f3 <- paste0(base, "x=2/f2.parquet")
+#'
+#' open_dataset(c(f1,f2,f3))
+#'
+#' @export
 open_dataset <- function(sources,
                          schema = NULL,
-                         hive_syle = TRUE,
+                         hive_style = TRUE,
                          unify_schemas = TRUE,
                          format = c("parquet", "csv", "tsv", "text"),
                          conn = cached_connection(),
-                         tblname = temp_tbl_name(),
+                         tblname = tmp_tbl_name(),
                          mode = "VIEW",
-                         filename = TRUE,
+                         filename = FALSE,
                          endpoint = NULL) {
 
   load_httpfs(conn)
 
-  tblname <- temp_tbl_name()
   view_query <- query_string(tblname,
                              sources,
                              mode = mode,
-                             hive_partitioning = hive_syle,
+                             hive_partitioning = hive_style,
                              union_by_name = unify_schemas,
                              filename = filename
                              )
@@ -43,7 +82,7 @@ query_string <- function(tblname,
   source_uris <- vec_as_str(sources)
   scanner <- "parquet_scan("
   paste0(
-    paste("CREATE", mode, tblname, "AS SELECT * FROM"),
+    paste("CREATE", mode, tblname, "AS SELECT * FROM "),
     paste0(scanner, source_uris,
            ", HIVE_PARTITIONING=",hive_partitioning,
            ", UNION_BY_NAME=",union_by_name,
@@ -53,17 +92,32 @@ query_string <- function(tblname,
 }
 #union_by_name=True, filename=True
 
-tmp_table_name <- function(n = 20) {
-  paste0("duckdbfs_", sample(letters, n, replace = TRUE), collapse = "")
+tmp_tbl_name <- function(n = 15) {
+  paste0(sample(letters, n, replace = TRUE), collapse = "")
 }
 
 load_httpfs <- function(conn = cached_connection()) {
+  # NOTE: remote access (http or S3 paths) are not supported on Windows.
+  # If OS is Windows, this call should be skipped with non-zero return status
+  # Then, we should attempt to download http addresses to tempfile
+  # S3:// URIs on Windows should throw a "not supported on Windows" error.
+
   status <- DBI::dbExecute(conn, "INSTALL 'httpfs';")
   status <- DBI::dbExecute(conn, "LOAD 'httpfs';")
   invisible(status)
 }
 
-set_endpoint <- function(endpoint) {
-  DBI::dbExecute(conn, glue("SET s3_endpoint='{endpoint}';"))
-  DBI::dbExecute(conn, glue("SET s3_url_style='path';"))
+set_endpoint <- function(endpoint, conn = cached_connection()) {
+  DBI::dbExecute(conn, paste0("SET s3_endpoint='", endpoint, "';"))
+  DBI::dbExecute(conn, "SET s3_url_style='path';")
+}
+
+example_safe <- function() {
+  # not Windows, not CRAN
+
+  interactive() # dummy
+}
+
+remote_src <- function(conn) {
+  dbplyr::remote_src(conn)
 }
