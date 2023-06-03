@@ -54,9 +54,12 @@ open_dataset <- function(sources,
                          endpoint = NULL) {
 
   load_httpfs(conn)
+  enable_parallel(conn)
 
+  format <- match.arg(format)
   view_query <- query_string(tblname,
                              sources,
+                             format = format,
                              mode = mode,
                              hive_partitioning = hive_style,
                              union_by_name = unify_schemas,
@@ -80,7 +83,9 @@ query_string <- function(tblname,
                          filename = FALSE) {
 
   source_uris <- vec_as_str(sources)
-  scanner <- "parquet_scan("
+  scanner <- switch(format,
+                    "parquet" = "parquet_scan(",
+                    "read_csv_auto(")
   paste0(
     paste("CREATE", mode, tblname, "AS SELECT * FROM "),
     paste0(scanner, source_uris,
@@ -110,6 +115,11 @@ load_httpfs <- function(conn = cached_connection()) {
 set_endpoint <- function(endpoint, conn = cached_connection()) {
   DBI::dbExecute(conn, paste0("SET s3_endpoint='", endpoint, "';"))
   DBI::dbExecute(conn, "SET s3_url_style='path';")
+}
+
+enable_parallel <- function(conn = cached_connection(),
+                            duckdb_cores = parallel::detectCores()){
+  DBI::dbExecute(conn, paste0("PRAGMA threads=", duckdb_cores))
 }
 
 example_safe <- function() {
