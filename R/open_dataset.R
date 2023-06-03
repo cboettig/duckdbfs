@@ -12,9 +12,8 @@
 #' @param hive_style A logical value indicating whether to the dataset uses
 #' Hive-style partitioning.
 #' @param unify_schemas A logical value indicating whether to unify the schemas of
-#' the dataset files. If TRUE, the function will create a single schema for the
-#' dataset. If FALSE, the function will create a separate schema for each dataset
-#' file.
+#' the dataset files. If TRUE, will execute a UNION by column name across all files
+#' (NOTE: this can add considerably to the initial execution time)
 #' @param format The format of the dataset files. One of `"parquet"`, `"csv"`,
 #' `"tsv"`, or `"text"`.
 #' @param conn A connection to a database.
@@ -45,7 +44,7 @@
 open_dataset <- function(sources,
                          schema = NULL,
                          hive_style = TRUE,
-                         unify_schemas = TRUE,
+                         unify_schemas = FALSE,
                          format = c("parquet", "csv", "tsv", "text"),
                          conn = cached_connection(),
                          tblname = tmp_tbl_name(),

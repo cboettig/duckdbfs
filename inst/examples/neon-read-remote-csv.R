@@ -15,6 +15,9 @@ df <-  neonstore:::neon_data(product = "DP1.20288.001",
 
 
 bench::bench_time({
-ds <- duckdbfs::open_dataset(urls, format="csv", filename = TRUE)
+ds <- duckdbfs::open_dataset(urls,
+                             format="csv",
+                             filename = TRUE,
+                             unify_schemas = FALSE)
 })
 ds
