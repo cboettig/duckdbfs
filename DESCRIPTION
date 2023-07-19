@@ -1,6 +1,6 @@
 Package: duckdbfs
 Title: High Performance Remote Filesystem Access Using "duckdb"
-Version: 0.0.0.9000
+Version: 0.0.1
 Authors@R: 
   person("Carl", "Boettiger", , "cboettig@gmail.com", c("aut", "cre"),
          comment = c(ORCID = "0000-0002-1642-628X"))

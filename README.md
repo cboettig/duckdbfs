@@ -50,7 +50,7 @@ library(duckdbfs)
 
 ds <- open_dataset(urls, unify_schemas = TRUE)
 ds
-#> # Source:   table<tgrizqlmafongil> [3 x 4]
+#> # Source:   table<kvaywlmafpehbew> [3 x 4]
 #> # Database: DuckDB 0.8.1 [unknown@Linux 5.17.15-76051715-generic:R 4.3.1/:memory:]
 #>       i     j x         k
 #>   <int> <int> <chr> <int>
@@ -64,6 +64,33 @@ Use `filter()`, `select()`, etc from dplyr to subset and process data –
 dbpylr](https://dbplyr.tidyverse.org/reference/index.html). Then use
 `dplyr::collect()` to trigger evaluation and ingest results of the query
 into R.
+
+## S3-based access
+
+We can also access remote data over the S3 protocol. An advantage of S3
+is that unlike https, we can use wildcard globbing because the
+filesystem can list files.
+
+``` r
+parquet <- "s3://gbif-open-data-us-east-1/occurrence/2023-06-01/*/*"
+gbif <- open_dataset(parquet)
+```
+
+The S3 system can also support write access. Use the
+`duckdb_s3_config()` function to set access credentials and configure
+other settings, like alternative endpoints (for use with S3-compliant
+systes like [minio](https://min.io)).
+
+## Local files
+
+Of course, `open_dataset()` can also be used with local files. Remember
+that parquet format is not required, we can read csv files (including
+multiple and hive-partitioned csvs).
+
+``` r
+write.csv(mtcars, "mtcars.csv", row.names=FALSE)
+lazy_cars <- open_dataset("mtcars.csv", format = "csv")
+```
 
 ## Mechanism / motivation
 
