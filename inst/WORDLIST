@@ -20,6 +20,8 @@ gc
 globbing
 http
 httpfs
+https
+minio
 schemas
 tibble
 tsv

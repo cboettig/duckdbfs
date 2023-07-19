@@ -50,7 +50,7 @@ library(duckdbfs)
 
 ds <- open_dataset(urls, unify_schemas = TRUE)
 ds
-#> # Source:   table<kvaywlmafpehbew> [3 x 4]
+#> # Source:   table<kmsrcfyhapjjyyi> [3 x 4]
 #> # Database: DuckDB 0.8.1 [unknown@Linux 5.17.15-76051715-generic:R 4.3.1/:memory:]
 #>       i     j x         k
 #>   <int> <int> <chr> <int>
@@ -79,13 +79,13 @@ gbif <- open_dataset(parquet)
 The S3 system can also support write access. Use the
 `duckdb_s3_config()` function to set access credentials and configure
 other settings, like alternative endpoints (for use with S3-compliant
-systes like [minio](https://min.io)).
+systems like [minio](https://min.io)).
 
 ## Local files
 
 Of course, `open_dataset()` can also be used with local files. Remember
 that parquet format is not required, we can read csv files (including
-multiple and hive-partitioned csvs).
+multiple and hive-partitioned csv files).
 
 ``` r
 write.csv(mtcars, "mtcars.csv", row.names=FALSE)

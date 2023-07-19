@@ -70,11 +70,11 @@ parquet <- "s3://gbif-open-data-us-east-1/occurrence/2023-06-01/*/*"
 gbif <- open_dataset(parquet)
 ```
 
-The S3 system can also support write access.  Use the `duckdb_s3_config()` function to set access credentials and configure other settings, like alternative endpoints (for use with S3-compliant systes like [minio](https://min.io)).
+The S3 system can also support write access.  Use the `duckdb_s3_config()` function to set access credentials and configure other settings, like alternative endpoints (for use with S3-compliant systems like [minio](https://min.io)).
 
 ## Local files
 
-Of course, `open_dataset()` can also be used with local files.  Remember that parquet format is not required, we can read csv files (including multiple and hive-partitioned csvs). 
+Of course, `open_dataset()` can also be used with local files.  Remember that parquet format is not required, we can read csv files (including multiple and hive-partitioned csv files). 
 
 ```{r}
 write.csv(mtcars, "mtcars.csv", row.names=FALSE)
