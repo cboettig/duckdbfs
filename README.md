@@ -40,16 +40,18 @@ f3 <- paste0(base, "x=2/f2.parquet")
 urls <- c(f1,f2,f3)
 ```
 
-We can easily read this data into duckdb by passing a vector of URLs
+We can easily access this data without downloading by passing a vector
+of URLs. Note that if schemas (column names) do not match, we must
+explicitly request `duckdb` join the two schemas. Leave this as default,
+`FALSE` when not required to achieve much better performance.
 
 ``` r
 library(duckdbfs)
 
-ds <- open_dataset(urls)
-#> [1] "Making a duckdb connection!"
+ds <- open_dataset(urls, unify_schemas = TRUE)
 ds
-#> # Source:   table<tkebhpypqcxzwaa> [3 x 4]
-#> # Database: DuckDB 0.7.1 [unknown@Linux 5.17.15-76051715-generic:R 4.2.3/:memory:]
+#> # Source:   table<mjupgyrprzsyvte> [3 x 4]
+#> # Database: DuckDB 0.8.1 [unknown@Linux 5.17.15-76051715-generic:R 4.3.1/:memory:]
 #>       i     j x         k
 #>   <int> <int> <chr> <int>
 #> 1    42    84 1        NA
@@ -62,6 +64,16 @@ Use `filter()`, `select()`, etc from dplyr to subset and process data –
 dbpylr](https://dbplyr.tidyverse.org/reference/index.html). Then use
 `dplyr::collect()` to trigger evaluation and ingest results of the query
 into R.
+
+Note that `duckdbfs` automatically handles creating and handling the
+database connection object. It is optional but best practice to
+explicitly close the connection at the end of any script using
+`duckdbfs`, which avoids the warning that this connection is
+garbage-collected.
+
+``` r
+close_connection()
+```
 
 ## Mechanism / motivation
 
@@ -91,8 +103,8 @@ few exceptions:
   structure. Also note that passing a vector of paths can be
   significantly faster than globbing with S3 sources where the `ls()`
   operation is relatively expensive.
-- at this time, the duckdb httpfs filesystem extension in R does not
-  support Windows.
+- ***NOTE***: at this time, the duckdb httpfs filesystem extension in R
+  does not support Windows.
 
 ## Performance notes
 

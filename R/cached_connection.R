@@ -9,7 +9,7 @@ cached_connection <- function() {
   #             ifnotfound = list(NULL))$duckdbfs_conn
   conn <- getOption("duckdbfs_conn", NULL)
   if(!inherits(conn, "duckdb_connection")) {
-    print("Making a duckdb connection!")
+    if(getOption("duckdbfs_debug", FALSE)) print("Making a duckdb connection!")
     conn <- DBI::dbConnect(duckdb::duckdb(), ":memory:")
     options(duckdbfs_conn = conn)
     # assign("duckdbfs_conn", conn, envir = duckdbfs_env)
@@ -25,11 +25,19 @@ cached_connection <- function() {
   conn
 }
 
-
-# only needed by finalizer
-
-# Shut down connection before gc removes it.
-# Then clear cached reference to avoid using a stale connection
+#' close connection
+#'
+#' @param conn a duckdb connection (leave blank)
+#' Closes the invisible cached connection to duckdb
+#' @details
+#' Shuts down connection before gc removes it.
+#' Then clear cached reference to avoid using a stale connection
+#' This avoids complaint about connection being garbage collected.
+#' @export
+#' @examples
+#'
+#' close_connection()
+#'
 close_connection <- function(conn = cached_connection()) {
 
   if(DBI::dbIsValid(conn)) {

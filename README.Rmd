@@ -46,16 +46,27 @@ f3 <- paste0(base, "x=2/f2.parquet")
 urls <- c(f1,f2,f3)
 ```
 
-We can easily read this data into duckdb by passing a vector of URLs
+We can easily access this data without downloading by passing a vector of URLs. 
+Note that if schemas (column names) do not match, we must explicitly request 
+`duckdb` join the two schemas. Leave this as default, `FALSE` when not required
+to achieve much better performance.
 
 ```{r}
 library(duckdbfs)
 
-ds <- open_dataset(urls)
+ds <- open_dataset(urls, unify_schemas = TRUE)
 ds
 ```
 
 Use `filter()`, `select()`, etc from dplyr to subset and process data -- [any method supported by dbpylr](https://dbplyr.tidyverse.org/reference/index.html). Then use `dplyr::collect()` to trigger evaluation and ingest results of the query into R.
+
+
+Note that `duckdbfs` automatically handles creating and handling the database connection object.
+It is optional but best practice to explicitly close the connection at the end of any script using `duckdbfs`, which avoids the warning that this connection is garbage-collected.
+
+```{r}
+close_connection()
+```
 
 
 ## Mechanism / motivation
@@ -69,7 +80,7 @@ This is very similar to the behaviour of `arrow::open_dataset()`, with a few exc
 
 - at this time, `arrow` does not support access over HTTP -- remote sources must be in an S3 or GC-based object store.
 - With local filesystem or S3 paths, `duckdb` can support "globbing" and recursive globbing, e.g. `open_dataset(data/**/*.parquet)`. In contrast, http(s) URLs will always require the full vector since an `ls()` method is not possible.  However, note that even with URLs, `duckdb` can automatically populate columns given only by hive structure.  Also note that passing a vector of paths can be significantly faster than globbing with S3 sources where the `ls()` operation is relatively expensive.
-- at this time, the duckdb httpfs filesystem extension in R does not support Windows. 
+- ***NOTE***: at this time, the duckdb httpfs filesystem extension in R does not support Windows. 
 
 ## Performance notes
 
