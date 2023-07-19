@@ -26,9 +26,10 @@ the dataset files.}
 \item{hive_style}{A logical value indicating whether to the dataset uses
 Hive-style partitioning.}
 
-\item{unify_schemas}{A logical value indicating whether to unify the schemas of
-the dataset files. If TRUE, will execute a UNION by column name across all files
-(NOTE: this can add considerably to the initial execution time)}
+\item{unify_schemas}{A logical value indicating whether to unify the schemas
+of the dataset files (union_by_name). If TRUE, will execute a UNION by
+column name across all files (NOTE: this can add considerably to
+the initial execution time)}
 
 \item{format}{The format of the dataset files. One of \code{"parquet"}, \code{"csv"},
 \code{"tsv"}, or \code{"text"}.}

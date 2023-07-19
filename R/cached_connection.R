@@ -2,16 +2,50 @@
 duckdbfs_env <- new.env()
 
 
-# consider making persistent storage when mode=TABLE
-# to avoid reading entirely into RAM
-cached_connection <- function() {
+#' create a cachable duckdb connection
+#'
+#' This function is primarily intended for internal use by other
+#' `duckdbfs` functions.  However, it can be called directly by
+#' the user whenever it is desirable to have direct access to the
+#' connection object.
+#'
+#' When first called (by a user or internal function),
+#' this function both creates a duckdb connection and places
+#' that connection into a cache (`duckdbfs_conn` option).
+#' On subsequent calls, this function returns the cached connection,
+#' rather than recreating a fresh connection.
+#'
+#' This frees the user from the responsibility of managing a
+#' connection object, because functions needing access to the
+#' connection can use this to create or access the existing connection.
+#' At the close of the global environment, this function's finalizer
+#' should gracefully shutdown the connection before removing the cache.
+#'
+#' @inheritParams duckdb::duckdb
+#'
+#' @examples
+#'
+#' con <- cached_connection()
+#' close_connection(con)
+#'
+#' @export
+#'
+cached_connection <- function(dbdir = ":memory:",
+                              read_only = FALSE) {
+
   #conn <- mget("duckdbfs_conn", envir = duckdbfs_env,
   #             ifnotfound = list(NULL))$duckdbfs_conn
+
   conn <- getOption("duckdbfs_conn", NULL)
   if(!inherits(conn, "duckdb_connection")) {
-    print("Making a duckdb connection!")
-    conn <- DBI::dbConnect(duckdb::duckdb(), ":memory:")
+    if(getOption("duckdbfs_debug", FALSE)) {
+      print("Making a duckdb connection!")
+    }
+    conn <- DBI::dbConnect(duckdb::duckdb(),
+                           dbdir = dbdir,
+                           read_only = read_only)
     options(duckdbfs_conn = conn)
+
     # assign("duckdbfs_conn", conn, envir = duckdbfs_env)
   }
 
@@ -20,16 +54,25 @@ cached_connection <- function() {
 
   ## create finalizer to avoid duckdb complaining that connection
   ## was not shut down before gc
-  #e <- environment()
-  #reg.finalizer(e, function(e) close_connection(conn),TRUE)
+  e <- globalenv()
+  reg.finalizer(e, function(e) close_connection(),TRUE)
+
   conn
 }
 
-
-# only needed by finalizer
-
-# Shut down connection before gc removes it.
-# Then clear cached reference to avoid using a stale connection
+#' close connection
+#'
+#' @param conn a duckdb connection (leave blank)
+#' Closes the invisible cached connection to duckdb
+#' @details
+#' Shuts down connection before gc removes it.
+#' Then clear cached reference to avoid using a stale connection
+#' This avoids complaint about connection being garbage collected.
+#' @export
+#' @examples
+#'
+#' close_connection()
+#'
 close_connection <- function(conn = cached_connection()) {
 
   if(DBI::dbIsValid(conn)) {
