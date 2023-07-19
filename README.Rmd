@@ -61,13 +61,6 @@ ds
 Use `filter()`, `select()`, etc from dplyr to subset and process data -- [any method supported by dbpylr](https://dbplyr.tidyverse.org/reference/index.html). Then use `dplyr::collect()` to trigger evaluation and ingest results of the query into R.
 
 
-Note that `duckdbfs` automatically handles creating and handling the database connection object.
-It is optional but best practice to explicitly close the connection at the end of any script using `duckdbfs`, which avoids the warning that this connection is garbage-collected.
-
-```{r}
-close_connection()
-```
-
 
 ## Mechanism / motivation
 

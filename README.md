@@ -50,7 +50,7 @@ library(duckdbfs)
 
 ds <- open_dataset(urls, unify_schemas = TRUE)
 ds
-#> # Source:   table<mjupgyrprzsyvte> [3 x 4]
+#> # Source:   table<tgrizqlmafongil> [3 x 4]
 #> # Database: DuckDB 0.8.1 [unknown@Linux 5.17.15-76051715-generic:R 4.3.1/:memory:]
 #>       i     j x         k
 #>   <int> <int> <chr> <int>
@@ -64,16 +64,6 @@ Use `filter()`, `select()`, etc from dplyr to subset and process data –
 dbpylr](https://dbplyr.tidyverse.org/reference/index.html). Then use
 `dplyr::collect()` to trigger evaluation and ingest results of the query
 into R.
-
-Note that `duckdbfs` automatically handles creating and handling the
-database connection object. It is optional but best practice to
-explicitly close the connection at the end of any script using
-`duckdbfs`, which avoids the warning that this connection is
-garbage-collected.
-
-``` r
-close_connection()
-```
 
 ## Mechanism / motivation
 
