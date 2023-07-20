@@ -9,10 +9,7 @@ test_that("local csv files", {
 })
 
 
-
-
-
-test_that("We can open remote parquet datasets over https", {
+test_that("https", {
 
   skip_on_os("windows")
   skip_if_offline()
@@ -34,7 +31,7 @@ test_that("We can open remote parquet datasets over https", {
 })
 
 
-test_that("We can close connections", {
+test_that("close_connection", {
   close_connection()
   close_connection()
   expect_true(TRUE)
@@ -42,38 +39,33 @@ test_that("We can close connections", {
 
 
 
-test_that("We can open remote parquet datasets over s3", {
+test_that("s3", {
 
   skip_on_os("windows")
   skip_if_offline()
   skip_on_cran()
   skip_if_not_installed("minioclient")
 
+  # Hmm... this is quite an involved setup but...
   # Put some parquet the MINIO test server:
   base <- paste0("https://github.com/duckdb/duckdb/raw/master/",
                  "data/parquet-testing/hive-partitioning/union_by_name/")
   f1 <- paste0(base, "x=1/f1.parquet")
   tmp <- tempfile(fileext = ".parquet")
   download.file(f1, tmp, quiet = TRUE)
-
-
   minioclient::mc("mb -p play/duckdbfs", verbose = FALSE)
-  minioclient::mc("anonymous set download play/duckdbfs", verbose=FALSE)
   minioclient::mc_cp(tmp, "play/duckdbfs")
-  f <- basename(tmp)
 
-  #Sys.setenv("AWS_ACCESS_KEY_ID"="")
-  #Sys.setenv("AWS_SECRET_ACCESS_KEY"="")
+  # allow password-less access
+  minioclient::mc("anonymous set download play/duckdbfs", verbose=FALSE)
 
-  endpoint <- "play.min.io"
-  parquet <- "s3://duckdbfs/*.parquet"
+  # Could set passwords here if necessary
+  duckdb_s3_config(s3_endpoint = "play.min.io",
+                   s3_url_style="path")
+  df <- open_dataset("s3://duckdbfs/*.parquet")
 
-
-  duckdb_s3_config(s3_endpoint=endpoint)
-  df <- open_dataset(parquet)
-
-
-  minioclient::mc_rb("play/duckdbfs")
+  expect_s3_class(df, "tbl")
+  expect_s3_class(df, "tbl_duckdb_connection")
 
 
 })
