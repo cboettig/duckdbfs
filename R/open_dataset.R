@@ -1,7 +1,7 @@
 #' Open a dataset from a variety of sources
 #'
 #' This function opens a dataset from a variety of sources, including Parquet,
-#' CSV, etc, using either local filesystem paths, URLs, or S3 bucket URI
+#' CSV, etc, using either local file system paths, URLs, or S3 bucket URI
 #'  notation.
 #'
 #' @param sources A character vector of paths to the dataset files.

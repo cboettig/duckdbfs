@@ -1,5 +1,4 @@
 CMD
-Filesystem
 GC
 MINIO
 SSL
@@ -13,11 +12,9 @@ dplyr
 duckdb
 duckdb's
 duckdb’s
-filesize
-filesystem
-filesystems
 finalizer
 gc
+filesize
 globbing
 http
 httpfs

@@ -50,7 +50,7 @@ library(duckdbfs)
 
 ds <- open_dataset(urls, unify_schemas = TRUE)
 ds
-#> # Source:   table<ahpizkagpuxtxdd> [3 x 4]
+#> # Source:   table<nfzdryqkqgxdgbf> [3 x 4]
 #> # Database: DuckDB 0.8.1 [unknown@Linux 5.17.15-76051715-generic:R 4.3.1/:memory:]
 #>       i     j x         k
 #>   <int> <int> <chr> <int>
@@ -68,8 +68,8 @@ into R.
 ## S3-based access
 
 We can also access remote data over the S3 protocol. An advantage of S3
-is that unlike https, we can use wildcard globbing because the
-filesystem can list files.
+is that unlike https, we can use wildcard globbing because the file
+system can list files.
 
 ``` r
 parquet <- "s3://gbif-open-data-us-east-1/occurrence/2023-06-01/*/*"
@@ -112,15 +112,15 @@ few exceptions:
 
 - at this time, `arrow` does not support access over HTTP – remote
   sources must be in an S3 or GC-based object store.
-- With local filesystem or S3 paths, `duckdb` can support “globbing” and
-  recursive globbing, e.g. `open_dataset(data/**/*.parquet)`. In
+- With local file system or S3 paths, `duckdb` can support “globbing”
+  and recursive globbing, e.g. `open_dataset(data/**/*.parquet)`. In
   contrast, http(s) URLs will always require the full vector since an
   `ls()` method is not possible. However, note that even with URLs,
   `duckdb` can automatically populate columns given only by hive
   structure. Also note that passing a vector of paths can be
   significantly faster than globbing with S3 sources where the `ls()`
   operation is relatively expensive.
-- ***NOTE***: at this time, the duckdb httpfs filesystem extension in R
+- ***NOTE***: at this time, the duckdb httpfs file system extension in R
   does not support Windows.
 
 ## Performance notes
