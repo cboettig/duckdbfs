@@ -4,16 +4,17 @@
 #' Open a dataset from a variety of sources
 #'
 #' This function opens a dataset from a variety of sources, including Parquet,
-#' CSV, etc, using either local filesystem paths, URLs, or S3 bucket URI notation.
+#' CSV, etc, using either local filesystem paths, URLs, or S3 bucket URI
+#'  notation.
 #'
 #' @param sources A character vector of paths to the dataset files.
-#' @param schema The schema for the dataset. If NULL, the schema will be inferred from
-#' the dataset files.
+#' @param schema The schema for the dataset. If NULL, the schema will be
+#'  inferred from the dataset files.
 #' @param hive_style A logical value indicating whether to the dataset uses
 #' Hive-style partitioning.
-#' @param unify_schemas A logical value indicating whether to unify the schemas of
-#' the dataset files. If TRUE, will execute a UNION by column name across all files
-#' (NOTE: this can add considerably to the initial execution time)
+#' @param unify_schemas A logical value indicating whether to unify the schemas
+#'  of the dataset files. If TRUE, will execute a UNION by column name across
+#'  all files (NOTE: this can add considerably to the initial execution time)
 #' @param format The format of the dataset files. One of `"parquet"`, `"csv"`,
 #' `"tsv"`, or `"text"`.
 #' @param conn A connection to a database.
