@@ -40,16 +40,18 @@ f3 <- paste0(base, "x=2/f2.parquet")
 urls <- c(f1,f2,f3)
 ```
 
-We can easily read this data into duckdb by passing a vector of URLs
+We can easily access this data without downloading by passing a vector
+of URLs. Note that if schemas (column names) do not match, we must
+explicitly request `duckdb` join the two schemas. Leave this as default,
+`FALSE` when not required to achieve much better performance.
 
 ``` r
 library(duckdbfs)
 
-ds <- open_dataset(urls)
-#> [1] "Making a duckdb connection!"
+ds <- open_dataset(urls, unify_schemas = TRUE)
 ds
-#> # Source:   table<tkebhpypqcxzwaa> [3 x 4]
-#> # Database: DuckDB 0.7.1 [unknown@Linux 5.17.15-76051715-generic:R 4.2.3/:memory:]
+#> # Source:   table<kmsrcfyhapjjyyi> [3 x 4]
+#> # Database: DuckDB 0.8.1 [unknown@Linux 5.17.15-76051715-generic:R 4.3.1/:memory:]
 #>       i     j x         k
 #>   <int> <int> <chr> <int>
 #> 1    42    84 1        NA
@@ -62,6 +64,33 @@ Use `filter()`, `select()`, etc from dplyr to subset and process data –
 dbpylr](https://dbplyr.tidyverse.org/reference/index.html). Then use
 `dplyr::collect()` to trigger evaluation and ingest results of the query
 into R.
+
+## S3-based access
+
+We can also access remote data over the S3 protocol. An advantage of S3
+is that unlike https, we can use wildcard globbing because the
+filesystem can list files.
+
+``` r
+parquet <- "s3://gbif-open-data-us-east-1/occurrence/2023-06-01/*/*"
+gbif <- open_dataset(parquet)
+```
+
+The S3 system can also support write access. Use the
+`duckdb_s3_config()` function to set access credentials and configure
+other settings, like alternative endpoints (for use with S3-compliant
+systems like [minio](https://min.io)).
+
+## Local files
+
+Of course, `open_dataset()` can also be used with local files. Remember
+that parquet format is not required, we can read csv files (including
+multiple and hive-partitioned csv files).
+
+``` r
+write.csv(mtcars, "mtcars.csv", row.names=FALSE)
+lazy_cars <- open_dataset("mtcars.csv", format = "csv")
+```
 
 ## Mechanism / motivation
 
@@ -91,8 +120,8 @@ few exceptions:
   structure. Also note that passing a vector of paths can be
   significantly faster than globbing with S3 sources where the `ls()`
   operation is relatively expensive.
-- at this time, the duckdb httpfs filesystem extension in R does not
-  support Windows.
+- ***NOTE***: at this time, the duckdb httpfs filesystem extension in R
+  does not support Windows.
 
 ## Performance notes
 
