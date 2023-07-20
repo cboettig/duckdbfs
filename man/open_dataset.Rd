@@ -20,8 +20,8 @@ open_dataset(
 \arguments{
 \item{sources}{A character vector of paths to the dataset files.}
 
-\item{schema}{The schema for the dataset. If NULL, the schema will be inferred from
-the dataset files.}
+\item{schema}{The schema for the dataset. If NULL, the schema will be
+inferred from the dataset files.}
 
 \item{hive_style}{A logical value indicating whether to the dataset uses
 Hive-style partitioning.}
@@ -55,7 +55,8 @@ resulting data into memory.
 }
 \description{
 This function opens a dataset from a variety of sources, including Parquet,
-CSV, etc, using either local filesystem paths, URLs, or S3 bucket URI notation.
+CSV, etc, using either local filesystem paths, URLs, or S3 bucket URI
+notation.
 }
 \examples{
 \dontshow{if (duckdbfs:::example_safe()) (if (getRversion() >= "3.4") withAutoprint else force)(\{ # examplesIf}

@@ -50,7 +50,7 @@ library(duckdbfs)
 
 ds <- open_dataset(urls, unify_schemas = TRUE)
 ds
-#> # Source:   table<kmsrcfyhapjjyyi> [3 x 4]
+#> # Source:   table<ahpizkagpuxtxdd> [3 x 4]
 #> # Database: DuckDB 0.8.1 [unknown@Linux 5.17.15-76051715-generic:R 4.3.1/:memory:]
 #>       i     j x         k
 #>   <int> <int> <chr> <int>

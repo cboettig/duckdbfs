@@ -88,7 +88,7 @@ query_string <- function(tblname,
                          union_by_name = FALSE,
                          filename = FALSE) {
 
-  format = match.arg(format)
+  format <- match.arg(format)
   source_uris <- vec_as_str(sources)
   scanner <- switch(format,
                     "parquet" = "parquet_scan(",

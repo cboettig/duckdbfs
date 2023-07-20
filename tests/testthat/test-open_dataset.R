@@ -8,8 +8,26 @@ test_that("local csv files", {
 
 })
 
+test_that("duckdb_s3_config", {
 
-test_that("We can open remote parquet datasets over https", {
+  duckdb_s3_config(
+             s3_access_key_id = "YOUR_ACCESS_KEY_ID",
+             s3_secret_access_key = "YOUR_SECRET_ACCESS_KEY",
+             s3_endpoint = "YOUR_S3_ENDPOINT",
+             s3_region = "YOUR_S3_REGION",
+             s3_uploader_max_filesize = "800GB",
+             s3_uploader_max_parts_per_file = 100,
+             s3_uploader_thread_limit = 8,
+             s3_url_compatibility_mode = FALSE,
+             s3_url_style = "vhost",
+             s3_use_ssl = TRUE)
+
+
+
+})
+
+
+test_that("https", {
 
   skip_on_os("windows")
   skip_if_offline()
@@ -31,7 +49,7 @@ test_that("We can open remote parquet datasets over https", {
 })
 
 
-test_that("We can close connections", {
+test_that("close_connection", {
   close_connection()
   close_connection()
   expect_true(TRUE)
@@ -39,7 +57,7 @@ test_that("We can close connections", {
 
 
 
-test_that("We can open remote parquet datasets over s3", {
+test_that("s3", {
 
   skip_on_os("windows")
   skip_if_offline()
@@ -58,7 +76,6 @@ test_that("We can open remote parquet datasets over s3", {
 
   # allow password-less access
   minioclient::mc("anonymous set download play/duckdbfs", verbose=FALSE)
-
 
   # Could set passwords here if necessary
   duckdb_s3_config(s3_endpoint = "play.min.io",
