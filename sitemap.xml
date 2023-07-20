@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+  <url>
+    <loc>https://cboettig.github.io/duckdbfs/404.html</loc>
+  </url>
+  <url>
+    <loc>https://cboettig.github.io/duckdbfs/LICENSE-text.html</loc>
+  </url>
+  <url>
+    <loc>https://cboettig.github.io/duckdbfs/LICENSE.html</loc>
+  </url>
+  <url>
+    <loc>https://cboettig.github.io/duckdbfs/authors.html</loc>
+  </url>
+  <url>
+    <loc>https://cboettig.github.io/duckdbfs/index.html</loc>
+  </url>
+  <url>
+    <loc>https://cboettig.github.io/duckdbfs/reference/cached_connection.html</loc>
+  </url>
+  <url>
+    <loc>https://cboettig.github.io/duckdbfs/reference/close_connection.html</loc>
+  </url>
+  <url>
+    <loc>https://cboettig.github.io/duckdbfs/reference/duckdb_s3_config.html</loc>
+  </url>
+  <url>
+    <loc>https://cboettig.github.io/duckdbfs/reference/index.html</loc>
+  </url>
+  <url>
+    <loc>https://cboettig.github.io/duckdbfs/reference/open_dataset.html</loc>
+  </url>
+</urlset>
