@@ -15,7 +15,7 @@ duckdb_s3_config(
   s3_uploader_max_parts_per_file = NULL,
   s3_uploader_thread_limit = NULL,
   s3_url_compatibility_mode = NULL,
-  s3_url_style = c("vhost", "path"),
+  s3_url_style = NULL,
   s3_use_ssl = NULL
 )
 }
@@ -40,7 +40,8 @@ duckdb_s3_config(
 
 \item{s3_url_compatibility_mode}{Disable Globs and Query Parameters on S3 URLs (default: 0, allows globs/queries).}
 
-\item{s3_url_style}{The style of S3 URLs to use. Available options are "vhost" and "path" (default: \code{"vhost"}).}
+\item{s3_url_style}{The style of S3 URLs to use. Default is
+"vhost" unless s3_endpoint is set, which makes default "path" (i.e. MINIO systems).}
 
 \item{s3_use_ssl}{Enable or disable SSL for S3 connections (default: 1 (TRUE)).}
 }
