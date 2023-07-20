@@ -20,7 +20,8 @@ duckdb_s3_config(
 )
 }
 \arguments{
-\item{conn}{A database connection object created using the \code{cache_connection} function (default: \code{cache_connection()}).}
+\item{conn}{A database connection object created using the
+\code{cache_connection} function (default: \code{cache_connection()}).}
 
 \item{s3_access_key_id}{The S3 access key ID (default: \code{NULL}).}
 
@@ -32,21 +33,30 @@ duckdb_s3_config(
 
 \item{s3_session_token}{The S3 session token (default: \code{NULL}).}
 
-\item{s3_uploader_max_filesize}{The maximum filesize for S3 uploader (between 50GB and 5TB, default 800GB).}
+\item{s3_uploader_max_filesize}{The maximum filesize for S3 uploader
+(between 50GB and 5TB, default 800GB).}
 
-\item{s3_uploader_max_parts_per_file}{The maximum number of parts per file for S3 uploader (between 1 and 10000, default 10000).}
+\item{s3_uploader_max_parts_per_file}{The maximum number of parts per file
+for S3 uploader (between 1 and 10000, default 10000).}
 
-\item{s3_uploader_thread_limit}{The thread limit for S3 uploader (default: 50).}
+\item{s3_uploader_thread_limit}{The thread limit for S3 uploader
+(default: 50).}
 
-\item{s3_url_compatibility_mode}{Disable Globs and Query Parameters on S3 URLs (default: 0, allows globs/queries).}
+\item{s3_url_compatibility_mode}{Disable Globs and Query Parameters on
+S3 URLs (default: 0, allows globs/queries).}
 
 \item{s3_url_style}{The style of S3 URLs to use. Default is
-"vhost" unless s3_endpoint is set, which makes default "path" (i.e. MINIO systems).}
+"vhost" unless s3_endpoint is set, which makes default "path"
+(i.e. MINIO systems).}
 
-\item{s3_use_ssl}{Enable or disable SSL for S3 connections (default: 1 (TRUE)).}
+\item{s3_use_ssl}{Enable or disable SSL for S3 connections
+(default: 1 (TRUE)).}
 }
 \description{
-This function is used to configure S3 settings for a database connection. It allows you to set various S3-related parameters such as access key, secret access key, endpoint, region, session token, uploader settings, URL compatibility mode, URL style, and SSL usage.
+This function is used to configure S3 settings for a database connection.
+It allows you to set various S3-related parameters such as access key,
+secret access key, endpoint, region, session token, uploader settings,
+URL compatibility mode, URL style, and SSL usage.
 }
 \details{
 see \url{https://duckdb.org/docs/sql/configuration.html}

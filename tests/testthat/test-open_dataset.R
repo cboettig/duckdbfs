@@ -8,6 +8,24 @@ test_that("local csv files", {
 
 })
 
+test_that("duckdb_s3_config", {
+
+  duckdb_s3_config(
+             s3_access_key_id = "YOUR_ACCESS_KEY_ID",
+             s3_secret_access_key = "YOUR_SECRET_ACCESS_KEY",
+             s3_endpoint = "YOUR_S3_ENDPOINT",
+             s3_region = "YOUR_S3_REGION",
+             s3_uploader_max_filesize = "800GB",
+             s3_uploader_max_parts_per_file = 100,
+             s3_uploader_thread_limit = 8,
+             s3_url_compatibility_mode = FALSE,
+             s3_url_style = "vhost",
+             s3_use_ssl = TRUE)
+
+
+
+})
+
 
 test_that("https", {
 
