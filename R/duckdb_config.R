@@ -12,7 +12,8 @@
 #' @param s3_uploader_max_parts_per_file The maximum number of parts per file for S3 uploader (between 1 and 10000, default 10000).
 #' @param s3_uploader_thread_limit The thread limit for S3 uploader (default: 50).
 #' @param s3_url_compatibility_mode Disable Globs and Query Parameters on S3 URLs (default: 0, allows globs/queries).
-#' @param s3_url_style The style of S3 URLs to use. Available options are "vhost" and "path" (default: \code{"vhost"}).
+#' @param s3_url_style The style of S3 URLs to use. Default is
+#' "vhost" unless s3_endpoint is set, which makes default "path" (i.e. MINIO systems).
 #' @param s3_use_ssl Enable or disable SSL for S3 connections (default: 1 (TRUE)).
 #' @details see <https://duckdb.org/docs/sql/configuration.html>
 #' @return NULL
@@ -42,11 +43,14 @@ duckdb_s3_config <- function(conn = cached_connection(),
                       s3_uploader_max_parts_per_file = NULL,
                       s3_uploader_thread_limit = NULL,
                       s3_url_compatibility_mode = NULL,
-                      s3_url_style = c("vhost", "path"),
+                      s3_url_style = NULL,
                       s3_use_ssl = NULL
 ){
 
-  s3_url_style = match.arg(s3_url_style)
+
+  if(!is.null(s3_endpoint) && is.null(s3_url_style)) {
+    s3_url_style = "path"
+  }
   s3_endpoint <- gsub("^http[s]://", "", s3_endpoint)
   load_httpfs(conn)
 

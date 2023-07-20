@@ -69,7 +69,8 @@ test_that("We can open remote parquet datasets over s3", {
   parquet <- "s3://duckdbfs/*.parquet"
 
 
-  # df <- open_dataset(parquet, endpoint = endpoint)
+  duckdb_s3_config(s3_endpoint=endpoint)
+  df <- open_dataset(parquet)
 
 
   minioclient::mc_rb("play/duckdbfs")
