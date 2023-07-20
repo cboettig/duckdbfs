@@ -1,6 +1,7 @@
 CMD
 Filesystem
 GC
+MINIO
 SSL
 URI
 URIs

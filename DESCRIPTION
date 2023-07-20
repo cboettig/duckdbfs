@@ -4,10 +4,10 @@ Version: 0.0.1
 Authors@R: 
   person("Carl", "Boettiger", , "cboettig@gmail.com", c("aut", "cre"),
          comment = c(ORCID = "0000-0002-1642-628X"))
-Description: Provides friendly wrappers for creating duckdb-backed connections
-  to tabular datasets (csv, tsv, parquet, etc) on local or remote filesystems.
+Description: Provides friendly wrappers for creating "duckdb"-backed connections
+  to tabular datasets (csv, parquet, etc) on local or remote filesystems.
   This mimics the behaviour of "open_dataset" in the arrow package, 
-  but in addition to "S3" filesystem also generalizes to any list of http urls.
+  but in addition to "S3" filesystem also generalizes to any list of "http" URLs.
 License: MIT + file LICENSE
 Encoding: UTF-8
 Roxygen: list(markdown = TRUE)
