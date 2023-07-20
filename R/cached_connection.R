@@ -22,7 +22,7 @@ duckdbfs_env <- new.env()
 #' should gracefully shutdown the connection before removing the cache.
 #'
 #' @inheritParams duckdb::duckdb
-#'
+#' @returns a [duckdb::duckdb()] connection object
 #' @examples
 #'
 #' con <- cached_connection()
@@ -39,7 +39,7 @@ cached_connection <- function(dbdir = ":memory:",
   conn <- getOption("duckdbfs_conn", NULL)
   if(!inherits(conn, "duckdb_connection")) {
     if(getOption("duckdbfs_debug", FALSE)) {
-      print("Making a duckdb connection!")
+      message("Making a duckdb connection!")
     }
     conn <- DBI::dbConnect(duckdb::duckdb(),
                            dbdir = dbdir,
@@ -68,11 +68,12 @@ cached_connection <- function(dbdir = ":memory:",
 #' Shuts down connection before gc removes it.
 #' Then clear cached reference to avoid using a stale connection
 #' This avoids complaint about connection being garbage collected.
-#' @export
+#' @returns returns nothing.
 #' @examples
 #'
 #' close_connection()
 #'
+#' @export
 close_connection <- function(conn = cached_connection()) {
 
   if(DBI::dbIsValid(conn)) {

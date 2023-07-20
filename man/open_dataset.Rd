@@ -59,7 +59,7 @@ CSV, etc, using either local file system paths, URLs, or S3 bucket URI
 notation.
 }
 \examples{
-\dontshow{if (duckdbfs:::example_safe()) (if (getRversion() >= "3.4") withAutoprint else force)(\{ # examplesIf}
+\dontshow{if (interactive()) (if (getRversion() >= "3.4") withAutoprint else force)(\{ # examplesIf}
 # Open a remote, hive-partitioned Parquet dataset
 base <- paste0("https://github.com/duckdb/duckdb/raw/master/",
              "data/parquet-testing/hive-partitioning/union_by_name/")

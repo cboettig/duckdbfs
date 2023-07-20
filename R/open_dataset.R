@@ -29,7 +29,7 @@
 #' `dplyr::collect()` on the table, which forces evaluation and reading the
 #' resulting data into memory.
 #'
-#' @examplesIf duckdbfs:::example_safe()
+#' @examplesIf interactive()
 #' # Open a remote, hive-partitioned Parquet dataset
 #' base <- paste0("https://github.com/duckdb/duckdb/raw/master/",
 #'              "data/parquet-testing/hive-partitioning/union_by_name/")
@@ -58,8 +58,6 @@ open_dataset <- function(sources,
   if(!is.null(endpoint)){
     duckdb_s3_config(conn, s3_endpoint = endpoint)
   }
-
-  enable_parallel(conn)
 
   format <- match.arg(format)
   view_query <- query_string(tblname,

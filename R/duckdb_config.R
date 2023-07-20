@@ -26,7 +26,8 @@
 #' @param s3_use_ssl Enable or disable SSL for S3 connections
 #'  (default: 1 (TRUE)).
 #' @details see <https://duckdb.org/docs/sql/configuration.html>
-#' @return NULL
+#' @returns modifies configuration of passed connection,
+#'  returns nothing.
 #'
 #' @examplesIf interactive()
 #' # Configure S3 settings
@@ -94,8 +95,5 @@ load_httpfs <- function(conn = cached_connection()) {
   invisible(status)
 }
 
-enable_parallel <- function(conn = cached_connection(),
-                            duckdb_cores = parallel::detectCores()){
-  DBI::dbExecute(conn, paste0("PRAGMA threads=", duckdb_cores))
-}
+
 

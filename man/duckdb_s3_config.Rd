@@ -52,6 +52,10 @@ S3 URLs (default: 0, allows globs/queries).}
 \item{s3_use_ssl}{Enable or disable SSL for S3 connections
 (default: 1 (TRUE)).}
 }
+\value{
+modifies configuration of passed connection,
+returns nothing.
+}
 \description{
 This function is used to configure S3 settings for a database connection.
 It allows you to set various S3-related parameters such as access key,
