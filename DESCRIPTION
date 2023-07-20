@@ -12,11 +12,13 @@ License: MIT + file LICENSE
 Encoding: UTF-8
 Roxygen: list(markdown = TRUE)
 RoxygenNote: 7.2.3
+URL: https://github.com/cboettig/duckdbfs
+BugReports: https://github.com/cboettig/duckdbfs/issues
 Imports: 
     DBI,
     dbplyr,
     dplyr,
-    duckdb
+    duckdb (>= 0.3.2)
 Suggests: 
     minioclient,
     spelling,
