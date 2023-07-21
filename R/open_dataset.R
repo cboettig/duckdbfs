@@ -29,7 +29,7 @@
 #' `dplyr::collect()` on the table, which forces evaluation and reading the
 #' resulting data into memory.
 #'
-#' @examplesIf duckdbfs:::example_safe()
+#' @examplesIf interactive()
 #' # Open a remote, hive-partitioned Parquet dataset
 #' base <- paste0("https://github.com/duckdb/duckdb/raw/master/",
 #'              "data/parquet-testing/hive-partitioning/union_by_name/")
@@ -37,7 +37,7 @@
 #' f2 <- paste0(base, "x=1/f2.parquet")
 #' f3 <- paste0(base, "x=2/f2.parquet")
 #'
-#' open_dataset(c(f1,f2,f3))
+#' open_dataset(c(f1,f2,f3), unify_schemas = TRUE)
 #'
 #' @export
 open_dataset <- function(sources,
