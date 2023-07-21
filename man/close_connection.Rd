@@ -10,6 +10,9 @@ close_connection(conn = cached_connection())
 \item{conn}{a duckdb connection (leave blank)
 Closes the invisible cached connection to duckdb}
 }
+\value{
+returns nothing.
+}
 \description{
 close connection
 }
