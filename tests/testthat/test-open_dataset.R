@@ -2,7 +2,7 @@
 test_that("local csv files", {
   cars <- tempfile()
   write.csv(mtcars, cars)
-  df <- open_dataset(cars, format = "csv")
+  df <- open_dataset(cars, format = "csv", threads=1)
   expect_true(inherits(df, "tbl_duckdb_connection"))
   unlink(cars)
 
@@ -19,8 +19,7 @@ test_that("duckdb_s3_config", {
              s3_endpoint = "YOUR_S3_ENDPOINT",
              s3_region = "YOUR_S3_REGION",
              s3_uploader_max_filesize = "800GB",
-             s3_uploader_max_parts_per_file = 100,
-             s3_uploader_thread_limit = 8,
+             s3_uploader_max_parts_per_file = 1000,
              s3_url_compatibility_mode = FALSE,
              s3_url_style = "vhost",
              s3_use_ssl = TRUE)
@@ -43,7 +42,10 @@ test_that("https", {
   f3 <- paste0(base, "x=2/f2.parquet")
 
   conn <- cached_connection()
-  ds <- open_dataset( c(f1,f2,f3), conn = conn, unify_schemas = TRUE)
+  ds <- open_dataset( c(f1,f2,f3),
+                      conn = conn,
+                      unify_schemas = TRUE,
+                      threads=1)
   expect_s3_class(ds, "tbl")
 
   df <- dplyr::collect(ds)
@@ -83,7 +85,7 @@ test_that("s3", {
   # Could set passwords here if necessary
   duckdb_s3_config(s3_endpoint = "play.min.io",
                    s3_url_style="path")
-  df <- open_dataset("s3://duckdbfs/*.parquet")
+  df <- open_dataset("s3://duckdbfs/*.parquet", threads=1)
 
   expect_s3_class(df, "tbl")
   expect_s3_class(df, "tbl_duckdb_connection")
