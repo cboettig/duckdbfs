@@ -13,6 +13,9 @@ data is kept in RAM}
 
 \item{read_only}{Set to \code{TRUE} for read-only operation}
 }
+\value{
+a \code{\link[duckdb:duckdb]{duckdb::duckdb()}} connection object
+}
 \description{
 This function is primarily intended for internal use by other
 \code{duckdbfs} functions.  However, it can be called directly by

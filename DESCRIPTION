@@ -6,7 +6,7 @@ Authors@R:
          comment = c(ORCID = "0000-0002-1642-628X"))
 Description: Provides friendly wrappers for creating 'duckdb'-backed connections
   to tabular datasets (csv, parquet, etc) on local or remote file systems.
-  This mimics the behaviour of "open_dataset" in the arrow package, 
+  This mimics the behaviour of "open_dataset" in the 'arrow' package, 
   but in addition to 'S3' file system also generalizes to any list of 'http' URLs.
 License: MIT + file LICENSE
 Encoding: UTF-8

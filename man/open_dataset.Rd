@@ -14,7 +14,8 @@ open_dataset(
   tblname = tmp_tbl_name(),
   mode = "VIEW",
   filename = FALSE,
-  endpoint = NULL
+  endpoint = NULL,
+  threads = parallel::detectCores()
 )
 }
 \arguments{
@@ -44,6 +45,8 @@ the initial execution time)}
 the table name.}
 
 \item{endpoint}{optionally, an alternative endpoint for the S3 object store.}
+
+\item{threads}{restrict number of available threads to duckdb}
 }
 \value{
 A lazy \code{dplyr::tbl} object representing the opened dataset backed
@@ -59,7 +62,7 @@ CSV, etc, using either local file system paths, URLs, or S3 bucket URI
 notation.
 }
 \examples{
-\dontshow{if (duckdbfs:::example_safe()) (if (getRversion() >= "3.4") withAutoprint else force)(\{ # examplesIf}
+\dontshow{if (interactive()) (if (getRversion() >= "3.4") withAutoprint else force)(\{ # examplesIf}
 # Open a remote, hive-partitioned Parquet dataset
 base <- paste0("https://github.com/duckdb/duckdb/raw/master/",
              "data/parquet-testing/hive-partitioning/union_by_name/")
@@ -67,6 +70,6 @@ f1 <- paste0(base, "x=1/f1.parquet")
 f2 <- paste0(base, "x=1/f2.parquet")
 f3 <- paste0(base, "x=2/f2.parquet")
 
-open_dataset(c(f1,f2,f3))
+open_dataset(c(f1,f2,f3), unify_schemas = TRUE, threads=1)
 \dontshow{\}) # examplesIf}
 }

@@ -21,7 +21,7 @@
 #' @param filename A logical value indicating whether to include the filename in
 #' the table name.
 #' @param endpoint optionally, an alternative endpoint for the S3 object store.
-#'
+#' @param threads restrict number of available threads to duckdb
 #' @return A lazy `dplyr::tbl` object representing the opened dataset backed
 #' by a duckdb SQL connection.  Most `dplyr` (and some `tidyr`) verbs can be
 #' used directly on this object, as they can be translated into SQL commands
@@ -29,7 +29,7 @@
 #' `dplyr::collect()` on the table, which forces evaluation and reading the
 #' resulting data into memory.
 #'
-#' @examplesIf duckdbfs:::example_safe()
+#' @examplesIf interactive()
 #' # Open a remote, hive-partitioned Parquet dataset
 #' base <- paste0("https://github.com/duckdb/duckdb/raw/master/",
 #'              "data/parquet-testing/hive-partitioning/union_by_name/")
@@ -37,7 +37,7 @@
 #' f2 <- paste0(base, "x=1/f2.parquet")
 #' f3 <- paste0(base, "x=2/f2.parquet")
 #'
-#' open_dataset(c(f1,f2,f3))
+#' open_dataset(c(f1,f2,f3), unify_schemas = TRUE, threads=1)
 #'
 #' @export
 open_dataset <- function(sources,
@@ -49,7 +49,8 @@ open_dataset <- function(sources,
                          tblname = tmp_tbl_name(),
                          mode = "VIEW",
                          filename = FALSE,
-                         endpoint = NULL) {
+                         endpoint = NULL,
+                         threads = parallel::detectCores()) {
 
   if(all(grepl("^[http|s3:]", sources))) {
     load_httpfs(conn)
@@ -59,7 +60,8 @@ open_dataset <- function(sources,
     duckdb_s3_config(conn, s3_endpoint = endpoint)
   }
 
-  enable_parallel(conn)
+  # seemingly required?
+  enable_parallel(conn, threads)
 
   format <- match.arg(format)
   view_query <- query_string(tblname,
@@ -108,11 +110,6 @@ tmp_tbl_name <- function(n = 15) {
   paste0(sample(letters, n, replace = TRUE), collapse = "")
 }
 
-example_safe <- function() {
-  # not Windows, not CRAN
-
-  interactive() # dummy
-}
 
 remote_src <- function(conn) {
   dbplyr::remote_src(conn)
