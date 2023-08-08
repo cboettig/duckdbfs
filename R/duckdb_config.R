@@ -26,7 +26,7 @@
 #' @param s3_use_ssl Enable or disable SSL for S3 connections
 #'  (default: 1 (TRUE)).
 #' @details see <https://duckdb.org/docs/sql/configuration.html>
-#' @return NULL
+#' @return Returns silently (NULL) if successful.
 #'
 #' @examplesIf interactive()
 #' # Configure S3 settings
