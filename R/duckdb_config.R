@@ -96,6 +96,24 @@ load_httpfs <- function(conn = cached_connection()) {
 
 enable_parallel <- function(conn = cached_connection(),
                             duckdb_cores = parallel::detectCores()){
-  DBI::dbExecute(conn, paste0("PRAGMA threads=", duckdb_cores))
+  status <- DBI::dbExecute(conn, paste0("PRAGMA threads=", duckdb_cores))
+  invisible(status)
 }
 
+
+#' load the duckdb geospatial data plugin
+#'
+#' @inheritParams duckdb_s3_config
+#' @return loads the extension and returns status invisibly.
+#' @references <https://duckdb.org/docs/extensions/spatial.html>
+#' @export
+load_spatial <- function(conn = cached_connection()) {
+  # NOTE: remote access (http or S3 paths) are not supported on Windows.
+  # If OS is Windows, this call should be skipped with non-zero return status
+  # Then, we should attempt to download http addresses to tempfile
+  # S3:// URIs on Windows should throw a "not supported on Windows" error.
+
+  status <- DBI::dbExecute(conn, "INSTALL 'spatial';")
+  status <- DBI::dbExecute(conn, "LOAD 'spatial';")
+  invisible(status)
+}
