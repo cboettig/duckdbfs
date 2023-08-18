@@ -55,9 +55,11 @@ duckdb_s3_config <- function(conn = cached_connection(),
                              s3_url_compatibility_mode = NULL,
                              s3_url_style = NULL,
                              s3_use_ssl = NULL) {
+
   if (!is.null(s3_endpoint) && is.null(s3_url_style)) {
     s3_url_style <- "path"
   }
+
   s3_endpoint <- gsub("^http[s]://", "", s3_endpoint)
   load_httpfs(conn)
 

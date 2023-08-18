@@ -11,6 +11,8 @@ con <- duckdbfs::cached_connection()
 # of course it would be much faster using x/y lims from bbox using vanilla SQL, this is just a proof-of-concept
 costa_rica <- world |> filter(grepl("Costa Rica", name_long)) |> pull(geom) |> st_as_text()
 
+## FIXME wrap this so we don't need cached_connection() call and sql_render() and st_read?
+
 bench::bench_time({
 sql <- gbif |>
   mutate(geometry = ST_Point(decimallongitude, decimallatitude),
@@ -23,7 +25,14 @@ cr_species <- st_read(con, query=sql, geometry_column = "geom", EWKB=FALSE)
 cr_species |> as_tibble()
 })
 
+bench::bench_time({
+  ex <- gbif |>
+    filter(class == "Mammalia",
+           between(decimallongitude, -85.94, -82.55),
+           between(decimallatitude, 8.22, 11.22)) |>
+    collect()
 
+})
 
 
 
@@ -42,24 +51,4 @@ sql <- tbl(conn, "test") |>
   dbplyr::sql_render()
 
 ex <- st_read(conn, query=sql, geometry_column = "geom", EWKB=FALSE)
-
-
-## a trivial search polygon to filter:
-p2 <- rbind(c(0,0), c(0,3), c(3,3), c(3,0), c(0,0))
-pol <-st_polygon(list(p2))
-txt <- st_as_text(pol)
-
-## Can we use this to filter duckdb?
-sql <- tbl(conn, "test") |>
-  mutate(geometry = ST_Point(longitude, latitude),
-         geom = ST_AsWKB(geometry)) |>
-  filter(ST_Within(geometry, ST_GeomFromText({txt}))) |>
-  dbplyr::sql_render()
-sql
-ex <- st_read(conn, query=sql, geometry_column = "geom", EWKB=FALSE)
-ex
-
-sf <- st_as_sf(test, coords = c(3,2))
-filter <- st_as_sf(tibble(sites = "A", geometry = list(pol)))
-sf |> st_filter(filter)
 

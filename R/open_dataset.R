@@ -52,11 +52,10 @@ open_dataset <- function(sources,
                          endpoint = NULL,
                          threads = parallel::detectCores()) {
 
-  if(all(grepl("^[http|s3:]", sources))) {
-    load_httpfs(conn)
-  }
 
-  if(!is.null(endpoint)){
+  sources <- parse_uri(sources, conn = conn)
+
+  if(!is.null(endpoint)){ # can also be specified in URI query notation
     duckdb_s3_config(conn, s3_endpoint = endpoint)
   }
 
