@@ -30,6 +30,8 @@ parse_uri <- function(sources, conn) {
                      s3_endpoint = url$query[["endpoint_override"]],
                      s3_use_ssl = use_ssl)
 
+    sources <- paste0(url$scheme, "://", url$hostname, url$path)
+
     # append ** for recursive search
     sources <- paste0(sources, "/**")
   }
