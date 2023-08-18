@@ -1,8 +1,11 @@
 parse_uri <- function(sources, conn) {
 
-  if(all(grepl("^[http|s3:]", sources))) {
-    load_httpfs(conn)
+  if(!any(grepl("^[http|s3:]", sources))) {
+    # Local file-systems don't need parsing
+    return(sources)
   }
+
+  load_httpfs(conn)
 
   ## for now only parse sources of length-1
   if(length(sources) > 1) return(sources)
@@ -14,21 +17,19 @@ parse_uri <- function(sources, conn) {
 
     url <- url_parse(sources)
     scheme <- url$query[["scheme"]]
-    use_ssl <- identical(scheme, "http")
+    use_ssl <- identical(scheme, "https")
 
     if(identical(url$username, "anonymous")) {
       url$username <- ""
       url$password <- ""
     }
 
-
-
     duckdb_s3_config(conn = conn,
                      s3_access_key_id = url$username,
                      s3_secret_access_key = url$password,
                      s3_session_token = url$token,
                      s3_endpoint = url$query[["endpoint_override"]],
-                     s3_use_ssl = use_ssl)
+                     s3_use_ssl = as.integer(use_ssl))
 
     sources <- paste0(url$scheme, "://", url$hostname, url$path)
 
