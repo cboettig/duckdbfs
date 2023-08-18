@@ -43,7 +43,8 @@ jobs:
         with:
           extra-packages: any::rcmdcheck
           needs: check
-
+      - name: extra deps
+        run: R -e "remotes::install_github('cboettig/minioclient')"
       - uses: r-lib/actions/check-r-package@v2
         with:
           upload-snapshots: true
