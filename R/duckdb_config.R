@@ -25,6 +25,8 @@
 #'  (i.e. MINIO systems).
 #' @param s3_use_ssl Enable or disable SSL for S3 connections
 #'  (default: 1 (TRUE)).
+#' @param anonymous request anonymous access (sets `s3_access_key_id` and
+#'   `s3_secret_access_key` to `""`, allowing anonymous access to public buckets).
 #' @details see <https://duckdb.org/docs/sql/configuration.html>
 #' @return Returns silently (NULL) if successful.
 #'
@@ -40,7 +42,8 @@
 #'            s3_uploader_thread_limit = 8,
 #'            s3_url_compatibility_mode = FALSE,
 #'            s3_url_style = "vhost",
-#'            s3_use_ssl = TRUE)
+#'            s3_use_ssl = TRUE,
+#'            anonymous = TRUE)
 #'
 #' @export
 duckdb_s3_config <- function(conn = cached_connection(),
@@ -54,7 +57,8 @@ duckdb_s3_config <- function(conn = cached_connection(),
                              s3_uploader_thread_limit = NULL,
                              s3_url_compatibility_mode = NULL,
                              s3_url_style = NULL,
-                             s3_use_ssl = NULL) {
+                             s3_use_ssl = NULL,
+                             anonymous = NULL) {
 
   if (!is.null(s3_endpoint) && is.null(s3_url_style)) {
     s3_url_style <- "path"
@@ -62,6 +66,14 @@ duckdb_s3_config <- function(conn = cached_connection(),
 
   s3_endpoint <- gsub("^http[s]://", "", s3_endpoint)
   load_httpfs(conn)
+
+  if(!is.null(anonymous)){
+    if(!is.null(s3_access_key_id) || !is.null(s3_secret_access_key))
+      warning(paste("access keys provided when anonymous access requested.\n",
+                    "keys will be ignored"))
+    s3_access_key_id <- ""
+    s3_secret_access_key <- ""
+  }
 
   duckdb_set(s3_access_key_id, conn = conn)
   duckdb_set(s3_secret_access_key, conn = conn)
