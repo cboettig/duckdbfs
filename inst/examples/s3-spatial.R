@@ -1,3 +1,11 @@
+
+library(dplyr)
+library(duckdbfs)
+system.file("extdata/spatial-test.csv", package="duckdbfs") |>
+  open_dataset(format = "csv") |>
+  mutate(geometry = ST_Point(longitude, latitude)) |>
+  to_sf()
+
 library(dplyr)
 library(sf)
 library(spData)
@@ -25,6 +33,49 @@ cr_species <- st_read(con, query=sql, geometry_column = "geom", EWKB=FALSE)
 cr_species |> as_tibble()
 })
 
+
+
+
+devtools::load_all()
+library(dplyr)
+costa_rica <- spData::world |>
+  dplyr::filter(grepl("Costa Rica", name_long)) |>
+  dplyr::pull(geom) |>
+  sf::st_as_text()
+
+gbif <- duckdbfs::open_dataset("s3://gbif-open-data-us-east-1/occurrence/2022-12-01/occurrence.parquet/**", tblname = "gbif")
+x <-
+  gbif |>
+  mutate(geometry = ST_Point(decimallongitude, decimallatitude)) |>
+  filter(class == "Mammalia") |>
+  filter(ST_Within(geometry, ST_GeomFromText({costa_rica})))
+x |> to_sf()
+
+
+
+
+
+con <- duckdbfs::cached_connection()
+load_spatial(con)
+sql <- x |>
+  dplyr::mutate(wkb_geometry = ST_AsWKB(geometry)) |>
+  dbplyr::sql_render()
+sf::st_read(con, query=sql, geometry_column = "wkb_geometry")
+
+
+
+
+
+## with helpers
+species <- gbif |>
+  mutate(geometry = ST_Point(decimallongitude, decimallatitude)) |>
+  filter(class == "Mammalia") |>
+  filter(ST_Within(geometry, ST_GeomFromText({costa_rica}))) |>
+  to_sf()
+
+
+
+## compare to:
 bench::bench_time({
   ex <- gbif |>
     filter(class == "Mammalia",
