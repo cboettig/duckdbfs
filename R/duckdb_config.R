@@ -64,8 +64,8 @@ duckdb_s3_config <- function(conn = cached_connection(),
     s3_url_style <- "path"
   }
 
-  s3_endpoint <- gsub("^http[s]://", "", s3_endpoint)
-  load_httpfs(conn)
+  if(!is.null(s3_endpoint))
+    s3_endpoint <- gsub("^http[s]://", "", s3_endpoint)
 
   if(!is.null(anonymous)){
     if(!is.null(s3_access_key_id) || !is.null(s3_secret_access_key))
@@ -75,6 +75,7 @@ duckdb_s3_config <- function(conn = cached_connection(),
     s3_secret_access_key <- ""
   }
 
+  load_httpfs(conn)
   duckdb_set(s3_access_key_id, conn = conn)
   duckdb_set(s3_secret_access_key, conn = conn)
   duckdb_set(s3_endpoint, conn = conn)

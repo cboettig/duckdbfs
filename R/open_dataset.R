@@ -52,7 +52,6 @@ open_dataset <- function(sources,
                          endpoint = NULL,
                          threads = parallel::detectCores()) {
 
-
   sources <- parse_uri(sources, conn = conn)
 
   if(!is.null(endpoint)){ # can also be specified in URI query notation
