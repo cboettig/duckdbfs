@@ -12,9 +12,10 @@ dplyr
 duckdb
 duckdb's
 duckdb’s
+filesize
 finalizer
 gc
-filesize
+geospatial
 globbing
 http
 httpfs
@@ -22,6 +23,5 @@ https
 minio
 schemas
 tibble
-tsv
 uploader
 vhost

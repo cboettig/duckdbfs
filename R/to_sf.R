@@ -9,3 +9,4 @@ to_sf <- function(x, geometry_column = "geom", conn = cached_connection()) {
   sf::st_read(conn, query=sql, geometry_column = geometry)
 }
 
+utils::globalVariables(c("ST_AsWKB", "geometry"), package = "duckdbfs")
