@@ -106,8 +106,8 @@
 <div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">ds</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/open_dataset.html">open_dataset</a></span><span class="op">(</span><span class="va">urls</span>, unify_schemas <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
 <span><span class="va">ds</span></span>
-<span><span class="co">#&gt; # Source:   table&lt;cfkkhagnyckgfeg&gt; [3 x 4]</span></span>
-<span><span class="co">#&gt; # Database: DuckDB 0.8.1 [unknown@Linux 5.17.15-76051715-generic:R 4.3.1/:memory:]</span></span>
+<span><span class="co">#&gt; # Source:   table&lt;iooexuqdybkdbrs&gt; [3 x 4]</span></span>
+<span><span class="co">#&gt; # Database: DuckDB 0.8.1 [unknown@Linux 5.17.15-76051715-generic:R 4.3.0/:memory:]</span></span>
 <span><span class="co">#&gt;       i     j x         k</span></span>
 <span><span class="co">#&gt;   &lt;int&gt; &lt;int&gt; &lt;chr&gt; &lt;int&gt;</span></span>
 <span><span class="co">#&gt; 1    42    84 1        NA</span></span>
@@ -121,24 +121,19 @@
 <p>We can also access remote data over the S3 protocol. An advantage of S3 is that unlike https, it can discover all files in a given folder, so we don’t have to list them individually. This is particularly convenient for accessing large, partitioned datasets, like GBIF: (nearly 200 GB of data split across more than 2000 parquet files)</p>
 <div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">parquet</span> <span class="op">&lt;-</span> <span class="st">"s3://gbif-open-data-us-east-1/occurrence/2023-06-01/occurrence.parquet"</span></span>
-<span><span class="va">gbif</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/open_dataset.html">open_dataset</a></span><span class="op">(</span><span class="va">parquet</span><span class="op">)</span></span></code></pre></div>
-<p>The S3 system can also support write access. Use the <code><a href="reference/duckdb_s3_config.html">duckdb_s3_config()</a></code> function to set access credentials and configure other settings, like alternative endpoints (for use with S3-compliant systems like <a href="https://min.io" class="external-link">minio</a>). Many of these settings can also be passed along more compactly using the URI query notation found in the <code>arrow</code> package. For instance, we can request anonymous access to a bucket on an alternative endpoint as:</p>
+<span><span class="fu"><a href="reference/duckdb_s3_config.html">duckdb_s3_config</a></span><span class="op">(</span><span class="op">)</span></span>
+<span><span class="va">gbif</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/open_dataset.html">open_dataset</a></span><span class="op">(</span><span class="va">parquet</span>, anonymous <span class="op">=</span> <span class="cn">TRUE</span>, s3_region<span class="op">=</span><span class="st">"us-east-1"</span><span class="op">)</span></span></code></pre></div>
+<p>The additional configuration arguments are passed to the helper function <code><a href="reference/duckdb_s3_config.html">duckdb_s3_config()</a></code> to set access credentials and configure other settings, like alternative endpoints (for use with S3-compliant systems like <a href="https://min.io" class="external-link">minio</a>). Of course it also possible to set these ahead of time by calling <code><a href="reference/duckdb_s3_config.html">duckdb_s3_config()</a></code> directly. Many of these settings can also be passed along more compactly using the URI query notation found in the <code>arrow</code> package. For instance, we can request anonymous access to a bucket on an alternative endpoint as:</p>
 <div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">efi</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/open_dataset.html">open_dataset</a></span><span class="op">(</span><span class="st">"s3://anonymous@neon4cast-scores/parquet/aquatics?endpoint_override=data.ecoforecast.org"</span><span class="op">)</span></span></code></pre></div>
-<p>Alternatively, the <code>duckdb_s3_config</code> parameters can be passed as additional named arguments:</p>
-<div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">efi</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/open_dataset.html">open_dataset</a></span><span class="op">(</span><span class="st">"s3://neon4cast-scores/parquet/aquatics"</span>, </span>
-<span>                    s3_access_key_id<span class="op">=</span><span class="st">""</span>,</span>
-<span>                    s3_endpoint<span class="op">=</span><span class="st">"data.ecoforecast.org"</span><span class="op">)</span></span></code></pre></div>
 </div>
 <div class="section level2">
 <h2 id="spatial-data">Spatial data<a class="anchor" aria-label="anchor" href="#spatial-data"></a>
 </h2>
 <p><code>duckdb</code> can also understand a wide array of spatial data queries for spatial vector data, similar to operations found in the popular <code>sf</code> package. Most spatial query operations require an geometry column that expresses the simple feature geometry in <code>duckdb</code>’s internal geometry format (nearly but not exactly WKB). A common pattern will first generate the geometry column from raw columns, such as <code>latitude</code> and <code>lognitude</code> columns, using the <code>duckdb</code> implementation of the a method familiar to postgis, <code>ST_Point</code>:</p>
-<div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">spatial_ex</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/paste.html" class="external-link">paste0</a></span><span class="op">(</span><span class="st">"https://raw.githubusercontent.com/cboettig/duckdbfs/"</span>,</span>
-<span>                     <span class="st">"7189ed7e0456927a55a877acf77aaadc074ba01b/"</span>,</span>
-<span>                     <span class="st">"inst/extdata/spatial-test.csv"</span><span class="op">)</span> <span class="op">|&gt;</span></span>
+<span>                     <span class="st">"main/inst/extdata/spatial-test.csv"</span><span class="op">)</span> <span class="op">|&gt;</span></span>
 <span>  <span class="fu"><a href="reference/open_dataset.html">open_dataset</a></span><span class="op">(</span>format <span class="op">=</span> <span class="st">"csv"</span><span class="op">)</span> </span>
 <span></span>
 <span><span class="va">spatial_ex</span> <span class="op">|&gt;</span></span>
@@ -162,7 +157,7 @@
 <span><span class="co">#&gt; 10    j       10        10 POINT (10 10)</span></span></code></pre></div>
 <p>Recall that when used against any sort of external database like <code>duckdb</code>, most <code>dplyr</code> functions like <code><a href="https://dplyr.tidyverse.org/reference/mutate.html" class="external-link">dplyr::mutate()</a></code> are being transcribed into SQL by <code>dbplyr</code>, and not actually ever run in R. This allows us to seamlessly pass along spatial functions like <code>ST_Point</code>, despite this not being an available R function. The <code><a href="reference/to_sf.html">to_sf()</a></code> coercion will parse its input into a SQL query that gets passed to <code>duckdb</code>, and the return object will be collected through <code><a href="https://r-spatial.github.io/sf/reference/st_read.html" class="external-link">sf::st_read</a></code>, returning an (in-memory) <code>sf</code> object.</p>
 <p>Note that we can add arbitrary spatial functions that operate on this geometry, provided we do so prior to our call to <code>to_sf</code>. For instance, here we first create our geometry column from lat/lon columns, and then compute the distance from each element to a spatial point:</p>
-<div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">spatial_ex</span> <span class="op">|&gt;</span> </span>
 <span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate.html" class="external-link">mutate</a></span><span class="op">(</span>geometry <span class="op">=</span> <span class="fu">ST_Point</span><span class="op">(</span><span class="va">longitude</span>, <span class="va">latitude</span><span class="op">)</span><span class="op">)</span> <span class="op">|&gt;</span></span>
 <span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate.html" class="external-link">mutate</a></span><span class="op">(</span>dist <span class="op">=</span> <span class="fu">ST_Distance</span><span class="op">(</span><span class="va">geometry</span>, <span class="fu">ST_Point</span><span class="op">(</span><span class="fl">0</span>,<span class="fl">0</span><span class="op">)</span><span class="op">)</span><span class="op">)</span> <span class="op">|&gt;</span> </span>
@@ -189,7 +184,7 @@
 <h2 id="local-files">Local files<a class="anchor" aria-label="anchor" href="#local-files"></a>
 </h2>
 <p>Of course, <code><a href="reference/open_dataset.html">open_dataset()</a></code> can also be used with local files. Remember that parquet format is not required, we can read csv files (including multiple and hive-partitioned csv files).</p>
-<div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/utils/write.table.html" class="external-link">write.csv</a></span><span class="op">(</span><span class="va">mtcars</span>, <span class="st">"mtcars.csv"</span>, row.names<span class="op">=</span><span class="cn">FALSE</span><span class="op">)</span></span>
 <span><span class="va">lazy_cars</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/open_dataset.html">open_dataset</a></span><span class="op">(</span><span class="st">"mtcars.csv"</span>, format <span class="op">=</span> <span class="st">"csv"</span><span class="op">)</span></span></code></pre></div>
 </div>
