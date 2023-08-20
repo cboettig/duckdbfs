@@ -35,12 +35,12 @@
 #'
 #' @export
 to_sf <- function(x, conn = cached_connection()) {
+  load_spatial(conn)
   sql <- x |>
     dplyr::mutate(geometry = ST_AsWKB(geometry)) |>
     dbplyr::sql_render()
 
   requireNamespace("sf", quietly = TRUE)
-  load_spatial(conn)
   sf::st_read(conn, query=sql, geometry_column = "geometry")
 }
 

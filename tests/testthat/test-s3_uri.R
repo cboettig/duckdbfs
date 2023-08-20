@@ -24,5 +24,8 @@ test_that("s3 uri parsing", {
   expect_equal(parts$path, "/parquet/aquatics")
   expect_equal(parts$query[["endpoint_url"]], "data.ecoforecast.org")
 
+  url <- "s3://anonymous@neon4cast-scores/parquet/aquatics?endpoint_url=data.ecoforecast.org"
+  parts <- url_parse(url)
+  expect_equal(parts$username, "anonymous")
 
 })

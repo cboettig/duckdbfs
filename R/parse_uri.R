@@ -105,27 +105,21 @@ url_parse <- function(url) {
   pieces <- parse_match(authority, "^(([^@]+)@)?([^:]+)?(:([^#]+))?")
 
 
-  token <- NULL
   username <- NULL
   password <- NULL
+  token <- NULL
 
-  userinfo <- pieces[[2]]
-  if (!is.null(userinfo)) {
-
-    if (grepl(":", userinfo)) {
-      keys <- strsplit(userinfo, ":")[[1]]
-      if(length(keys) > 0) {
-        username <- keys[1]
-      }
-      if(length(keys) > 0) {
-        password <- keys[2]
-      }
-      if(length(keys) > 1) {
-        token <- keys[3]
-      }
+  username <- pieces[[2]]
+  if (!is.null(username)) {
+    keys <- strsplit(username, ":")[[1]]
+    if(length(keys) > 0) {
+      username <- keys[1]
     }
-    else {
-      userinfo <- list(userinfo, NULL)
+    if(length(keys) > 1) {
+      password <- keys[2]
+    }
+    if(length(keys) > 2) {
+      token <- keys[3]
     }
   }
   hostname <- pieces[[3]]
