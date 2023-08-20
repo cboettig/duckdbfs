@@ -124,9 +124,9 @@ url_parse <- function(url) {
   }
   hostname <- pieces[[3]]
   port <- pieces[[5]]
-  structure(list(scheme = scheme, hostname = hostname, username = username,
-                 password = password, token = token, port = port, path = path,
-                 query = query, fragment = fragment))
+  list(scheme = scheme, hostname = hostname, username = username,
+       password = password, token = token, port = port, path = path,
+       query = query, fragment = fragment)
 }
 
 

@@ -61,8 +61,8 @@ explicitly request `duckdb` join the two schemas. Leave this as default,
 ``` r
 ds <- open_dataset(urls, unify_schemas = TRUE)
 ds
-#> # Source:   table<cfkkhagnyckgfeg> [3 x 4]
-#> # Database: DuckDB 0.8.1 [unknown@Linux 5.17.15-76051715-generic:R 4.3.1/:memory:]
+#> # Source:   table<iooexuqdybkdbrs> [3 x 4]
+#> # Database: DuckDB 0.8.1 [unknown@Linux 5.17.15-76051715-generic:R 4.3.0/:memory:]
 #>       i     j x         k
 #>   <int> <int> <chr> <int>
 #> 1    42    84 1        NA
@@ -86,28 +86,21 @@ data split across more than 2000 parquet files)
 
 ``` r
 parquet <- "s3://gbif-open-data-us-east-1/occurrence/2023-06-01/occurrence.parquet"
-gbif <- open_dataset(parquet)
+duckdb_s3_config()
+gbif <- open_dataset(parquet, anonymous = TRUE, s3_region="us-east-1")
 ```
 
-The S3 system can also support write access. Use the
-`duckdb_s3_config()` function to set access credentials and configure
-other settings, like alternative endpoints (for use with S3-compliant
-systems like [minio](https://min.io)). Many of these settings can also
-be passed along more compactly using the URI query notation found in the
-`arrow` package. For instance, we can request anonymous access to a
-bucket on an alternative endpoint as:
+The additional configuration arguments are passed to the helper function
+`duckdb_s3_config()` to set access credentials and configure other
+settings, like alternative endpoints (for use with S3-compliant systems
+like [minio](https://min.io)). Of course it also possible to set these
+ahead of time by calling `duckdb_s3_config()` directly. Many of these
+settings can also be passed along more compactly using the URI query
+notation found in the `arrow` package. For instance, we can request
+anonymous access to a bucket on an alternative endpoint as:
 
 ``` r
 efi <- open_dataset("s3://anonymous@neon4cast-scores/parquet/aquatics?endpoint_override=data.ecoforecast.org")
-```
-
-Alternatively, the `duckdb_s3_config` parameters can be passed as
-additional named arguments:
-
-``` r
-efi <- open_dataset("s3://neon4cast-scores/parquet/aquatics", 
-                    s3_access_key_id="",
-                    s3_endpoint="data.ecoforecast.org")
 ```
 
 ## Spatial data
@@ -123,8 +116,7 @@ familiar to postgis, `ST_Point`:
 
 ``` r
 spatial_ex <- paste0("https://raw.githubusercontent.com/cboettig/duckdbfs/",
-                     "7189ed7e0456927a55a877acf77aaadc074ba01b/",
-                     "inst/extdata/spatial-test.csv") |>
+                     "main/inst/extdata/spatial-test.csv") |>
   open_dataset(format = "csv") 
 
 spatial_ex |>
