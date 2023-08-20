@@ -16,7 +16,7 @@ URL compatibility mode, URL style, and SSL usage."><!-- mathjax --><script src="
     
     <a class="navbar-brand me-2" href="../index.html">duckdbfs</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.0.1</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.0.2</small>
 
     
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -26,6 +26,9 @@ URL compatibility mode, URL style, and SSL usage."><!-- mathjax --><script src="
     <div id="navbar" class="collapse navbar-collapse ms-3">
       <ul class="navbar-nav me-auto"><li class="active nav-item">
   <a class="nav-link" href="../reference/index.html">Reference</a>
+</li>
+<li class="nav-item">
+  <a class="nav-link" href="../news/index.html">Changelog</a>
 </li>
       </ul><form class="form-inline my-2 my-lg-0" role="search">
         <input type="search" class="form-control me-sm-2" aria-label="Toggle navigation" name="search-input" data-search-index="../search.json" id="search-input" placeholder="Search for" autocomplete="off"></form>
@@ -69,7 +72,8 @@ URL compatibility mode, URL style, and SSL usage.</p>
 <span>  s3_uploader_thread_limit <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  s3_url_compatibility_mode <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  s3_url_style <span class="op">=</span> <span class="cn">NULL</span>,</span>
-<span>  s3_use_ssl <span class="op">=</span> <span class="cn">NULL</span></span>
+<span>  s3_use_ssl <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  anonymous <span class="op">=</span> <span class="cn">NULL</span></span>
 <span><span class="op">)</span></span></code></pre></div>
     </div>
 
@@ -130,6 +134,11 @@ S3 URLs (default: 0, allows globs/queries).</p></dd>
 <dd><p>Enable or disable SSL for S3 connections
 (default: 1 (TRUE)).</p></dd>
 
+
+<dt>anonymous</dt>
+<dd><p>request anonymous access (sets <code>s3_access_key_id</code> and
+<code>s3_secret_access_key</code> to <code>""</code>, allowing anonymous access to public buckets).</p></dd>
+
 </dl></div>
     <div class="section level2">
     <h2 id="value">Value<a class="anchor" aria-label="anchor" href="#value"></a></h2>
@@ -156,7 +165,8 @@ S3 URLs (default: 0, allows globs/queries).</p></dd>
 <span class="r-in"><span>           s3_uploader_thread_limit <span class="op">=</span> <span class="fl">8</span>,</span></span>
 <span class="r-in"><span>           s3_url_compatibility_mode <span class="op">=</span> <span class="cn">FALSE</span>,</span></span>
 <span class="r-in"><span>           s3_url_style <span class="op">=</span> <span class="st">"vhost"</span>,</span></span>
-<span class="r-in"><span>           s3_use_ssl <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span></span>
+<span class="r-in"><span>           s3_use_ssl <span class="op">=</span> <span class="cn">TRUE</span>,</span></span>
+<span class="r-in"><span>           anonymous <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="op">}</span></span></span>
 </code></pre></div>
     </div>

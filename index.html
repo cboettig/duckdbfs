@@ -32,7 +32,7 @@
     
     <a class="navbar-brand me-2" href="index.html">duckdbfs</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.0.1</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.0.2</small>
 
     
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -43,6 +43,9 @@
       <ul class="navbar-nav me-auto">
 <li class="nav-item">
   <a class="nav-link" href="reference/index.html">Reference</a>
+</li>
+<li class="nav-item">
+  <a class="nav-link" href="news/index.html">Changelog</a>
 </li>
       </ul>
 <form class="form-inline my-2 my-lg-0" role="search">
@@ -78,10 +81,21 @@
 <span><span class="fu">devtools</span><span class="fu">::</span><span class="fu">install_github</span><span class="op">(</span><span class="st">"cboettig/duckdbfs"</span><span class="op">)</span></span></code></pre></div>
 </div>
 <div class="section level2">
-<h2 id="example">Example<a class="anchor" aria-label="anchor" href="#example"></a>
+<h2 id="quickstart">Quickstart<a class="anchor" aria-label="anchor" href="#quickstart"></a>
 </h2>
-<p>Imagine we have a collection of URLs to files we want to combine into a single tibble in R. The files could be parquet or csv, and some files may have additional columns not present in other files. The combined data may be very large, potentially bigger than available RAM or slow to download completely, but we may only want a subset using methods like <code><a href="https://dplyr.tidyverse.org/reference/filter.html" class="external-link">dplyr::filter()</a></code> or <code><a href="https://dplyr.tidyverse.org/reference/summarise.html" class="external-link">dplyr::summarise()</a></code>.</p>
 <div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/cboettig/duckdbfs" class="external-link">duckdbfs</a></span><span class="op">)</span></span>
+<span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://dplyr.tidyverse.org" class="external-link">dplyr</a></span><span class="op">)</span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt; Attaching package: 'dplyr'</span></span>
+<span><span class="co">#&gt; The following objects are masked from 'package:stats':</span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt;     filter, lag</span></span>
+<span><span class="co">#&gt; The following objects are masked from 'package:base':</span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt;     intersect, setdiff, setequal, union</span></span></code></pre></div>
+<p>Imagine we have a collection of URLs to files we want to combine into a single tibble in R. The files could be parquet or csv, and some files may have additional columns not present in other files. The combined data may be very large, potentially bigger than available RAM or slow to download completely, but we may only want a subset using methods like <code><a href="https://dplyr.tidyverse.org/reference/filter.html" class="external-link">dplyr::filter()</a></code> or <code><a href="https://dplyr.tidyverse.org/reference/summarise.html" class="external-link">dplyr::summarise()</a></code>.</p>
+<div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">base</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/paste.html" class="external-link">paste0</a></span><span class="op">(</span><span class="st">"https://github.com/duckdb/duckdb/raw/master/"</span>,</span>
 <span>               <span class="st">"data/parquet-testing/hive-partitioning/union_by_name/"</span><span class="op">)</span></span>
 <span><span class="va">f1</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/paste.html" class="external-link">paste0</a></span><span class="op">(</span><span class="va">base</span>, <span class="st">"x=1/f1.parquet"</span><span class="op">)</span></span>
@@ -89,34 +103,93 @@
 <span><span class="va">f3</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/paste.html" class="external-link">paste0</a></span><span class="op">(</span><span class="va">base</span>, <span class="st">"x=2/f2.parquet"</span><span class="op">)</span></span>
 <span><span class="va">urls</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="va">f1</span>,<span class="va">f2</span>,<span class="va">f3</span><span class="op">)</span></span></code></pre></div>
 <p>We can easily access this data without downloading by passing a vector of URLs. Note that if schemas (column names) do not match, we must explicitly request <code>duckdb</code> join the two schemas. Leave this as default, <code>FALSE</code> when not required to achieve much better performance.</p>
-<div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/cboettig/duckdbfs" class="external-link">duckdbfs</a></span><span class="op">)</span></span>
-<span></span>
-<span><span class="va">ds</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/open_dataset.html">open_dataset</a></span><span class="op">(</span><span class="va">urls</span>, unify_schemas <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
+<div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">ds</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/open_dataset.html">open_dataset</a></span><span class="op">(</span><span class="va">urls</span>, unify_schemas <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
 <span><span class="va">ds</span></span>
-<span><span class="co">#&gt; # Source:   table&lt;nfzdryqkqgxdgbf&gt; [3 x 4]</span></span>
+<span><span class="co">#&gt; # Source:   table&lt;cfkkhagnyckgfeg&gt; [3 x 4]</span></span>
 <span><span class="co">#&gt; # Database: DuckDB 0.8.1 [unknown@Linux 5.17.15-76051715-generic:R 4.3.1/:memory:]</span></span>
 <span><span class="co">#&gt;       i     j x         k</span></span>
 <span><span class="co">#&gt;   &lt;int&gt; &lt;int&gt; &lt;chr&gt; &lt;int&gt;</span></span>
 <span><span class="co">#&gt; 1    42    84 1        NA</span></span>
 <span><span class="co">#&gt; 2    42    84 1        NA</span></span>
 <span><span class="co">#&gt; 3    NA   128 2        33</span></span></code></pre></div>
-<p>Use <code><a href="https://rdrr.io/r/stats/filter.html" class="external-link">filter()</a></code>, <code>select()</code>, etc from dplyr to subset and process data – <a href="https://dbplyr.tidyverse.org/reference/index.html" class="external-link">any method supported by dbpylr</a>. Then use <code><a href="https://dplyr.tidyverse.org/reference/compute.html" class="external-link">dplyr::collect()</a></code> to trigger evaluation and ingest results of the query into R.</p>
+<p>Use <code><a href="https://dplyr.tidyverse.org/reference/filter.html" class="external-link">filter()</a></code>, <code><a href="https://dplyr.tidyverse.org/reference/select.html" class="external-link">select()</a></code>, etc from dplyr to subset and process data – <a href="https://dbplyr.tidyverse.org/reference/index.html" class="external-link">any method supported by dbpylr</a>. Then use <code><a href="https://dplyr.tidyverse.org/reference/compute.html" class="external-link">dplyr::collect()</a></code> to trigger evaluation and ingest results of the query into R.</p>
 </div>
 <div class="section level2">
 <h2 id="s3-based-access">S3-based access<a class="anchor" aria-label="anchor" href="#s3-based-access"></a>
 </h2>
-<p>We can also access remote data over the S3 protocol. An advantage of S3 is that unlike https, we can use wildcard globbing because the file system can list files.</p>
-<div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">parquet</span> <span class="op">&lt;-</span> <span class="st">"s3://gbif-open-data-us-east-1/occurrence/2023-06-01/*/*"</span></span>
+<p>We can also access remote data over the S3 protocol. An advantage of S3 is that unlike https, it can discover all files in a given folder, so we don’t have to list them individually. This is particularly convenient for accessing large, partitioned datasets, like GBIF: (nearly 200 GB of data split across more than 2000 parquet files)</p>
+<div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">parquet</span> <span class="op">&lt;-</span> <span class="st">"s3://gbif-open-data-us-east-1/occurrence/2023-06-01/occurrence.parquet"</span></span>
 <span><span class="va">gbif</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/open_dataset.html">open_dataset</a></span><span class="op">(</span><span class="va">parquet</span><span class="op">)</span></span></code></pre></div>
-<p>The S3 system can also support write access. Use the <code><a href="reference/duckdb_s3_config.html">duckdb_s3_config()</a></code> function to set access credentials and configure other settings, like alternative endpoints (for use with S3-compliant systems like <a href="https://min.io" class="external-link">minio</a>).</p>
+<p>The S3 system can also support write access. Use the <code><a href="reference/duckdb_s3_config.html">duckdb_s3_config()</a></code> function to set access credentials and configure other settings, like alternative endpoints (for use with S3-compliant systems like <a href="https://min.io" class="external-link">minio</a>). Many of these settings can also be passed along more compactly using the URI query notation found in the <code>arrow</code> package. For instance, we can request anonymous access to a bucket on an alternative endpoint as:</p>
+<div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">efi</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/open_dataset.html">open_dataset</a></span><span class="op">(</span><span class="st">"s3://anonymous@neon4cast-scores/parquet/aquatics?endpoint_override=data.ecoforecast.org"</span><span class="op">)</span></span></code></pre></div>
+<p>Alternatively, the <code>duckdb_s3_config</code> parameters can be passed as additional named arguments:</p>
+<div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">efi</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/open_dataset.html">open_dataset</a></span><span class="op">(</span><span class="st">"s3://neon4cast-scores/parquet/aquatics"</span>, </span>
+<span>                    s3_access_key_id<span class="op">=</span><span class="st">""</span>,</span>
+<span>                    s3_endpoint<span class="op">=</span><span class="st">"data.ecoforecast.org"</span><span class="op">)</span></span></code></pre></div>
+</div>
+<div class="section level2">
+<h2 id="spatial-data">Spatial data<a class="anchor" aria-label="anchor" href="#spatial-data"></a>
+</h2>
+<p><code>duckdb</code> can also understand a wide array of spatial data queries for spatial vector data, similar to operations found in the popular <code>sf</code> package. Most spatial query operations require an geometry column that expresses the simple feature geometry in <code>duckdb</code>’s internal geometry format (nearly but not exactly WKB). A common pattern will first generate the geometry column from raw columns, such as <code>latitude</code> and <code>lognitude</code> columns, using the <code>duckdb</code> implementation of the a method familiar to postgis, <code>ST_Point</code>:</p>
+<div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">spatial_ex</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/paste.html" class="external-link">paste0</a></span><span class="op">(</span><span class="st">"https://raw.githubusercontent.com/cboettig/duckdbfs/"</span>,</span>
+<span>                     <span class="st">"7189ed7e0456927a55a877acf77aaadc074ba01b/"</span>,</span>
+<span>                     <span class="st">"inst/extdata/spatial-test.csv"</span><span class="op">)</span> <span class="op">|&gt;</span></span>
+<span>  <span class="fu"><a href="reference/open_dataset.html">open_dataset</a></span><span class="op">(</span>format <span class="op">=</span> <span class="st">"csv"</span><span class="op">)</span> </span>
+<span></span>
+<span><span class="va">spatial_ex</span> <span class="op">|&gt;</span></span>
+<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate.html" class="external-link">mutate</a></span><span class="op">(</span>geometry <span class="op">=</span> <span class="fu">ST_Point</span><span class="op">(</span><span class="va">longitude</span>, <span class="va">latitude</span><span class="op">)</span><span class="op">)</span> <span class="op">|&gt;</span></span>
+<span>  <span class="fu"><a href="reference/to_sf.html">to_sf</a></span><span class="op">(</span><span class="op">)</span></span>
+<span><span class="co">#&gt; Simple feature collection with 10 features and 3 fields</span></span>
+<span><span class="co">#&gt; Geometry type: POINT</span></span>
+<span><span class="co">#&gt; Dimension:     XY</span></span>
+<span><span class="co">#&gt; Bounding box:  xmin: 1 ymin: 1 xmax: 10 ymax: 10</span></span>
+<span><span class="co">#&gt; CRS:           NA</span></span>
+<span><span class="co">#&gt;    site latitude longitude      geometry</span></span>
+<span><span class="co">#&gt; 1     a        1         1   POINT (1 1)</span></span>
+<span><span class="co">#&gt; 2     b        2         2   POINT (2 2)</span></span>
+<span><span class="co">#&gt; 3     c        3         3   POINT (3 3)</span></span>
+<span><span class="co">#&gt; 4     d        4         4   POINT (4 4)</span></span>
+<span><span class="co">#&gt; 5     e        5         5   POINT (5 5)</span></span>
+<span><span class="co">#&gt; 6     f        6         6   POINT (6 6)</span></span>
+<span><span class="co">#&gt; 7     g        7         7   POINT (7 7)</span></span>
+<span><span class="co">#&gt; 8     h        8         8   POINT (8 8)</span></span>
+<span><span class="co">#&gt; 9     i        9         9   POINT (9 9)</span></span>
+<span><span class="co">#&gt; 10    j       10        10 POINT (10 10)</span></span></code></pre></div>
+<p>Recall that when used against any sort of external database like <code>duckdb</code>, most <code>dplyr</code> functions like <code><a href="https://dplyr.tidyverse.org/reference/mutate.html" class="external-link">dplyr::mutate()</a></code> are being transcribed into SQL by <code>dbplyr</code>, and not actually ever run in R. This allows us to seamlessly pass along spatial functions like <code>ST_Point</code>, despite this not being an available R function. The <code><a href="reference/to_sf.html">to_sf()</a></code> coercion will parse its input into a SQL query that gets passed to <code>duckdb</code>, and the return object will be collected through <code><a href="https://r-spatial.github.io/sf/reference/st_read.html" class="external-link">sf::st_read</a></code>, returning an (in-memory) <code>sf</code> object.</p>
+<p>Note that we can add arbitrary spatial functions that operate on this geometry, provided we do so prior to our call to <code>to_sf</code>. For instance, here we first create our geometry column from lat/lon columns, and then compute the distance from each element to a spatial point:</p>
+<div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">spatial_ex</span> <span class="op">|&gt;</span> </span>
+<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate.html" class="external-link">mutate</a></span><span class="op">(</span>geometry <span class="op">=</span> <span class="fu">ST_Point</span><span class="op">(</span><span class="va">longitude</span>, <span class="va">latitude</span><span class="op">)</span><span class="op">)</span> <span class="op">|&gt;</span></span>
+<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate.html" class="external-link">mutate</a></span><span class="op">(</span>dist <span class="op">=</span> <span class="fu">ST_Distance</span><span class="op">(</span><span class="va">geometry</span>, <span class="fu">ST_Point</span><span class="op">(</span><span class="fl">0</span>,<span class="fl">0</span><span class="op">)</span><span class="op">)</span><span class="op">)</span> <span class="op">|&gt;</span> </span>
+<span>  <span class="fu"><a href="reference/to_sf.html">to_sf</a></span><span class="op">(</span><span class="op">)</span></span>
+<span><span class="co">#&gt; Simple feature collection with 10 features and 4 fields</span></span>
+<span><span class="co">#&gt; Geometry type: POINT</span></span>
+<span><span class="co">#&gt; Dimension:     XY</span></span>
+<span><span class="co">#&gt; Bounding box:  xmin: 1 ymin: 1 xmax: 10 ymax: 10</span></span>
+<span><span class="co">#&gt; CRS:           NA</span></span>
+<span><span class="co">#&gt;    site latitude longitude      dist      geometry</span></span>
+<span><span class="co">#&gt; 1     a        1         1  1.414214   POINT (1 1)</span></span>
+<span><span class="co">#&gt; 2     b        2         2  2.828427   POINT (2 2)</span></span>
+<span><span class="co">#&gt; 3     c        3         3  4.242641   POINT (3 3)</span></span>
+<span><span class="co">#&gt; 4     d        4         4  5.656854   POINT (4 4)</span></span>
+<span><span class="co">#&gt; 5     e        5         5  7.071068   POINT (5 5)</span></span>
+<span><span class="co">#&gt; 6     f        6         6  8.485281   POINT (6 6)</span></span>
+<span><span class="co">#&gt; 7     g        7         7  9.899495   POINT (7 7)</span></span>
+<span><span class="co">#&gt; 8     h        8         8 11.313708   POINT (8 8)</span></span>
+<span><span class="co">#&gt; 9     i        9         9 12.727922   POINT (9 9)</span></span>
+<span><span class="co">#&gt; 10    j       10        10 14.142136 POINT (10 10)</span></span></code></pre></div>
+<p>For more details including a complete list of the dozens of spatial operations currently supported and notes on performance and current limitations, see the <a href="https://github.com/duckdblabs/duckdb_spatial" class="external-link">duckdb spatial docs</a></p>
 </div>
 <div class="section level2">
 <h2 id="local-files">Local files<a class="anchor" aria-label="anchor" href="#local-files"></a>
 </h2>
 <p>Of course, <code><a href="reference/open_dataset.html">open_dataset()</a></code> can also be used with local files. Remember that parquet format is not required, we can read csv files (including multiple and hive-partitioned csv files).</p>
-<div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/utils/write.table.html" class="external-link">write.csv</a></span><span class="op">(</span><span class="va">mtcars</span>, <span class="st">"mtcars.csv"</span>, row.names<span class="op">=</span><span class="cn">FALSE</span><span class="op">)</span></span>
 <span><span class="va">lazy_cars</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/open_dataset.html">open_dataset</a></span><span class="op">(</span><span class="st">"mtcars.csv"</span>, format <span class="op">=</span> <span class="st">"csv"</span><span class="op">)</span></span></code></pre></div>
 </div>
@@ -145,6 +218,7 @@
   </main><aside class="col-md-3"><div class="links">
 <h2 data-toc-skip>Links</h2>
 <ul class="list-unstyled">
+<li><a href="https://cloud.r-project.org/package=duckdbfs" class="external-link">View on CRAN</a></li>
 <li><a href="https://github.com/cboettig/duckdbfs/" class="external-link">Browse source code</a></li>
 <li><a href="https://github.com/cboettig/duckdbfs/issues" class="external-link">Report a bug</a></li>
 </ul>

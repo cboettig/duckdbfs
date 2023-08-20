@@ -16,6 +16,9 @@
     <loc>https://cboettig.github.io/duckdbfs/index.html</loc>
   </url>
   <url>
+    <loc>https://cboettig.github.io/duckdbfs/news/index.html</loc>
+  </url>
+  <url>
     <loc>https://cboettig.github.io/duckdbfs/reference/cached_connection.html</loc>
   </url>
   <url>
@@ -28,6 +31,12 @@
     <loc>https://cboettig.github.io/duckdbfs/reference/index.html</loc>
   </url>
   <url>
+    <loc>https://cboettig.github.io/duckdbfs/reference/load_spatial.html</loc>
+  </url>
+  <url>
     <loc>https://cboettig.github.io/duckdbfs/reference/open_dataset.html</loc>
+  </url>
+  <url>
+    <loc>https://cboettig.github.io/duckdbfs/reference/to_sf.html</loc>
   </url>
 </urlset>
