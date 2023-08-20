@@ -3,4 +3,6 @@
 export(cached_connection)
 export(close_connection)
 export(duckdb_s3_config)
+export(load_spatial)
 export(open_dataset)
+export(to_sf)

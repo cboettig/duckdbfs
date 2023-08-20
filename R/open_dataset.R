@@ -2,7 +2,7 @@
 #'
 #' This function opens a dataset from a variety of sources, including Parquet,
 #' CSV, etc, using either local file system paths, URLs, or S3 bucket URI
-#'  notation.
+#' notation.
 #'
 #' @param sources A character vector of paths to the dataset files.
 #' @param schema The schema for the dataset. If NULL, the schema will be
@@ -20,8 +20,10 @@
 #' @param mode The mode to create the table in. One of `"VIEW"` or `"TABLE"`.
 #' @param filename A logical value indicating whether to include the filename in
 #' the table name.
-#' @param endpoint optionally, an alternative endpoint for the S3 object store.
-#' @param threads restrict number of available threads to duckdb
+#' @param ... optional additional arguments passed to `duckdb_s3_config()`.
+#'   Note these apply after those set by the URI notation and thus may be used
+#'   to override or provide settings not supported in that format.
+#' @param threads restrict number of available threads to `duckdb`
 #' @return A lazy `dplyr::tbl` object representing the opened dataset backed
 #' by a duckdb SQL connection.  Most `dplyr` (and some `tidyr`) verbs can be
 #' used directly on this object, as they can be translated into SQL commands
@@ -30,7 +32,7 @@
 #' resulting data into memory.
 #'
 #' @examplesIf interactive()
-#' # Open a remote, hive-partitioned Parquet dataset
+#' # A remote, hive-partitioned Parquet dataset
 #' base <- paste0("https://github.com/duckdb/duckdb/raw/master/",
 #'              "data/parquet-testing/hive-partitioning/union_by_name/")
 #' f1 <- paste0(base, "x=1/f1.parquet")
@@ -38,6 +40,11 @@
 #' f3 <- paste0(base, "x=2/f2.parquet")
 #'
 #' open_dataset(c(f1,f2,f3), unify_schemas = TRUE, threads=1)
+#'
+#' # Access an S3 database specifying an independently-hosted (MINIO) endpoint
+#' efi <- open_dataset("s3://neon4cast-scores/parquet/aquatics",
+#'                     s3_access_key_id="",
+#'                     s3_endpoint="data.ecoforecast.org")
 #'
 #' @export
 open_dataset <- function(sources,
@@ -49,15 +56,13 @@ open_dataset <- function(sources,
                          tblname = tmp_tbl_name(),
                          mode = "VIEW",
                          filename = FALSE,
-                         endpoint = NULL,
+                         ...,
                          threads = parallel::detectCores()) {
 
-  if(all(grepl("^[http|s3:]", sources))) {
-    load_httpfs(conn)
-  }
+  sources <- parse_uri(sources, conn = conn)
 
-  if(!is.null(endpoint)){
-    duckdb_s3_config(conn, s3_endpoint = endpoint)
+  if(length(list(...)) > 0) { # can also be specified in URI query notation
+    duckdb_s3_config(conn = conn, ...)
   }
 
   # seemingly required?
@@ -104,7 +109,6 @@ query_string <- function(tblname,
            ");")
   )
 }
-#union_by_name=True, filename=True
 
 tmp_tbl_name <- function(n = 15) {
   paste0(sample(letters, n, replace = TRUE), collapse = "")

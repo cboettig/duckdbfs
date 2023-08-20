@@ -16,7 +16,8 @@ duckdb_s3_config(
   s3_uploader_thread_limit = NULL,
   s3_url_compatibility_mode = NULL,
   s3_url_style = NULL,
-  s3_use_ssl = NULL
+  s3_use_ssl = NULL,
+  anonymous = NULL
 )
 }
 \arguments{
@@ -51,6 +52,9 @@ S3 URLs (default: 0, allows globs/queries).}
 
 \item{s3_use_ssl}{Enable or disable SSL for S3 connections
 (default: 1 (TRUE)).}
+
+\item{anonymous}{request anonymous access (sets \code{s3_access_key_id} and
+\code{s3_secret_access_key} to \code{""}, allowing anonymous access to public buckets).}
 }
 \value{
 Returns silently (NULL) if successful.
@@ -77,6 +81,7 @@ duckdb_s3_config(
            s3_uploader_thread_limit = 8,
            s3_url_compatibility_mode = FALSE,
            s3_url_style = "vhost",
-           s3_use_ssl = TRUE)
+           s3_use_ssl = TRUE,
+           anonymous = TRUE)
 \dontshow{\}) # examplesIf}
 }
