@@ -32,7 +32,12 @@ You can install the development version of duckdbfs from [GitHub](https://github
 devtools::install_github("cboettig/duckdbfs")
 ```
 
-## Example
+## Quickstart
+
+```{r setup}
+library(duckdbfs)
+library(dplyr)
+```
 
 Imagine we have a collection of URLs to files we want to combine into a single tibble in R.  The files could be parquet or csv, and some files may have additional columns not present in other files.  The combined data may be very large, potentially bigger than available RAM or slow to download completely, but we may only want a subset using methods like `dplyr::filter()` or `dplyr::summarise()`.  
 
@@ -52,8 +57,6 @@ Note that if schemas (column names) do not match, we must explicitly request
 to achieve much better performance.
 
 ```{r}
-library(duckdbfs)
-
 ds <- open_dataset(urls, unify_schemas = TRUE)
 ds
 ```
@@ -63,14 +66,72 @@ Use `filter()`, `select()`, etc from dplyr to subset and process data -- [any me
 ## S3-based access
 
 We can also access remote data over the S3 protocol. An advantage of S3 is that 
-unlike https, we can use wildcard globbing because the file system can list files.
+unlike https, it can discover all files in a given folder, so we don't have to list them individually.
+This is particularly convenient for accessing large, partitioned datasets, like GBIF: (nearly 200 GB of data split across more than 2000 parquet files)
 
 ```{r}
-parquet <- "s3://gbif-open-data-us-east-1/occurrence/2023-06-01/*/*"
+parquet <- "s3://gbif-open-data-us-east-1/occurrence/2023-06-01/occurrence.parquet"
 gbif <- open_dataset(parquet)
 ```
 
-The S3 system can also support write access.  Use the `duckdb_s3_config()` function to set access credentials and configure other settings, like alternative endpoints (for use with S3-compliant systems like [minio](https://min.io)).
+The S3 system can also support write access.  Use the `duckdb_s3_config()` function to set access credentials and configure other settings, like alternative endpoints (for use with S3-compliant systems like [minio](https://min.io)).  Many of these settings can also be passed along more compactly using the URI query notation found in the `arrow` package.  For instance, we can request anonymous access to a bucket on an alternative endpoint as:
+
+```{r}
+efi <- open_dataset("s3://anonymous@neon4cast-scores/parquet/aquatics?endpoint_override=data.ecoforecast.org")
+```
+
+Alternatively, the `duckdb_s3_config` parameters can be passed as additional named arguments:
+
+```{r}
+efi <- open_dataset("s3://neon4cast-scores/parquet/aquatics", 
+                    s3_access_key_id="",
+                    s3_endpoint="data.ecoforecast.org")
+```
+
+## Spatial data
+
+`duckdb` can also understand a wide array of spatial data queries for spatial
+vector data, similar to operations found in the popular `sf` package. 
+Most spatial query operations require an geometry column that expresses the 
+simple feature geometry in `duckdb`'s internal geometry format 
+(nearly but not exactly WKB).  A common pattern will first generate the 
+geometry column from raw columns, such as `latitude` and `lognitude` columns,
+using the `duckdb` implementation of the a method familiar to postgis, `ST_Point`:
+
+
+```{r}
+spatial_ex <- paste0("https://raw.githubusercontent.com/cboettig/duckdbfs/",
+                     "7189ed7e0456927a55a877acf77aaadc074ba01b/",
+                     "inst/extdata/spatial-test.csv") |>
+  open_dataset(format = "csv") 
+
+spatial_ex |>
+  mutate(geometry = ST_Point(longitude, latitude)) |>
+  to_sf()
+```
+
+Recall that when used against any sort of external database like `duckdb`, 
+most `dplyr` functions like `dplyr::mutate()` are being transcribed into SQL
+by `dbplyr`, and not actually ever run in R. This allows us to seamlessly pass
+along spatial functions like `ST_Point`, despite this not being an available R
+function. The `to_sf()` coercion will parse its input into a SQL query that gets
+passed to `duckdb`, and the return object will be collected through
+`sf::st_read`, returning an (in-memory) `sf` object. 
+
+
+Note that we can add arbitrary spatial functions that operate on this geometry,
+provided we do so prior to our call to `to_sf`. For instance, here we first
+create our geometry column from lat/lon columns, and then compute the distance
+from each element to a spatial point:
+
+```{r}
+spatial_ex |> 
+  mutate(geometry = ST_Point(longitude, latitude)) |>
+  mutate(dist = ST_Distance(geometry, ST_Point(0,0))) |> 
+  to_sf()
+```
+
+For more details including a complete list of the dozens of spatial operations currently supported and notes on performance and current limitations, see the [duckdb spatial docs](https://github.com/duckdblabs/duckdb_spatial)
 
 ## Local files
 

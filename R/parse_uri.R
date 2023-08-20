@@ -29,6 +29,7 @@ parse_uri <- function(sources, conn) {
                      s3_secret_access_key = url$password,
                      s3_session_token = url$token,
                      s3_endpoint = url$query[["endpoint_override"]],
+                     s3_region = url$query[["region"]],
                      s3_use_ssl = as.integer(use_ssl))
 
     sources <- paste0(url$scheme, "://", url$hostname, url$path)

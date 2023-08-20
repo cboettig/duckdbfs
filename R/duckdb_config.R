@@ -1,3 +1,18 @@
+# FIXME: should we expose a generic interface for setting any pragma listed in
+# https://duckdb.org/docs/sql/configuration.html
+
+
+
+duckdb_set <- function(x, conn = cached_connection()) {
+  if(!is.null(x)) {
+    name <- deparse(substitute(x))
+    cmd <- paste0("SET ", name, "='", x, "';")
+    DBI::dbExecute(conn, cmd)
+  }
+}
+
+
+
 #' Configure S3 settings for database connection
 #'
 #' This function is used to configure S3 settings for a database connection.
@@ -90,19 +105,9 @@ duckdb_s3_config <- function(conn = cached_connection(),
   duckdb_set(s3_use_ssl, conn = conn)
 }
 
-duckdb_set <- function(x, conn = cached_connection()) {
-  if(!is.null(x)) {
-    name <- deparse(substitute(x))
-    cmd <- paste0("SET ", name, "='", x, "';")
-    DBI::dbExecute(conn, cmd)
-  }
-}
-
 load_httpfs <- function(conn = cached_connection()) {
   # NOTE: remote access (http or S3 paths) are not supported on Windows.
-  # If OS is Windows, this call should be skipped with non-zero return status
-  # Then, we should attempt to download http addresses to tempfile
-  # S3:// URIs on Windows should throw a "not supported on Windows" error.
+  # Does duckdb now throw a helpful error about this?
 
   status <- DBI::dbExecute(conn, "INSTALL 'httpfs';")
   status <- DBI::dbExecute(conn, "LOAD 'httpfs';")

@@ -1,6 +1,8 @@
 # duckdbfs 0.0.2
 
-* S3 interface supports `arrow`-compatible URI notation:
+* spatial data query support! See README.md
+
+* The S3 interface supports `arrow`-compatible URI notation:
   - Alternate endpoints can now be passed like so 
     `s3://userid:secret_token@bucket-name?endpoint_override=data.ecoforecast.org`
   - Users can omit the use of `*` (match any file) or `**` 
@@ -13,7 +15,11 @@
   This can also be passed as the username position in URI notation, e.g.
   `s3://anonymous@bucket_name`.  
 
-
+* `open_dataset` drops use of `endpoint` as an argument.  Instead, alternative
+  S3 endpoints can be set either by using the URI query notation or calling
+  `duckdb_s3_config()` first.  Additionally, any arguments to `duckdb_s3_config()`,
+  including `s3_endpoint`, can now be passed to `open_dataset` through the `...`.
+  Note these settings will override any set by the URI notation.
 
 # duckdbfs 0.0.1
 
