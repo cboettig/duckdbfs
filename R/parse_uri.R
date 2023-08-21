@@ -1,7 +1,10 @@
 parse_uri <- function(sources, conn) {
 
+  # Local file-systems don't need S3 parsing
+  # But use recursion only if local source is a directory
   if(!any(grepl("^[http|s3:]", sources))) {
-    # Local file-systems don't need parsing
+    is_dir <- dir.exists(sources)
+    sources[is_dir] <- paste0(sources[is_dir], "/**")
     return(sources)
   }
 
@@ -33,7 +36,7 @@ parse_uri <- function(sources, conn) {
                      s3_use_ssl = as.integer(use_ssl))
 
     sources <- paste0(url$scheme, "://", url$hostname, url$path)
-
+    sources <- paste0(sources, "/**")
 
   }
   sources

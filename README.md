@@ -61,7 +61,7 @@ explicitly request `duckdb` join the two schemas. Leave this as default,
 ``` r
 ds <- open_dataset(urls, unify_schemas = TRUE)
 ds
-#> # Source:   table<foejoqozfobiwaw> [3 x 4]
+#> # Source:   table<csnyzuoxobayjyy> [3 x 4]
 #> # Database: DuckDB 0.8.1 [unknown@Linux 5.17.15-76051715-generic:R 4.3.1/:memory:]
 #>       i     j x         k
 #>   <int> <int> <chr> <int>
@@ -222,13 +222,13 @@ few exceptions:
 - With local file system or S3 paths, `duckdb` can support “globbing” at
   any point in the path, e.g. `open_dataset(data/*/subdir)`. (Like
   arrow, `duckdbfs::open_dataset` will assume recursive path discovery
-  unless `recursive=FALSE` on both S3 or local filesystems). Note that
-  http(s) URLs will always require the full vector since a `ls()` method
-  is not possible. Even with URLs or vector-based paths, `duckdb` can
-  automatically populate column names given only by hive structure when
-  `hive_style=TRUE` (default). Note that passing a vector of paths can
-  be significantly faster than globbing with S3 sources where the `ls()`
-  operation is relatively expensive when there are many partitions.
+  on directories). Note that http(s) URLs will always require the full
+  vector since a `ls()` method is not possible. Even with URLs or
+  vector-based paths, `duckdb` can automatically populate column names
+  given only by hive structure when `hive_style=TRUE` (default). Note
+  that passing a vector of paths can be significantly faster than
+  globbing with S3 sources where the `ls()` operation is relatively
+  expensive when there are many partitions.
 
 ## Performance notes
 

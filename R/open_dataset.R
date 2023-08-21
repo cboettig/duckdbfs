@@ -20,8 +20,6 @@
 #' @param mode The mode to create the table in. One of `"VIEW"` or `"TABLE"`.
 #' @param filename A logical value indicating whether to include the filename in
 #' the table name.
-#' @param recursive search filepath recursively? (S3 or local filesystems only).
-#'   default TRUE.
 #' @param ... optional additional arguments passed to `duckdb_s3_config()`.
 #'   Note these apply after those set by the URI notation and thus may be used
 #'   to override or provide settings not supported in that format.
@@ -58,14 +56,10 @@ open_dataset <- function(sources,
                          tblname = tmp_tbl_name(),
                          mode = "VIEW",
                          filename = FALSE,
-                         recursive = TRUE,
                          ...,
                          threads = parallel::detectCores()) {
 
   sources <- parse_uri(sources, conn = conn)
-  if (recursive && !any(grepl("^https?://", sources))) {
-    sources <- paste0(sources, "/**")
-  }
 
   if(length(list(...)) > 0) { # can also be specified in URI query notation
     duckdb_s3_config(conn = conn, ...)
@@ -87,6 +81,9 @@ open_dataset <- function(sources,
   dplyr::tbl(conn, tblname)
 }
 
+use_recursive <- function(sources) {
+  !all(identical(tools::file_ext(sources), ""))
+}
 
 vec_as_str <- function(x) {
   if(length(x) <= 1) return(paste0("'",x,"'"))

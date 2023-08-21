@@ -66,7 +66,7 @@ notation.
 \examples{
 \dontshow{if (interactive()) (if (getRversion() >= "3.4") withAutoprint else force)(\{ # examplesIf}
 # A remote, hive-partitioned Parquet dataset
-base <- paste0("https://github.com/duckdb/duckdb/raw/master/",
+base <- paste0("https://github.com/duckdb/duckdb/raw/main/",
              "data/parquet-testing/hive-partitioning/union_by_name/")
 f1 <- paste0(base, "x=1/f1.parquet")
 f2 <- paste0(base, "x=1/f2.parquet")
