@@ -20,11 +20,9 @@ Imports:
     dplyr,
     duckdb (>= 0.3.2)
 Suggests: 
-    minioclient (>= 0.0.5),
     sf,
     spelling,
     testthat (>= 3.0.0)
 Config/testthat/edition: 3
 Language: en-US
-Remotes: 
-    github::cboettig/minioclient
+
