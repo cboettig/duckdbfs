@@ -2,7 +2,7 @@
 test_that("local csv files", {
   cars <- tempfile()
   write.csv(mtcars, cars)
-  df <- open_dataset(cars, format = "csv", threads=1)
+  df <- open_dataset(cars, format = "csv")
   expect_true(inherits(df, "tbl_duckdb_connection"))
   unlink(cars)
 
@@ -85,7 +85,7 @@ test_that("s3", {
   # Could set passwords here if necessary
   duckdb_s3_config(s3_endpoint = "play.min.io",
                    s3_url_style="path")
-  df <- open_dataset("s3://duckdbfs/*.parquet", threads=1)
+  df <- open_dataset("s3://duckdbfs/*.parquet")
 
   expect_s3_class(df, "tbl")
   expect_s3_class(df, "tbl_duckdb_connection")

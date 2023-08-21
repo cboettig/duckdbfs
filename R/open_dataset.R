@@ -23,7 +23,6 @@
 #' @param ... optional additional arguments passed to `duckdb_s3_config()`.
 #'   Note these apply after those set by the URI notation and thus may be used
 #'   to override or provide settings not supported in that format.
-#' @param threads restrict number of available threads to `duckdb`
 #' @return A lazy `dplyr::tbl` object representing the opened dataset backed
 #' by a duckdb SQL connection.  Most `dplyr` (and some `tidyr`) verbs can be
 #' used directly on this object, as they can be translated into SQL commands
@@ -39,7 +38,7 @@
 #' f2 <- paste0(base, "x=1/f2.parquet")
 #' f3 <- paste0(base, "x=2/f2.parquet")
 #'
-#' open_dataset(c(f1,f2,f3), unify_schemas = TRUE, threads=1)
+#' open_dataset(c(f1,f2,f3), unify_schemas = TRUE)
 #'
 #' # Access an S3 database specifying an independently-hosted (MINIO) endpoint
 #' efi <- open_dataset("s3://neon4cast-scores/parquet/aquatics",
@@ -56,8 +55,7 @@ open_dataset <- function(sources,
                          tblname = tmp_tbl_name(),
                          mode = "VIEW",
                          filename = FALSE,
-                         ...,
-                         threads = parallel::detectCores()) {
+                         ...) {
 
   sources <- parse_uri(sources, conn = conn)
 
@@ -65,8 +63,9 @@ open_dataset <- function(sources,
     duckdb_s3_config(conn = conn, ...)
   }
 
-  # seemingly required?
-  enable_parallel(conn, threads)
+  # ensure active connection
+  version <- DBI::dbExecute(conn, "PRAGMA version;")
+
 
   format <- match.arg(format)
   view_query <- query_string(tblname,
@@ -77,6 +76,7 @@ open_dataset <- function(sources,
                              union_by_name = unify_schemas,
                              filename = filename
                              )
+
   DBI::dbSendQuery(conn, view_query)
   dplyr::tbl(conn, tblname)
 }
