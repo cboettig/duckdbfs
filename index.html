@@ -96,7 +96,7 @@
 <span><span class="co">#&gt;     intersect, setdiff, setequal, union</span></span></code></pre></div>
 <p>Imagine we have a collection of URLs to files we want to combine into a single tibble in R. The files could be parquet or csv, and some files may have additional columns not present in other files. The combined data may be very large, potentially bigger than available RAM or slow to download completely, but we may only want a subset using methods like <code><a href="https://dplyr.tidyverse.org/reference/filter.html" class="external-link">dplyr::filter()</a></code> or <code><a href="https://dplyr.tidyverse.org/reference/summarise.html" class="external-link">dplyr::summarise()</a></code>.</p>
 <div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">base</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/paste.html" class="external-link">paste0</a></span><span class="op">(</span><span class="st">"https://github.com/duckdb/duckdb/raw/master/"</span>,</span>
+<code class="sourceCode R"><span><span class="va">base</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/paste.html" class="external-link">paste0</a></span><span class="op">(</span><span class="st">"https://github.com/duckdb/duckdb/raw/main/"</span>,</span>
 <span>               <span class="st">"data/parquet-testing/hive-partitioning/union_by_name/"</span><span class="op">)</span></span>
 <span><span class="va">f1</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/paste.html" class="external-link">paste0</a></span><span class="op">(</span><span class="va">base</span>, <span class="st">"x=1/f1.parquet"</span><span class="op">)</span></span>
 <span><span class="va">f2</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/paste.html" class="external-link">paste0</a></span><span class="op">(</span><span class="va">base</span>, <span class="st">"x=1/f2.parquet"</span><span class="op">)</span></span>
@@ -106,8 +106,8 @@
 <div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">ds</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/open_dataset.html">open_dataset</a></span><span class="op">(</span><span class="va">urls</span>, unify_schemas <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
 <span><span class="va">ds</span></span>
-<span><span class="co">#&gt; # Source:   table&lt;iooexuqdybkdbrs&gt; [3 x 4]</span></span>
-<span><span class="co">#&gt; # Database: DuckDB 0.8.1 [unknown@Linux 5.17.15-76051715-generic:R 4.3.0/:memory:]</span></span>
+<span><span class="co">#&gt; # Source:   table&lt;csnyzuoxobayjyy&gt; [3 x 4]</span></span>
+<span><span class="co">#&gt; # Database: DuckDB 0.8.1 [unknown@Linux 5.17.15-76051715-generic:R 4.3.1/:memory:]</span></span>
 <span><span class="co">#&gt;       i     j x         k</span></span>
 <span><span class="co">#&gt;   &lt;int&gt; &lt;int&gt; &lt;chr&gt; &lt;int&gt;</span></span>
 <span><span class="co">#&gt; 1    42    84 1        NA</span></span>
@@ -189,25 +189,36 @@
 <span><span class="va">lazy_cars</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/open_dataset.html">open_dataset</a></span><span class="op">(</span><span class="st">"mtcars.csv"</span>, format <span class="op">=</span> <span class="st">"csv"</span><span class="op">)</span></span></code></pre></div>
 </div>
 <div class="section level2">
-<h2 id="mechanism--motivation">Mechanism / motivation<a class="anchor" aria-label="anchor" href="#mechanism--motivation"></a>
+<h2 id="limitations">Limitations<a class="anchor" aria-label="anchor" href="#limitations"></a>
 </h2>
-<p>This package simply creates a duckdb connection, ensures the httpfs extension is installed if necessary, and constructs a <code>VIEW</code> using duckdb’s <code>parquet_scan()</code> or <code>read_csv_auto()</code> methods and associated options. It then returns a <code><a href="https://dplyr.tidyverse.org/reference/tbl.html" class="external-link">dplyr::tbl()</a></code> for the resulting view. Though straightforward, this process is substantially more verbose than the analogous single function call provided by <code>arrow::open_dataset()</code> due mostly to the necessary string manipulation to construct the VIEW as a SQL statement. I’ve used this pattern a lot, especially when arrow is not an option (http data) or has substantially worse performance (many S3 URIs).</p>
-</div>
-<div class="section level2">
-<h2 id="advanced-notes">Advanced notes<a class="anchor" aria-label="anchor" href="#advanced-notes"></a>
-</h2>
-<p>This is very similar to the behaviour of <code>arrow::open_dataset()</code>, with a few exceptions:</p>
 <ul>
-<li>at this time, <code>arrow</code> does not support access over HTTP – remote sources must be in an S3 or GC-based object store.</li>
-<li>With local file system or S3 paths, <code>duckdb</code> can support “globbing” and recursive globbing, e.g. <code>open_dataset(data/**/*.parquet)</code>. In contrast, http(s) URLs will always require the full vector since an <code><a href="https://rdrr.io/r/base/ls.html" class="external-link">ls()</a></code> method is not possible. However, note that even with URLs, <code>duckdb</code> can automatically populate columns given only by hive structure. Also note that passing a vector of paths can be significantly faster than globbing with S3 sources where the <code><a href="https://rdrr.io/r/base/ls.html" class="external-link">ls()</a></code> operation is relatively expensive.</li>
 <li>
 <strong><em>NOTE</em></strong>: at this time, the duckdb httpfs file system extension in R does not support Windows.</li>
 </ul>
 </div>
 <div class="section level2">
+<h2 id="mechanism--motivation">Mechanism / motivation<a class="anchor" aria-label="anchor" href="#mechanism--motivation"></a>
+</h2>
+<p>This package simply creates a duckdb connection, ensures the <code>httpfs</code> and <code>spatial</code> extensions are installed if necessary, sets the S3 configuration, and then constructs a <code>VIEW</code> using duckdb’s <code>parquet_scan()</code> or <code>read_csv_auto()</code> methods and associated options. It then returns a <code><a href="https://dplyr.tidyverse.org/reference/tbl.html" class="external-link">dplyr::tbl()</a></code> for the resulting view. Though straightforward, this process is substantially more verbose than the analogous single function call provided by <code>arrow::open_dataset()</code> due mostly to the necessary string manipulation to construct the VIEW as a SQL statement. I’ve used this pattern a lot, especially when arrow is not an option (http data) or has substantially worse performance (many S3 URIs).</p>
+</div>
+<div class="section level2">
+<h2 id="advanced-notes">Advanced notes<a class="anchor" aria-label="anchor" href="#advanced-notes"></a>
+</h2>
+<p>This is very similar to the behavior of <code>arrow::open_dataset()</code>, with a few exceptions:</p>
+<ul>
+<li>at this time, <code>arrow</code> does not support access over HTTP – remote sources must be in an S3 or GC-based object store.</li>
+<li>With local file system or S3 paths, <code>duckdb</code> can support “globbing” at any point in the path, e.g. <code>open_dataset(data/*/subdir)</code>. (Like arrow, <code><a href="reference/open_dataset.html">duckdbfs::open_dataset</a></code> will assume recursive path discovery on directories). Note that http(s) URLs will always require the full vector since a <code><a href="https://rdrr.io/r/base/ls.html" class="external-link">ls()</a></code> method is not possible. Even with URLs or vector-based paths, <code>duckdb</code> can automatically populate column names given only by hive structure when <code>hive_style=TRUE</code> (default). Note that passing a vector of paths can be significantly faster than globbing with S3 sources where the <code><a href="https://rdrr.io/r/base/ls.html" class="external-link">ls()</a></code> operation is relatively expensive when there are many partitions.</li>
+</ul>
+</div>
+<div class="section level2">
 <h2 id="performance-notes">Performance notes<a class="anchor" aria-label="anchor" href="#performance-notes"></a>
 </h2>
-<p>On slow network connections or when accessing a remote table repeatedly, it may improve performance to create a local copy of the table rather than perform all operations over the network. The simplest way to do this is by setting the <code>mode = "TABLE"</code> instead of “VIEW” on open dataset. It is probably desirable to pass a duckdb connection backed by persistent disk location in this case instead of the default <code><a href="reference/cached_connection.html">cached_connection()</a></code> unless available RAM is not limiting.</p>
+<ul>
+<li>In some settings, <code><a href="reference/open_dataset.html">duckdbfs::open_dataset</a></code> can give substantially better performance (orders of magnitude) than <code>arrow::open_dataset()</code>, while in other settings it may be comparable or even slower. Package versions, system libraries, network architecture, remote storage performance, network traffic, and other factors can all influence performance, making precise benchmark comparisons in real-world contexts difficult.</li>
+<li>On slow network connections or when accessing a remote table repeatedly, it may improve performance to create a local copy of the table rather than perform all operations over the network. The simplest way to do this is by setting the <code>mode = "TABLE"</code> instead of “VIEW” on open dataset. It is probably desirable to pass a duckdb connection backed by persistent disk location in this case instead of the default <code><a href="reference/cached_connection.html">cached_connection()</a></code> unless available RAM is not limiting.</li>
+<li>
+<code>unify_schema</code> is very computationally expensive. Ensuring all files/partitions match schema in advance or processing different files separately can greatly improve performance.</li>
+</ul>
 </div>
 </div>
   </main><aside class="col-md-3"><div class="links">
