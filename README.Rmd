@@ -34,7 +34,7 @@ devtools::install_github("cboettig/duckdbfs")
 
 ## Quickstart
 
-```{r setup}
+```{r setup, message = FALSE}
 library(duckdbfs)
 library(dplyr)
 ```
@@ -43,12 +43,14 @@ Imagine we have a collection of URLs to files we want to combine into a single t
 
 
 ```{r example}
-base <- paste0("https://github.com/duckdb/duckdb/raw/master/",
-               "data/parquet-testing/hive-partitioning/union_by_name/")
-f1 <- paste0(base, "x=1/f1.parquet")
-f2 <- paste0(base, "x=1/f2.parquet")
-f3 <- paste0(base, "x=2/f2.parquet")
-urls <- c(f1,f2,f3)
+base <- paste0(
+  "https://github.com/duckdb/duckdb/raw/main/",
+  "data/parquet-testing/hive-partitioning/union_by_name/"
+)
+f1 <- paste0(base, "x%3D1/f1.parquet")
+f2 <- paste0(base, "x%3D1/f2.parquet")
+f3 <- paste0(base, "x%3D2/f2.parquet")
+urls <- c(f1, f2, f3)
 ```
 
 We can easily access this data without downloading by passing a vector of URLs. 
@@ -72,7 +74,7 @@ This is particularly convenient for accessing large, partitioned datasets, like 
 ```{r}
 parquet <- "s3://gbif-open-data-us-east-1/occurrence/2023-06-01/occurrence.parquet"
 duckdb_s3_config()
-gbif <- open_dataset(parquet, anonymous = TRUE, s3_region="us-east-1")
+gbif <- open_dataset(parquet, anonymous = TRUE, s3_region = "us-east-1")
 ```
 
 
@@ -95,9 +97,11 @@ using the `duckdb` implementation of the a method familiar to postgis, `ST_Point
 
 
 ```{r}
-spatial_ex <- paste0("https://raw.githubusercontent.com/cboettig/duckdbfs/",
-                     "main/inst/extdata/spatial-test.csv") |>
-  open_dataset(format = "csv") 
+spatial_ex <- paste0(
+  "https://raw.githubusercontent.com/cboettig/duckdbfs/",
+  "main/inst/extdata/spatial-test.csv"
+) |>
+  open_dataset(format = "csv")
 
 spatial_ex |>
   mutate(geometry = ST_Point(longitude, latitude)) |>
@@ -119,9 +123,9 @@ create our geometry column from lat/lon columns, and then compute the distance
 from each element to a spatial point:
 
 ```{r}
-spatial_ex |> 
+spatial_ex |>
   mutate(geometry = ST_Point(longitude, latitude)) |>
-  mutate(dist = ST_Distance(geometry, ST_Point(0,0))) |> 
+  mutate(dist = ST_Distance(geometry, ST_Point(0, 0))) |>
   to_sf()
 ```
 
@@ -132,7 +136,7 @@ For more details including a complete list of the dozens of spatial operations c
 Of course, `open_dataset()` can also be used with local files.  Remember that parquet format is not required, we can read csv files (including multiple and hive-partitioned csv files). 
 
 ```{r}
-write.csv(mtcars, "mtcars.csv", row.names=FALSE)
+write.csv(mtcars, "mtcars.csv", row.names = FALSE)
 lazy_cars <- open_dataset("mtcars.csv", format = "csv")
 ```
 

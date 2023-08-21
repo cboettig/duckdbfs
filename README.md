@@ -27,14 +27,6 @@ devtools::install_github("cboettig/duckdbfs")
 ``` r
 library(duckdbfs)
 library(dplyr)
-#> 
-#> Attaching package: 'dplyr'
-#> The following objects are masked from 'package:stats':
-#> 
-#>     filter, lag
-#> The following objects are masked from 'package:base':
-#> 
-#>     intersect, setdiff, setequal, union
 ```
 
 Imagine we have a collection of URLs to files we want to combine into a
@@ -45,12 +37,14 @@ download completely, but we may only want a subset using methods like
 `dplyr::filter()` or `dplyr::summarise()`.
 
 ``` r
-base <- paste0("https://github.com/duckdb/duckdb/raw/master/",
-               "data/parquet-testing/hive-partitioning/union_by_name/")
-f1 <- paste0(base, "x=1/f1.parquet")
-f2 <- paste0(base, "x=1/f2.parquet")
-f3 <- paste0(base, "x=2/f2.parquet")
-urls <- c(f1,f2,f3)
+base <- paste0(
+  "https://github.com/duckdb/duckdb/raw/main/",
+  "data/parquet-testing/hive-partitioning/union_by_name/"
+)
+f1 <- paste0(base, "x%3D1/f1.parquet")
+f2 <- paste0(base, "x%3D1/f2.parquet")
+f3 <- paste0(base, "x%3D2/f2.parquet")
+urls <- c(f1, f2, f3)
 ```
 
 We can easily access this data without downloading by passing a vector
@@ -61,13 +55,13 @@ explicitly request `duckdb` join the two schemas. Leave this as default,
 ``` r
 ds <- open_dataset(urls, unify_schemas = TRUE)
 ds
-#> # Source:   table<iooexuqdybkdbrs> [3 x 4]
-#> # Database: DuckDB 0.8.1 [unknown@Linux 5.17.15-76051715-generic:R 4.3.0/:memory:]
-#>       i     j x         k
-#>   <int> <int> <chr> <int>
-#> 1    42    84 1        NA
-#> 2    42    84 1        NA
-#> 3    NA   128 2        33
+#> # Source:   table<qhoxegoheqweudh> [3 x 4]
+#> # Database: DuckDB 0.8.1 [kc@Linux 6.4.0-2-amd64:R 4.3.1/:memory:]
+#>       i     j     x     k
+#>   <int> <int> <int> <int>
+#> 1    42    84     1    NA
+#> 2    42    84    NA    NA
+#> 3    NA   128    NA    33
 ```
 
 Use `filter()`, `select()`, etc from dplyr to subset and process data –
@@ -87,7 +81,7 @@ data split across more than 2000 parquet files)
 ``` r
 parquet <- "s3://gbif-open-data-us-east-1/occurrence/2023-06-01/occurrence.parquet"
 duckdb_s3_config()
-gbif <- open_dataset(parquet, anonymous = TRUE, s3_region="us-east-1")
+gbif <- open_dataset(parquet, anonymous = TRUE, s3_region = "us-east-1")
 ```
 
 The additional configuration arguments are passed to the helper function
@@ -115,9 +109,11 @@ generate the geometry column from raw columns, such as `latitude` and
 familiar to postgis, `ST_Point`:
 
 ``` r
-spatial_ex <- paste0("https://raw.githubusercontent.com/cboettig/duckdbfs/",
-                     "main/inst/extdata/spatial-test.csv") |>
-  open_dataset(format = "csv") 
+spatial_ex <- paste0(
+  "https://raw.githubusercontent.com/cboettig/duckdbfs/",
+  "main/inst/extdata/spatial-test.csv"
+) |>
+  open_dataset(format = "csv")
 
 spatial_ex |>
   mutate(geometry = ST_Point(longitude, latitude)) |>
@@ -155,9 +151,9 @@ here we first create our geometry column from lat/lon columns, and then
 compute the distance from each element to a spatial point:
 
 ``` r
-spatial_ex |> 
+spatial_ex |>
   mutate(geometry = ST_Point(longitude, latitude)) |>
-  mutate(dist = ST_Distance(geometry, ST_Point(0,0))) |> 
+  mutate(dist = ST_Distance(geometry, ST_Point(0, 0))) |>
   to_sf()
 #> Simple feature collection with 10 features and 4 fields
 #> Geometry type: POINT
@@ -189,7 +185,7 @@ that parquet format is not required, we can read csv files (including
 multiple and hive-partitioned csv files).
 
 ``` r
-write.csv(mtcars, "mtcars.csv", row.names=FALSE)
+write.csv(mtcars, "mtcars.csv", row.names = FALSE)
 lazy_cars <- open_dataset("mtcars.csv", format = "csv")
 ```
 
@@ -211,18 +207,18 @@ S3 URIs).
 This is very similar to the behaviour of `arrow::open_dataset()`, with a
 few exceptions:
 
-- at this time, `arrow` does not support access over HTTP – remote
-  sources must be in an S3 or GC-based object store.
-- With local file system or S3 paths, `duckdb` can support “globbing”
-  and recursive globbing, e.g. `open_dataset(data/**/*.parquet)`. In
-  contrast, http(s) URLs will always require the full vector since an
-  `ls()` method is not possible. However, note that even with URLs,
-  `duckdb` can automatically populate columns given only by hive
-  structure. Also note that passing a vector of paths can be
-  significantly faster than globbing with S3 sources where the `ls()`
-  operation is relatively expensive.
-- ***NOTE***: at this time, the duckdb httpfs file system extension in R
-  does not support Windows.
+-   at this time, `arrow` does not support access over HTTP – remote
+    sources must be in an S3 or GC-based object store.
+-   With local file system or S3 paths, `duckdb` can support “globbing”
+    and recursive globbing, e.g. `open_dataset(data/**/*.parquet)`. In
+    contrast, http(s) URLs will always require the full vector since an
+    `ls()` method is not possible. However, note that even with URLs,
+    `duckdb` can automatically populate columns given only by hive
+    structure. Also note that passing a vector of paths can be
+    significantly faster than globbing with S3 sources where the `ls()`
+    operation is relatively expensive.
+-   ***NOTE***: at this time, the duckdb httpfs file system extension in
+    R does not support Windows.
 
 ## Performance notes
 
