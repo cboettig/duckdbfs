@@ -35,7 +35,7 @@ test_that("https", {
   skip_if_offline()
   skip_on_cran()
 
-  base <- paste0("https://github.com/duckdb/duckdb/raw/master/",
+  base <- paste0("https://github.com/duckdb/duckdb/raw/main/",
                  "data/parquet-testing/hive-partitioning/union_by_name/")
   f1 <- paste0(base, "x=1/f1.parquet")
   f2 <- paste0(base, "x=1/f2.parquet")
@@ -71,7 +71,7 @@ test_that("s3", {
 
   # Hmm... this is quite an involved setup but...
   # Put some parquet the MINIO test server:
-  base <- paste0("https://github.com/duckdb/duckdb/raw/master/",
+  base <- paste0("https://github.com/duckdb/duckdb/raw/main/",
                  "data/parquet-testing/hive-partitioning/union_by_name/")
   f1 <- paste0(base, "x=1/f1.parquet")
   tmp <- tempfile(fileext = ".parquet")

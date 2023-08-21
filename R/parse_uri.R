@@ -34,8 +34,7 @@ parse_uri <- function(sources, conn) {
 
     sources <- paste0(url$scheme, "://", url$hostname, url$path)
 
-    # append ** for recursive search
-    sources <- paste0(sources, "/**")
+
   }
   sources
 }

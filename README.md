@@ -45,7 +45,7 @@ download completely, but we may only want a subset using methods like
 `dplyr::filter()` or `dplyr::summarise()`.
 
 ``` r
-base <- paste0("https://github.com/duckdb/duckdb/raw/master/",
+base <- paste0("https://github.com/duckdb/duckdb/raw/main/",
                "data/parquet-testing/hive-partitioning/union_by_name/")
 f1 <- paste0(base, "x=1/f1.parquet")
 f2 <- paste0(base, "x=1/f2.parquet")
@@ -61,8 +61,8 @@ explicitly request `duckdb` join the two schemas. Leave this as default,
 ``` r
 ds <- open_dataset(urls, unify_schemas = TRUE)
 ds
-#> # Source:   table<iooexuqdybkdbrs> [3 x 4]
-#> # Database: DuckDB 0.8.1 [unknown@Linux 5.17.15-76051715-generic:R 4.3.0/:memory:]
+#> # Source:   table<foejoqozfobiwaw> [3 x 4]
+#> # Database: DuckDB 0.8.1 [unknown@Linux 5.17.15-76051715-generic:R 4.3.1/:memory:]
 #>       i     j x         k
 #>   <int> <int> <chr> <int>
 #> 1    42    84 1        NA
@@ -193,12 +193,18 @@ write.csv(mtcars, "mtcars.csv", row.names=FALSE)
 lazy_cars <- open_dataset("mtcars.csv", format = "csv")
 ```
 
+## Limitations
+
+- ***NOTE***: at this time, the duckdb httpfs file system extension in R
+  does not support Windows.
+
 ## Mechanism / motivation
 
-This package simply creates a duckdb connection, ensures the httpfs
-extension is installed if necessary, and constructs a `VIEW` using
-duckdb’s `parquet_scan()` or `read_csv_auto()` methods and associated
-options. It then returns a `dplyr::tbl()` for the resulting view. Though
+This package simply creates a duckdb connection, ensures the `httpfs`
+and `spatial` extensions are installed if necessary, sets the S3
+configuration, and then constructs a `VIEW` using duckdb’s
+`parquet_scan()` or `read_csv_auto()` methods and associated options. It
+then returns a `dplyr::tbl()` for the resulting view. Though
 straightforward, this process is substantially more verbose than the
 analogous single function call provided by `arrow::open_dataset()` due
 mostly to the necessary string manipulation to construct the VIEW as a
@@ -208,28 +214,39 @@ S3 URIs).
 
 ## Advanced notes
 
-This is very similar to the behaviour of `arrow::open_dataset()`, with a
+This is very similar to the behavior of `arrow::open_dataset()`, with a
 few exceptions:
 
 - at this time, `arrow` does not support access over HTTP – remote
   sources must be in an S3 or GC-based object store.
-- With local file system or S3 paths, `duckdb` can support “globbing”
-  and recursive globbing, e.g. `open_dataset(data/**/*.parquet)`. In
-  contrast, http(s) URLs will always require the full vector since an
-  `ls()` method is not possible. However, note that even with URLs,
-  `duckdb` can automatically populate columns given only by hive
-  structure. Also note that passing a vector of paths can be
-  significantly faster than globbing with S3 sources where the `ls()`
-  operation is relatively expensive.
-- ***NOTE***: at this time, the duckdb httpfs file system extension in R
-  does not support Windows.
+- With local file system or S3 paths, `duckdb` can support “globbing” at
+  any point in the path, e.g. `open_dataset(data/*/subdir)`. (Like
+  arrow, `duckdbfs::open_dataset` will assume recursive path discovery
+  unless `recursive=FALSE` on both S3 or local filesystems). Note that
+  http(s) URLs will always require the full vector since a `ls()` method
+  is not possible. Even with URLs or vector-based paths, `duckdb` can
+  automatically populate column names given only by hive structure when
+  `hive_style=TRUE` (default). Note that passing a vector of paths can
+  be significantly faster than globbing with S3 sources where the `ls()`
+  operation is relatively expensive when there are many partitions.
 
 ## Performance notes
 
-On slow network connections or when accessing a remote table repeatedly,
-it may improve performance to create a local copy of the table rather
-than perform all operations over the network. The simplest way to do
-this is by setting the `mode = "TABLE"` instead of “VIEW” on open
-dataset. It is probably desirable to pass a duckdb connection backed by
-persistent disk location in this case instead of the default
-`cached_connection()` unless available RAM is not limiting.
+- In some settings, `duckdbfs::open_dataset` can give substantially
+  better performance (orders of magnitude) than `arrow::open_dataset()`,
+  while in other settings it may be comparable or even slower. Package
+  versions, system libraries, network architecture, remote storage
+  performance, network traffic, and other factors can all influence
+  performance, making precise benchmark comparisons in real-world
+  contexts difficult.
+- On slow network connections or when accessing a remote table
+  repeatedly, it may improve performance to create a local copy of the
+  table rather than perform all operations over the network. The
+  simplest way to do this is by setting the `mode = "TABLE"` instead of
+  “VIEW” on open dataset. It is probably desirable to pass a duckdb
+  connection backed by persistent disk location in this case instead of
+  the default `cached_connection()` unless available RAM is not
+  limiting.
+- `unify_schema` is very computationally expensive. Ensuring all
+  files/partitions match schema in advance or processing different files
+  separately can greatly improve performance.
