@@ -18,16 +18,23 @@
 #' @param conn A connection to a database.
 #' @param tblname The name of the table to create in the database.
 #' @param mode The mode to create the table in. One of `"VIEW"` or `"TABLE"`.
+#' Creating a `VIEW`, the default, will execute more quickly because it
+#' does not create a local copy of the dataset.  `TABLE` will create a local
+#' copy in duckdb's native format, downloading the full dataset if necessary.
+#' When using `TABLE` mode with large data, please be sure to use a `conn`
+#' connections with disk-based storage, e.g. by calling [cached_connection()],
+#' e.g. `cached_connection("storage_path")`, otherwise the full data must fit
+#' into RAM.  Using `TABLE` assumes familiarity with R's DBI-based interface.
 #' @param filename A logical value indicating whether to include the filename in
 #' the table name.
-#' @param ... optional additional arguments passed to `duckdb_s3_config()`.
+#' @param ... optional additional arguments passed to [duckdb_s3_config()].
 #'   Note these apply after those set by the URI notation and thus may be used
 #'   to override or provide settings not supported in that format.
 #' @return A lazy `dplyr::tbl` object representing the opened dataset backed
 #' by a duckdb SQL connection.  Most `dplyr` (and some `tidyr`) verbs can be
 #' used directly on this object, as they can be translated into SQL commands
 #' automatically via `dbplyr`.  Generic R commands require using
-#' `dplyr::collect()` on the table, which forces evaluation and reading the
+#' [dplyr::collect()] on the table, which forces evaluation and reading the
 #' resulting data into memory.
 #'
 #' @examplesIf interactive()
