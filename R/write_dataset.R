@@ -1,8 +1,11 @@
-#' @param dataset a remote dataset object from `open_dataset`,
+
+#' write_dataset
+#'
+#' @param dataset a remote tbl object from `open_dataset`,
 #' or an in-memory data.frame.
 #' @param path a local file path or S3 path with write credentials
-#' @inheritParams open_dataset
-#'
+#' @param conn duckdbfs database connection
+#' @param ... additional arguments to [duckdb_s3_config()]
 #' @examplesIf interactive()
 #'   write_dataset(mtcars, tempfile())
 #'

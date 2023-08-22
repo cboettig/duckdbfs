@@ -11,9 +11,8 @@ test_that("local csv files", {
 test_that("duckdb_s3_config", {
 
   skip_on_os("windows")
-  skip_if_offline()
   skip_on_cran()
-  duckdb_s3_config(
+  status <- duckdb_s3_config(
              s3_access_key_id = "YOUR_ACCESS_KEY_ID",
              s3_secret_access_key = "YOUR_SECRET_ACCESS_KEY",
              s3_endpoint = "YOUR_S3_ENDPOINT",
@@ -24,6 +23,7 @@ test_that("duckdb_s3_config", {
              s3_url_style = "vhost",
              s3_use_ssl = TRUE)
 
+  expect_identical(status, 0)
 
 
 })
@@ -32,7 +32,7 @@ test_that("duckdb_s3_config", {
 test_that("https", {
 
   skip_on_os("windows")
-  skip_if_offline()
+  #skip_if_offline()
   skip_on_cran()
 
   base <- paste0("https://github.com/duckdb/duckdb/raw/main/",
@@ -44,8 +44,7 @@ test_that("https", {
   conn <- cached_connection()
   ds <- open_dataset( c(f1,f2,f3),
                       conn = conn,
-                      unify_schemas = TRUE,
-                      threads=1)
+                      unify_schemas = TRUE)
   expect_s3_class(ds, "tbl")
 
   df <- dplyr::collect(ds)
@@ -65,7 +64,7 @@ test_that("close_connection", {
 test_that("s3", {
 
   skip_on_os("windows")
-  skip_if_offline()
+  #skip_if_offline()
   skip_on_cran()
   skip_if_not_installed("minioclient")
 
