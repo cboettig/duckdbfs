@@ -14,11 +14,18 @@ write_dataset <- function(dataset,
                           path,
                           conn = cached_connection(),
                           ...) {
+  version <- DBI::dbExecute(conn, "PRAGMA version;")
+
+
   if(is.null(dbplyr::remote_src(dataset))) {
+
     tblname = tmp_tbl_name()
     DBI::dbWriteTable(conn, name = tblname, value = dataset)
+
   } else {
+
     tblname <- as.character(dbplyr::remote_name(dataset))
+
   }
 
   path <- parse_uri(path, conn = conn, recursive = FALSE)
