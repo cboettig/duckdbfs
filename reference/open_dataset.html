@@ -108,7 +108,14 @@ the initial execution time)</p></dd>
 
 
 <dt>mode</dt>
-<dd><p>The mode to create the table in. One of <code>"VIEW"</code> or <code>"TABLE"</code>.</p></dd>
+<dd><p>The mode to create the table in. One of <code>"VIEW"</code> or <code>"TABLE"</code>.
+Creating a <code>VIEW</code>, the default, will execute more quickly because it
+does not create a local copy of the dataset.  <code>TABLE</code> will create a local
+copy in duckdb's native format, downloading the full dataset if necessary.
+When using <code>TABLE</code> mode with large data, please be sure to use a <code>conn</code>
+connections with disk-based storage, e.g. by calling <code><a href="cached_connection.html">cached_connection()</a></code>,
+e.g. <code>cached_connection("storage_path")</code>, otherwise the full data must fit
+into RAM.  Using <code>TABLE</code> assumes familiarity with R's DBI-based interface.</p></dd>
 
 
 <dt>filename</dt>
