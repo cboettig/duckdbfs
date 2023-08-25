@@ -10,10 +10,10 @@ test_that("local csv files", {
 
 test_that("duckdb_s3_config", {
 
-  skip_on_os("windows")
   skip_if_offline()
+  skip_on_os("windows")
   skip_on_cran()
-  duckdb_s3_config(
+  status <- duckdb_s3_config(
              s3_access_key_id = "YOUR_ACCESS_KEY_ID",
              s3_secret_access_key = "YOUR_SECRET_ACCESS_KEY",
              s3_endpoint = "YOUR_S3_ENDPOINT",
@@ -24,6 +24,7 @@ test_that("duckdb_s3_config", {
              s3_url_style = "vhost",
              s3_use_ssl = TRUE)
 
+  expect_identical(status, 0)
 
 
 })
@@ -44,8 +45,7 @@ test_that("https", {
   conn <- cached_connection()
   ds <- open_dataset( c(f1,f2,f3),
                       conn = conn,
-                      unify_schemas = TRUE,
-                      threads=1)
+                      unify_schemas = TRUE)
   expect_s3_class(ds, "tbl")
 
   df <- dplyr::collect(ds)
@@ -85,10 +85,11 @@ test_that("s3", {
   # Could set passwords here if necessary
   duckdb_s3_config(s3_endpoint = "play.min.io",
                    s3_url_style="path")
-  df <- open_dataset("s3://duckdbfs/*.parquet")
+  df <- open_dataset("s3://duckdbfs/")
 
   expect_s3_class(df, "tbl")
   expect_s3_class(df, "tbl_duckdb_connection")
 
+  minioclient::mc("rb --force play/duckdbfs", verbose = FALSE)
 
 })

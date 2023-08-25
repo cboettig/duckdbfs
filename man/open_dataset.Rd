@@ -38,12 +38,19 @@ the initial execution time)}
 
 \item{tblname}{The name of the table to create in the database.}
 
-\item{mode}{The mode to create the table in. One of \code{"VIEW"} or \code{"TABLE"}.}
+\item{mode}{The mode to create the table in. One of \code{"VIEW"} or \code{"TABLE"}.
+Creating a \code{VIEW}, the default, will execute more quickly because it
+does not create a local copy of the dataset.  \code{TABLE} will create a local
+copy in duckdb's native format, downloading the full dataset if necessary.
+When using \code{TABLE} mode with large data, please be sure to use a \code{conn}
+connections with disk-based storage, e.g. by calling \code{\link[=cached_connection]{cached_connection()}},
+e.g. \code{cached_connection("storage_path")}, otherwise the full data must fit
+into RAM.  Using \code{TABLE} assumes familiarity with R's DBI-based interface.}
 
 \item{filename}{A logical value indicating whether to include the filename in
 the table name.}
 
-\item{...}{optional additional arguments passed to \code{duckdb_s3_config()}.
+\item{...}{optional additional arguments passed to \code{\link[=duckdb_s3_config]{duckdb_s3_config()}}.
 Note these apply after those set by the URI notation and thus may be used
 to override or provide settings not supported in that format.}
 }
@@ -52,7 +59,7 @@ A lazy \code{dplyr::tbl} object representing the opened dataset backed
 by a duckdb SQL connection.  Most \code{dplyr} (and some \code{tidyr}) verbs can be
 used directly on this object, as they can be translated into SQL commands
 automatically via \code{dbplyr}.  Generic R commands require using
-\code{dplyr::collect()} on the table, which forces evaluation and reading the
+\code{\link[dplyr:compute]{dplyr::collect()}} on the table, which forces evaluation and reading the
 resulting data into memory.
 }
 \description{

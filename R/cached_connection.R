@@ -37,6 +37,15 @@ cached_connection <- function(dbdir = ":memory:",
   #             ifnotfound = list(NULL))$duckdbfs_conn
 
   conn <- getOption("duckdbfs_conn", NULL)
+
+  ## destroy invalid (closed) connections first
+  if(inherits(conn, "duckdb_connection")) {
+    if(!DBI::dbIsValid(conn)) {
+      close_connection(conn)
+      conn <- NULL
+    }
+  }
+
   if(!inherits(conn, "duckdb_connection")) {
     if(getOption("duckdbfs_debug", FALSE)) {
       message("Making a duckdb connection!")
@@ -48,10 +57,6 @@ cached_connection <- function(dbdir = ":memory:",
 
     # assign("duckdbfs_conn", conn, envir = duckdbfs_env)
   }
-
-  # prevent gc from removing connection (envir / options copy doesn't help)
-  # .duckdbfs_conn <<- conn
-
   ## create finalizer to avoid duckdb complaining that connection
   ## was not shut down before gc
   e <- globalenv()
