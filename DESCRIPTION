@@ -21,6 +21,7 @@ Imports:
     duckdb (>= 0.3.2)
 Suggests: 
     sf,
+    jsonlite,
     spelling,
     testthat (>= 3.0.0)
 Config/testthat/edition: 3
