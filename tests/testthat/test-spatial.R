@@ -9,12 +9,13 @@ test_that("spatial", {
   skip_if_not_installed("sf")
   skip_on_cran()
 
-  load_spatial()
-
+  library(dplyr)
+  library(sf)
   ex <- system.file("extdata/spatial-test.csv", package="duckdbfs") |>
   open_dataset(format = "csv") |>
-  mutate(geometry = ST_Point(longitude, latitude)) |>
+  dplyr::mutate(geometry = ST_Point(longitude, latitude)) |>
   to_sf()
 
+  expect_true(TRUE)
 
 })

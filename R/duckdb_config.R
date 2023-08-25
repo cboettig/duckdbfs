@@ -137,3 +137,10 @@ load_spatial <- function(conn = cached_connection()) {
   status <- DBI::dbExecute(conn, "LOAD 'spatial';")
   invisible(status)
 }
+
+duckdb_extensions <- function(conn = cached_connection()) {
+  query <- "SELECT * FROM duckdb_extensions();"
+  DBI::dbGetQuery(conn, query)
+}
+
+
