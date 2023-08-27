@@ -67,6 +67,7 @@ notation.</p>
 <span>  tblname <span class="op">=</span> <span class="fu">tmp_tbl_name</span><span class="op">(</span><span class="op">)</span>,</span>
 <span>  mode <span class="op">=</span> <span class="st">"VIEW"</span>,</span>
 <span>  filename <span class="op">=</span> <span class="cn">FALSE</span>,</span>
+<span>  recursive <span class="op">=</span> <span class="cn">TRUE</span>,</span>
 <span>  <span class="va">...</span></span>
 <span><span class="op">)</span></span></code></pre></div>
     </div>
@@ -121,6 +122,11 @@ into RAM.  Using <code>TABLE</code> assumes familiarity with R's DBI-based inter
 <dt>filename</dt>
 <dd><p>A logical value indicating whether to include the filename in
 the table name.</p></dd>
+
+
+<dt>recursive</dt>
+<dd><p>should we assume recursive path? default TRUE. Set to FALSE
+if trying to open a single, un-partitioned file.</p></dd>
 
 
 <dt>...</dt>
