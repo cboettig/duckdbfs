@@ -27,6 +27,8 @@
 #' into RAM.  Using `TABLE` assumes familiarity with R's DBI-based interface.
 #' @param filename A logical value indicating whether to include the filename in
 #' the table name.
+#' @param recursive should we assume recursive path? default TRUE. Set to FALSE
+#' if trying to open a single, un-partitioned file.
 #' @param ... optional additional arguments passed to [duckdb_s3_config()].
 #'   Note these apply after those set by the URI notation and thus may be used
 #'   to override or provide settings not supported in that format.
@@ -62,9 +64,10 @@ open_dataset <- function(sources,
                          tblname = tmp_tbl_name(),
                          mode = "VIEW",
                          filename = FALSE,
+                         recursive = TRUE,
                          ...) {
 
-  sources <- parse_uri(sources, conn = conn)
+  sources <- parse_uri(sources, conn = conn, recursive = recursive)
 
   if(length(list(...)) > 0) { # can also be specified in URI query notation
     duckdb_s3_config(conn = conn, ...)

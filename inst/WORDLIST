@@ -16,9 +16,7 @@ dplyr
 duckdb
 duckdb's
 duckdb’s
-filepath
 filesize
-filesystems
 finalizer
 gc
 geospatial
@@ -34,6 +32,7 @@ postgis
 schemas
 tbl
 tibble
+un
 uploader
 vhost
 ’s

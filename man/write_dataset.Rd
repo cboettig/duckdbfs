@@ -4,7 +4,15 @@
 \alias{write_dataset}
 \title{write_dataset}
 \usage{
-write_dataset(dataset, path, conn = cached_connection(), ...)
+write_dataset(
+  dataset,
+  path,
+  conn = cached_connection(),
+  format = c("parquet", "csv"),
+  partitioning = dplyr::group_vars(dataset),
+  overwrite = TRUE,
+  ...
+)
 }
 \arguments{
 \item{dataset}{a remote tbl object from \code{open_dataset},
@@ -13,6 +21,12 @@ or an in-memory data.frame.}
 \item{path}{a local file path or S3 path with write credentials}
 
 \item{conn}{duckdbfs database connection}
+
+\item{format}{export format}
+
+\item{partitioning}{names of columns to use as partition variables}
+
+\item{overwrite}{allow overwriting of existing files?}
 
 \item{...}{additional arguments to \code{\link[=duckdb_s3_config]{duckdb_s3_config()}}}
 }

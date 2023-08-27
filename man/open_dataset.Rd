@@ -14,6 +14,7 @@ open_dataset(
   tblname = tmp_tbl_name(),
   mode = "VIEW",
   filename = FALSE,
+  recursive = TRUE,
   ...
 )
 }
@@ -49,6 +50,9 @@ into RAM.  Using \code{TABLE} assumes familiarity with R's DBI-based interface.}
 
 \item{filename}{A logical value indicating whether to include the filename in
 the table name.}
+
+\item{recursive}{should we assume recursive path? default TRUE. Set to FALSE
+if trying to open a single, un-partitioned file.}
 
 \item{...}{optional additional arguments passed to \code{\link[=duckdb_s3_config]{duckdb_s3_config()}}.
 Note these apply after those set by the URI notation and thus may be used
