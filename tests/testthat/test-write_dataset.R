@@ -23,6 +23,25 @@ test_that("write_dataset", {
   expect_s3_class(df, "tbl")
 })
 
+test_that("write_dataset partitions", {
+
+  skip_on_cran()
+  ## write an in-memory dataset
+  path <- file.path(tempdir(), "mtcars")
+  library(dplyr)
+
+  mtcars |>
+    group_by(cyl, gear) |>
+    write_dataset(path)
+
+  expect_true(file.exists(path))
+  df <- open_dataset(path)
+  expect_s3_class(df, "tbl")
+  parts <- list.files(path)
+  expect_true(any(grepl("cyl=4", parts)))
+
+})
+
 
 test_that("write_dataset, remote input", {
   skip_on_cran()

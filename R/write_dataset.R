@@ -24,8 +24,7 @@ write_dataset <- function(dataset,
   format <- match.arg(format)
   version <- DBI::dbExecute(conn, "PRAGMA version;")
 
-  if(is.null(dbplyr::remote_src(dataset))) {
-
+  if(is_not_remote(dataset)) {
     tblname = tmp_tbl_name()
     DBI::dbWriteTable(conn, name = tblname, value = dataset)
 
@@ -54,8 +53,8 @@ write_dataset <- function(dataset,
   format <- toupper(format)
   partition_by <- character(0)
   if(length(partitioning) > 0) {
-    partition_by <- paste0("PARTITION BY (",
-                           paste(partitioning, sep=", "),
+    partition_by <- paste0("PARTITION_BY (",
+                           paste(partitioning, collapse=", "),
                            "), ")
   }
   comma <- character(0)
@@ -74,4 +73,8 @@ write_dataset <- function(dataset,
 
 
   DBI::dbSendQuery(conn, query)
+}
+
+is_not_remote <- function(x) {
+  is.null(suppressWarnings(dbplyr::remote_src(x)))
 }
