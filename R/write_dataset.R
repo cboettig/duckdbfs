@@ -5,6 +5,9 @@
 #' or an in-memory data.frame.
 #' @param path a local file path or S3 path with write credentials
 #' @param conn duckdbfs database connection
+#' @param format export format
+#' @param partitioning names of columns to use as partition variables
+#' @param overwrite allow overwriting of existing files?
 #' @param ... additional arguments to [duckdb_s3_config()]
 #' @examplesIf interactive()
 #'   write_dataset(mtcars, tempfile())
@@ -13,9 +16,13 @@
 write_dataset <- function(dataset,
                           path,
                           conn = cached_connection(),
+                          format = c("parquet", "csv"),
+                          partitioning = dplyr::group_vars(dataset),
+                          overwrite = TRUE,
                           ...) {
-  version <- DBI::dbExecute(conn, "PRAGMA version;")
 
+  format <- match.arg(format)
+  version <- DBI::dbExecute(conn, "PRAGMA version;")
 
   if(is.null(dbplyr::remote_src(dataset))) {
 
@@ -30,17 +37,38 @@ write_dataset <- function(dataset,
 
   path <- parse_uri(path, conn = conn, recursive = FALSE)
 
-  if(grepl("^s3://", path)) {
-    load_httpfs(conn)
-    duckdb_s3_config(conn = conn, ...)
-
-    query <- paste("COPY", tblname, "TO", paste0("'", path, "'"))
-  } else {
-
-    query <- paste("COPY", tblname, "TO",
-                   paste0("'", path, "'"),
-                   "(FORMAT PARQUET);")
+  ## local writes use different notation to allow overwrites:
+  allow_overwrite <- character(0)
+  if(overwrite){
+    allow_overwrite <- paste("OVERWRITE_OR_IGNORE")
   }
+
+  if(grepl("^s3://", path)) {
+    duckdb_s3_config(conn = conn, ...)
+    if(overwrite){
+      allow_overwrite <- paste("ALLOW_OVERWRITE", overwrite)
+    }
+  }
+
+
+  format <- toupper(format)
+  partition_by <- character(0)
+  if(length(partitioning) > 0) {
+    partition_by <- paste0("PARTITION BY (",
+                           paste(partitioning, sep=", "),
+                           "), ")
+  }
+
+  options <-  paste0(
+                    paste("FORMAT", format), ", ",
+                    partition_by,
+                    allow_overwrite
+                   )
+
+  query <- paste("COPY", tblname, "TO",
+                 paste0("'", path, "'"),
+                 paste0("(",  options, ")"), ";")
+
 
   DBI::dbSendQuery(conn, query)
 }
