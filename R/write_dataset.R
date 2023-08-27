@@ -46,7 +46,7 @@ write_dataset <- function(dataset,
   if(grepl("^s3://", path)) {
     duckdb_s3_config(conn = conn, ...)
     if(overwrite){
-      allow_overwrite <- paste("ALLOW_OVERWRITE", overwrite)
+     # allow_overwrite <- paste("ALLOW_OVERWRITE", overwrite)
     }
   }
 
@@ -58,9 +58,12 @@ write_dataset <- function(dataset,
                            paste(partitioning, sep=", "),
                            "), ")
   }
-
+  comma <- character(0)
+  if (length(c(partition_by, allow_overwrite) > 0)){
+    comma <- ", "
+  }
   options <-  paste0(
-                    paste("FORMAT", format), ", ",
+                    paste("FORMAT", "'parquet'"), comma,
                     partition_by,
                     allow_overwrite
                    )
