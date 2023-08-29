@@ -20,7 +20,7 @@ parse_uri <- function(sources, conn, recursive = TRUE) {
 
     url <- url_parse(sources)
     scheme <- url$query[["scheme"]]
-    use_ssl <- identical(scheme, "https")
+    use_ssl <- !identical(scheme, "http")
 
     if(identical(url$username, "anonymous")) {
       url$username <- ""
