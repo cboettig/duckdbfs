@@ -76,7 +76,8 @@ test_that("write_dataset to s3:", {
 
   minioclient::mc_mb("play/duckdbfs")
 
-  write_dataset(mtcars,
+  mtcars |> group_by(cyl, gear) |>
+  write_dataset(
                 "s3://duckdbfs/mtcars.parquet",
                 s3_access_key_id = config$accessKey,
                 s3_secret_access_key = config$secretKey,
