@@ -110,6 +110,12 @@ query_string <- function(tblname,
 
   format <- match.arg(format)
   source_uris <- vec_as_str(sources)
+
+  ## Allow overwrites on VIEW
+  mode <- switch(mode,
+         "VIEW" = "OR REPLACE TEMPORARY VIEW",
+         "TABLE" = "TABLE")
+
   scanner <- switch(format,
                     "parquet" = "parquet_scan(",
                     "read_csv_auto(")
