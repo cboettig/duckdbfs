@@ -18,7 +18,7 @@ Imports:
     DBI,
     dbplyr,
     dplyr,
-    duckdb (>= 0.3.2)
+    duckdb (>= 0.8.1)
 Suggests: 
     sf,
     jsonlite,
