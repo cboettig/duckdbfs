@@ -46,7 +46,8 @@
 
     <div class="section level2">
 <h2 class="pkg-version" data-toc-text="0.0.2" id="duckdbfs-002">duckdbfs 0.0.2<a class="anchor" aria-label="anchor" href="#duckdbfs-002"></a></h2>
-<ul><li><p>spatial data query support! See README.md</p></li>
+<ul><li><p>duckdbfs now has spatial data query support! Users can leverage spatial data operations like <code>st_distance()</code> and <code>st_area()</code> and request return values as <code>sf</code> objects. Supports network-based access too. See README.md</p></li>
+<li><p>Added <code><a href="../reference/write_dataset.html">write_dataset()</a></code> which can write to (potentially partitioned) parquet to local directories or remote (S3) buckets.</p></li>
 <li>
 <p>The S3 interface supports <code>arrow</code>-compatible URI notation:</p>
 <ul><li>Alternate endpoints can now be passed like so <code>s3://userid:secret_token@bucket-name?endpoint_override=data.ecoforecast.org</code>
