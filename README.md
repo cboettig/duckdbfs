@@ -61,8 +61,8 @@ explicitly request `duckdb` join the two schemas. Leave this as default,
 ``` r
 ds <- open_dataset(urls, unify_schemas = TRUE)
 ds
-#> # Source:   table<csnyzuoxobayjyy> [3 x 4]
-#> # Database: DuckDB 0.8.1 [unknown@Linux 5.17.15-76051715-generic:R 4.3.1/:memory:]
+#> # Source:   table<kkkmtknecathhep> [3 x 4]
+#> # Database: DuckDB 0.8.1 [unknown@Linux 6.4.6-76060406-generic:R 4.3.1/:memory:]
 #>       i     j x         k
 #>   <int> <int> <chr> <int>
 #> 1    42    84 1        NA
@@ -182,11 +182,23 @@ operations currently supported and notes on performance and current
 limitations, see the [duckdb spatial
 docs](https://github.com/duckdblabs/duckdb_spatial)
 
+## Writing datasets
+
+Like `arrow::write_dataset()`, `duckdbfs::write_dataset()` can write
+partitioned parquet files to local disks and also directly to an S3
+bucket. Partitioned writes should take advantage of threading. Partition
+variables can be specified explicitly, or any `dplyr` grouping variables
+will be used by default:
+
+``` r
+mtcars |> group_by(cyl, gear) |> write_dataset(tempfile())
+```
+
 ## Local files
 
-Of course, `open_dataset()` can also be used with local files. Remember
-that parquet format is not required, we can read csv files (including
-multiple and hive-partitioned csv files).
+Of course, `open_dataset()` and `write_dataset()` also be used with
+local files. Remember that parquet format is not required, we can read
+csv files (including multiple and hive-partitioned csv files).
 
 ``` r
 write.csv(mtcars, "mtcars.csv", row.names=FALSE)

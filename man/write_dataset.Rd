@@ -30,11 +30,17 @@ or an in-memory data.frame.}
 
 \item{...}{additional arguments to \code{\link[=duckdb_s3_config]{duckdb_s3_config()}}}
 }
+\value{
+Returns the path, invisibly.
+}
 \description{
 write_dataset
 }
 \examples{
 \dontshow{if (interactive()) (if (getRversion() >= "3.4") withAutoprint else force)(\{ # examplesIf}
   write_dataset(mtcars, tempfile())
+\dontshow{\}) # examplesIf}
+\dontshow{if (interactive()) (if (getRversion() >= "3.4") withAutoprint else force)(\{ # examplesIf}
+write_dataset(mtcars, tempdir())
 \dontshow{\}) # examplesIf}
 }

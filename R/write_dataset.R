@@ -11,8 +11,11 @@
 #' @param ... additional arguments to [duckdb_s3_config()]
 #' @examplesIf interactive()
 #'   write_dataset(mtcars, tempfile())
-#'
+#' @return Returns the path, invisibly.
 #' @export
+#' @examplesIf interactive()
+#' write_dataset(mtcars, tempdir())
+#'
 write_dataset <- function(dataset,
                           path,
                           conn = cached_connection(),
@@ -72,7 +75,8 @@ write_dataset <- function(dataset,
                  paste0("(",  options, ")"), ";")
 
 
-  DBI::dbSendQuery(conn, query)
+  status <- DBI::dbSendQuery(conn, query)
+  invisible(path)
 }
 
 is_not_remote <- function(x) {

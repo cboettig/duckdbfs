@@ -1,6 +1,11 @@
 # duckdbfs 0.0.2
 
-* spatial data query support! See README.md
+* duckdbfs now has spatial data query support! Users can leverage spatial
+  data operations like `st_distance()` and `st_area()` and request return
+  values as `sf` objects.  Supports network-based access too.  See README.md
+
+* Added `write_dataset()` which can write to (potentially partitioned) parquet
+  to local directories or remote (S3) buckets.
 
 * The S3 interface supports `arrow`-compatible URI notation:
   - Alternate endpoints can now be passed like so 
