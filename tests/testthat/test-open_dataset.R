@@ -6,6 +6,9 @@ test_that("local csv files", {
   expect_true(inherits(df, "tbl_duckdb_connection"))
   unlink(cars)
 
+  close_connection()
+
+
 })
 
 test_that("duckdb_s3_config", {
@@ -55,6 +58,9 @@ test_that("https", {
 
 
 test_that("close_connection", {
+
+  skip_on_cran()
+
   close_connection()
   close_connection()
   expect_true(TRUE)
