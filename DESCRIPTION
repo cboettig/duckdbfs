@@ -1,6 +1,6 @@
 Package: duckdbfs
 Title: High Performance Remote File System Access Using 'duckdb'
-Version: 0.0.2
+Version: 0.0.2-1
 Authors@R: 
   person("Carl", "Boettiger", , "cboettig@gmail.com", c("aut", "cre"),
          comment = c(ORCID = "0000-0002-1642-628X"))
@@ -20,6 +20,7 @@ Imports:
     dplyr,
     duckdb (>= 0.8.1)
 Suggests: 
+    curl,
     sf,
     jsonlite,
     spelling,
