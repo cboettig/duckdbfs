@@ -90,6 +90,6 @@ remote_name <- function (x)
   if (inherits(lq, "lazy_base_remote_query")) {
     return(lq$x)
   }
-  lq$x$x
+  paste(as.character(lq$x$x), collapse="")
 }
 
