@@ -33,7 +33,7 @@ write_dataset <- function(dataset,
 
   } else {
 
-    tblname <- as.character(dbplyr::remote_name(dataset))
+    tblname <- as.character(remote_name(dataset))
 
   }
 
@@ -82,3 +82,14 @@ write_dataset <- function(dataset,
 is_not_remote <- function(x) {
   is.null(suppressWarnings(dbplyr::remote_src(x)))
 }
+
+# Based on dbplyr
+remote_name <- function (x)
+{
+  lq <- x$lazy_query
+  if (inherits(lq, "lazy_base_remote_query")) {
+    return(lq$x)
+  }
+  lq$x$x
+}
+
