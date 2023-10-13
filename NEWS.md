@@ -1,3 +1,7 @@
+# duckdbfs 0.0.3
+
+* `write_dataset()` now understands lazy queries, not just lazy tables.
+
 # duckdbfs 0.0.2
 
 * duckdbfs now has spatial data query support! Users can leverage spatial

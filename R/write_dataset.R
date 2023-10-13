@@ -33,7 +33,7 @@ write_dataset <- function(dataset,
 
   } else {
 
-    tblname <- as.character(dbplyr::remote_name(dataset))
+    tblname <- as.character(remote_name(dataset, conn))
 
   }
 
@@ -82,3 +82,13 @@ write_dataset <- function(dataset,
 is_not_remote <- function(x) {
   is.null(suppressWarnings(dbplyr::remote_src(x)))
 }
+
+
+remote_name <- function (x, con)
+{
+  out <- dbplyr::remote_name(x)
+  if(is.null(out))
+    out <- paste0("(", dbplyr::sql_render(x$lazy_query, con = con), ")")
+  out
+}
+

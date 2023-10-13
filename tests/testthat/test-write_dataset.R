@@ -21,6 +21,14 @@ test_that("write_dataset", {
   expect_true(file.exists(path))
   df <- open_dataset(path)
   expect_s3_class(df, "tbl")
+
+  ## Write from a query string
+  path2 <- file.path(tempdir(), "spatial2.parquet")
+
+  tbl |>
+    dplyr::mutate(new = "test") |>
+    write_dataset(path2)
+
 })
 
 test_that("write_dataset partitions", {
