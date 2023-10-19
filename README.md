@@ -180,7 +180,7 @@ spatial_ex |>
 For more details including a complete list of the dozens of spatial
 operations currently supported and notes on performance and current
 limitations, see the [duckdb spatial
-docs](https://github.com/duckdblabs/duckdb_spatial)
+docs](https://github.com/duckdb/duckdb_spatial)
 
 ## Writing datasets
 

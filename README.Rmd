@@ -125,7 +125,7 @@ spatial_ex |>
   to_sf()
 ```
 
-For more details including a complete list of the dozens of spatial operations currently supported and notes on performance and current limitations, see the [duckdb spatial docs](https://github.com/duckdblabs/duckdb_spatial)
+For more details including a complete list of the dozens of spatial operations currently supported and notes on performance and current limitations, see the [duckdb spatial docs](https://github.com/duckdb/duckdb_spatial)
 
 ## Writing datasets
 
