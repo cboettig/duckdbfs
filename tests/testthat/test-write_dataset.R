@@ -74,9 +74,12 @@ test_that("write_dataset to s3:", {
 #  skip("S3 write not enabled")
   skip_if_offline()
   skip_on_cran()
+  skip_on_os("windows") # minioclient parsing issue?
   skip_if_not_installed("jsonlite")
   skip_if_not_installed("minioclient")
   minioclient::install_mc(force = TRUE)
+
+  # parsing of this appears to fail on windows, unclear why
   p <- minioclient::mc_alias_ls("play --json")
   config <- jsonlite::fromJSON(p$stdout)
 
