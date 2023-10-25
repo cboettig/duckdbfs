@@ -205,10 +205,6 @@ write.csv(mtcars, "mtcars.csv", row.names=FALSE)
 lazy_cars <- open_dataset("mtcars.csv", format = "csv")
 ```
 
-## Limitations
-
-- ***NOTE***: at this time, the duckdb httpfs file system extension in R
-  does not support Windows.
 
 ## Mechanism / motivation
 
