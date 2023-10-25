@@ -126,8 +126,17 @@ enable_parallel <- function(conn = cached_connection(),
 #' @references <https://duckdb.org/docs/extensions/spatial.html>
 #' @export
 load_spatial <- function(conn = cached_connection()) {
-  status <- DBI::dbExecute(conn, "INSTALL 'spatial';")
-  status <- DBI::dbExecute(conn, "LOAD 'spatial';")
+
+  module <- "spatial"
+  ext <- duckdb_extensions(conn)
+  i <- which(ext$extension_name == module)
+
+  if(!ext$installed[[i]]) {
+    status <- DBI::dbExecute(conn, paste0("INSTALL '", module, "';"))
+  }
+  if(!ext$loaded[[i]]) {
+    status <- DBI::dbExecute(conn, paste0("LOAD '", module, "';"))
+  }
   invisible(status)
 }
 
