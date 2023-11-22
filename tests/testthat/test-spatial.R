@@ -18,6 +18,11 @@ test_that("spatial", {
 })
 
 test_that("spatial vector read", {
+
+  skip_on_os("windows") # come on duckdb, support extensions on windows
+  skip_if_offline() # needs to be able to load the spatial module
+  skip_on_cran()
+
   path <- system.file("extdata/world.gpkg", package = "duckdbfs")
   x <- open_dataset(path, format = "sf")
 
