@@ -16,3 +16,12 @@ test_that("spatial", {
   expect_true(TRUE)
 
 })
+
+test_that("spatial vector read", {
+  path <- system.file("extdata/world.gpkg", package = "duckdbfs")
+  x <- open_dataset(path, format = "sf")
+
+  expect_s3_class(x, "tbl_lazy")
+  expect_s3_class(x, "tbl")
+})
+

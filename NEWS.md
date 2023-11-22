@@ -1,3 +1,9 @@
+# duckdbfs 0.0.4
+
+* `open_dataset()` gains option `sf` to format, allowing users to parse
+  spatial vector data in simple features standard (objects read by `sf`)
+
+
 # duckdbfs 0.0.3
 
 * `write_dataset()` now understands lazy queries, not just lazy tables.

@@ -14,7 +14,8 @@
 #'  column name across all files (NOTE: this can add considerably to
 #'  the initial execution time)
 #' @param format The format of the dataset files. One of `"parquet"`, `"csv"`,
-#' `"tsv"`, or `"text"`.
+#' `"tsv"`, `"text"` or `"sf"` (for any Simple Features spatial dataset supported
+#' by the sf package).
 #' @param conn A connection to a database.
 #' @param tblname The name of the table to create in the database.
 #' @param mode The mode to create the table in. One of `"VIEW"` or `"TABLE"`.
@@ -59,7 +60,7 @@ open_dataset <- function(sources,
                          schema = NULL,
                          hive_style = TRUE,
                          unify_schemas = FALSE,
-                         format = c("parquet", "csv", "tsv", "text"),
+                         format = c("parquet", "csv", "tsv", "text", "sf"),
                          conn = cached_connection(),
                          tblname = tmp_tbl_name(),
                          mode = "VIEW",
@@ -78,6 +79,9 @@ open_dataset <- function(sources,
 
 
   format <- match.arg(format)
+  if(format == "sf") {
+    load_spatial(conn = conn)
+  }
   view_query <- query_string(tblname,
                              sources,
                              format = format,
@@ -102,7 +106,7 @@ vec_as_str <- function(x) {
 
 query_string <- function(tblname,
                          sources,
-                         format = c("parquet", "csv", "tsv", "text"),
+                         format = c("parquet", "csv", "tsv", "text", "sf"),
                          mode = c("VIEW", "TABLE"),
                          hive_partitioning = TRUE,
                          union_by_name = FALSE,
@@ -118,13 +122,29 @@ query_string <- function(tblname,
 
   scanner <- switch(format,
                     "parquet" = "parquet_scan(",
-                    "read_csv_auto(")
+                    "csv"  = "read_csv_auto(",
+                    "tsv"  = "read_csv_auto(",
+                    "text" = "read_csv_auto(",
+                    "sf" = "st_read("
+                    )
+
+  tabular_options <- paste0(
+    ", HIVE_PARTITIONING=",hive_partitioning,
+    ", UNION_BY_NAME=",union_by_name,
+    ", FILENAME=",filename)
+
+  options <- switch(format,
+                    "parquet" = tabular_options,
+                    "csv"  = tabular_options,
+                    "tsv"  = tabular_options,
+                    "text" = tabular_options,
+                    "sf" = ""
+  )
+
+
   paste0(
     paste("CREATE", mode, tblname, "AS SELECT * FROM "),
-    paste0(scanner, source_uris,
-           ", HIVE_PARTITIONING=",hive_partitioning,
-           ", UNION_BY_NAME=",union_by_name,
-           ", FILENAME=",filename,
+    paste0(scanner, source_uris, options,
            ");")
   )
 }
