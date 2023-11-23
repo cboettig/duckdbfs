@@ -12,12 +12,16 @@ countries <- open_dataset("/vsicurl/https://github.com/cboettig/duckdbfs/raw/spa
 cities <- open_dataset("/vsicurl/https://github.com/cboettig/duckdbfs/raw/spatial-read/inst/extdata/metro.fgb",
                           format = "sf", tblname = "cities")
 
+con <- cached_connection()
 ## We can count number of cities in each country with a bit of SQL
 x <- DBI::dbGetQuery(con, "
-SELECT countries.iso_a3, count(kbas.geom) AS total
+SELECT countries.iso_a3, count(cities.geom) AS total
 FROM countries
-LEFT JOIN kbas ON st_contains(countries.geom,kbas.geom)
-GROUP BY countries.iso_a3;
+LEFT JOIN cities
+ON st_contains(countries.geom, cities.geom)
+GROUP BY countries.iso_a3
+ORDER BY total DESC
+LIMIT 6
 ")
 
 # in dplyr this could be nice and pretty, but `join_by` refuses the syntax
