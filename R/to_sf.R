@@ -24,15 +24,15 @@
 #' # from lat/long columns using the `st_point` method.
 #' sf <-
 #'   open_dataset(csv_file, format = "csv") |>
-#'   mutate(geometry = ST_Point(longitude, latitude)) |>
+#'   mutate(geom = ST_Point(longitude, latitude)) |>
 #'   to_sf()
 #'
 #' # We can use the full space of spatial operations, including spatial
 #' # and normal dplyr filters.  All operations are translated into a
 #' # spatial SQL query by `to_sf`:
 #' open_dataset(csv_file, format = "csv") |>
-#'   mutate(geometry = ST_Point(longitude, latitude)) |>
-#'   mutate(dist = ST_Distance(geometry, ST_Point(0,0))) |>
+#'   mutate(geom = ST_Point(longitude, latitude)) |>
+#'   mutate(dist = ST_Distance(geom, ST_Point(0,0))) |>
 #'   filter(site %in% c("a", "b", "e")) |>
 #'   to_sf()
 #'
@@ -40,12 +40,15 @@
 #' @export
 to_sf <- function(x, conn = cached_connection()) {
   load_spatial(conn)
+  if("geometry" %in% colnames(x)) {
+    x <- x |> dplyr::rename(geom=geometry)
+  }
   sql <- x |>
-    dplyr::mutate(geometry = ST_AsWKB(geometry)) |>
+    dplyr::mutate(geom = ST_AsWKB(geom)) |>
     dbplyr::sql_render()
 
   requireNamespace("sf", quietly = TRUE)
-  sf::st_read(conn, query=sql, geometry_column = "geometry")
+  sf::st_read(conn, query=sql, geometry_column = "geom")
 }
 
-utils::globalVariables(c("ST_AsWKB", "geometry"), package = "duckdbfs")
+utils::globalVariables(c("ST_AsWKB", "geom", "geometry"), package = "duckdbfs")

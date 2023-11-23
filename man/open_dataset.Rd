@@ -9,7 +9,7 @@ open_dataset(
   schema = NULL,
   hive_style = TRUE,
   unify_schemas = FALSE,
-  format = c("parquet", "csv", "tsv", "text"),
+  format = c("parquet", "csv", "tsv", "text", "sf"),
   conn = cached_connection(),
   tblname = tmp_tbl_name(),
   mode = "VIEW",
@@ -33,7 +33,8 @@ column name across all files (NOTE: this can add considerably to
 the initial execution time)}
 
 \item{format}{The format of the dataset files. One of \code{"parquet"}, \code{"csv"},
-\code{"tsv"}, or \code{"text"}.}
+\code{"tsv"}, \code{"text"} or \code{"sf"} (for any Simple Features spatial dataset supported
+by the sf package).}
 
 \item{conn}{A connection to a database.}
 
