@@ -10,7 +10,7 @@
     
     <a class="navbar-brand me-2" href="../index.html">duckdbfs</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.0.3</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.0.3.99</small>
 
     
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -45,7 +45,13 @@
     </div>
 
     <div class="section level2">
-<h2 class="pkg-version" data-toc-text="0.0.3" id="duckdbfs-003">duckdbfs 0.0.3<a class="anchor" aria-label="anchor" href="#duckdbfs-003"></a></h2>
+<h2 class="pkg-version" data-toc-text="0.0.4" id="duckdbfs-004">duckdbfs 0.0.4<a class="anchor" aria-label="anchor" href="#duckdbfs-004"></a></h2>
+<ul><li>
+<code><a href="../reference/open_dataset.html">open_dataset()</a></code> gains option <code>sf</code> to format, allowing users to parse spatial vector data in simple features standard (objects read by <code>sf</code>)</li>
+<li>default geometry column in <code><a href="../reference/to_sf.html">to_sf()</a></code> is now termed <code>geom</code>, to match the default used in <code>duckdb</code>’s <code>st_read()</code> function.</li>
+</ul></div>
+    <div class="section level2">
+<h2 class="pkg-version" data-toc-text="0.0.3" id="duckdbfs-003">duckdbfs 0.0.3<a class="anchor" aria-label="anchor" href="#duckdbfs-003"></a></h2><p class="text-muted">CRAN release: 2023-10-19</p>
 <ul><li>
 <code><a href="../reference/write_dataset.html">write_dataset()</a></code> now understands lazy queries, not just lazy tables.</li>
 </ul></div>

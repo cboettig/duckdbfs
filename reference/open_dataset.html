@@ -14,7 +14,7 @@ notation."><!-- mathjax --><script src="https://cdnjs.cloudflare.com/ajax/libs/m
     
     <a class="navbar-brand me-2" href="../index.html">duckdbfs</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.0.3</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.0.3.99</small>
 
     
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -62,7 +62,7 @@ notation.</p>
 <span>  schema <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  hive_style <span class="op">=</span> <span class="cn">TRUE</span>,</span>
 <span>  unify_schemas <span class="op">=</span> <span class="cn">FALSE</span>,</span>
-<span>  format <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"parquet"</span>, <span class="st">"csv"</span>, <span class="st">"tsv"</span>, <span class="st">"text"</span><span class="op">)</span>,</span>
+<span>  format <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"parquet"</span>, <span class="st">"csv"</span>, <span class="st">"tsv"</span>, <span class="st">"text"</span>, <span class="st">"sf"</span><span class="op">)</span>,</span>
 <span>  conn <span class="op">=</span> <span class="fu"><a href="cached_connection.html">cached_connection</a></span><span class="op">(</span><span class="op">)</span>,</span>
 <span>  tblname <span class="op">=</span> <span class="fu">tmp_tbl_name</span><span class="op">(</span><span class="op">)</span>,</span>
 <span>  mode <span class="op">=</span> <span class="st">"VIEW"</span>,</span>
@@ -97,7 +97,8 @@ the initial execution time)</p></dd>
 
 <dt>format</dt>
 <dd><p>The format of the dataset files. One of <code>"parquet"</code>, <code>"csv"</code>,
-<code>"tsv"</code>, or <code>"text"</code>.</p></dd>
+<code>"tsv"</code>, <code>"text"</code> or <code>"sf"</code> (for any Simple Features spatial dataset supported
+by the sf package).</p></dd>
 
 
 <dt>conn</dt>
