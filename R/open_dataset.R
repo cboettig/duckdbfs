@@ -106,6 +106,10 @@ select_format <- function(sources, format) {
   # format for vector sources always based on first element
   sources <- sources[[1]]
 
+  # default to parquet for S3 addresses
+  if(grepl("^s3://", sources)) {
+    return("parquet")
+  }
 
   if( fs::is_dir(sources) ) {
     sources <- fs::dir_ls(sources, recurse = TRUE, type="file")
@@ -121,6 +125,7 @@ select_format <- function(sources, format) {
                    "kml", "gmt")) {
     return("sf")
   }
+
 
   # default
   if (format == "") {

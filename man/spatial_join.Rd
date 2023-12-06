@@ -40,20 +40,21 @@ on using dplyr operations and call to_st() to collect this as an sf object.
 spatial_join
 }
 \details{
-Possible \href{https://postgis.net/workshops/postgis-intro/spatial_relationships.html}{spatial joins} include:
+Possible \href{https://postgis.net/workshops/postgis-intro/spatial_relationships.html}{spatial joins} include:\tabular{ll}{
+   Function \tab Description \cr
+   st_intersects \tab Geometry A intersects with geometry B \cr
+   st_disjoint \tab The complement of intersects \cr
+   st_within \tab Geometry A is within geometry B (complement of contains) \cr
+   st_dwithin \tab Geometries are within a specified distance, expressed in the same units as the coordinate reference system. \cr
+   st_touches \tab Two polygons touch if the that have at least one point in common, even if their interiors do not touch. \cr
+   st_contains \tab Geometry A entirely contains to geometry B. (complement of within) \cr
+   st_containsproperly \tab stricter version of \code{st_contains} (boundary counts as external) \cr
+   st_covers \tab geometry B is inside or on boundary of A. (A polygon covers a point on its boundary but does not contain it.) \cr
+   st_overlaps \tab geometry A intersects but does not completely contain geometry B \cr
+   st_equals \tab geometry A is equal to geometry B \cr
+   st_crosses \tab Lines or points in geometry A cross geometry B. \cr
+}
 
----------------|----------------------------------------------
-st_intersects  | Geometry A intersects with geometry B
-st_disjoint    | The complement of intersects
-st_within      | Geometry A is within geometry B (complement of contains)
-st_dwithin     | Geometries are within a specified distance, expressed in the same units as the coordinate reference system of the geometries.
-st_touches     | Two polygons touch if the that have at least one point in common, even if their interiors do not touch.
-st_contains    | Geometry A entirely contains to geometry B. (complement of within)
-st_containsproperly | stricter version of \code{st_contains} (boundary counts as external)
-st_covers   | Geometry B. is inside or on boundary of A. (A polygon covers a point on its boundary but does not contain it.)
-st_overlaps | Geometry A intersects but does not completely contain geometry B
-st_equals   | Geometry A is equal to geometry B
-st_crosses  | Lines or points in geometry A cross geometry B.
 
 All though SQL is not case sensitive, this function expects only
 lower case names for "by" functions.
