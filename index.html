@@ -106,13 +106,13 @@
 <div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">ds</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/open_dataset.html">open_dataset</a></span><span class="op">(</span><span class="va">urls</span>, unify_schemas <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
 <span><span class="va">ds</span></span>
-<span><span class="co">#&gt; # Source:   table&lt;kkkmtknecathhep&gt; [3 x 4]</span></span>
-<span><span class="co">#&gt; # Database: DuckDB 0.8.1 [unknown@Linux 6.4.6-76060406-generic:R 4.3.1/:memory:]</span></span>
-<span><span class="co">#&gt;       i     j x         k</span></span>
-<span><span class="co">#&gt;   &lt;int&gt; &lt;int&gt; &lt;chr&gt; &lt;int&gt;</span></span>
-<span><span class="co">#&gt; 1    42    84 1        NA</span></span>
-<span><span class="co">#&gt; 2    42    84 1        NA</span></span>
-<span><span class="co">#&gt; 3    NA   128 2        33</span></span></code></pre></div>
+<span><span class="co">#&gt; # Source:   table&lt;fkyaqxufdlsawiy&gt; [3 x 4]</span></span>
+<span><span class="co">#&gt; # Database: DuckDB v0.9.2 [unknown@Linux 6.5.6-76060506-generic:R 4.3.2/:memory:]</span></span>
+<span><span class="co">#&gt;       i     j     x     k</span></span>
+<span><span class="co">#&gt;   &lt;int&gt; &lt;int&gt; &lt;dbl&gt; &lt;int&gt;</span></span>
+<span><span class="co">#&gt; 1    42    84     1    NA</span></span>
+<span><span class="co">#&gt; 2    42    84     1    NA</span></span>
+<span><span class="co">#&gt; 3    NA   128     2    33</span></span></code></pre></div>
 <p>Use <code><a href="https://dplyr.tidyverse.org/reference/filter.html" class="external-link">filter()</a></code>, <code><a href="https://dplyr.tidyverse.org/reference/select.html" class="external-link">select()</a></code>, etc from dplyr to subset and process data – <a href="https://dbplyr.tidyverse.org/reference/index.html" class="external-link">any method supported by dbpylr</a>. Then use <code><a href="https://dplyr.tidyverse.org/reference/compute.html" class="external-link">dplyr::collect()</a></code> to trigger evaluation and ingest results of the query into R.</p>
 </div>
 <div class="section level2">
@@ -130,44 +130,26 @@
 <div class="section level2">
 <h2 id="spatial-data">Spatial data<a class="anchor" aria-label="anchor" href="#spatial-data"></a>
 </h2>
-<p><code>duckdb</code> can also understand a wide array of spatial data queries for spatial vector data, similar to operations found in the popular <code>sf</code> package. Most spatial query operations require an geometry column that expresses the simple feature geometry in <code>duckdb</code>’s internal geometry format (nearly but not exactly WKB). A common pattern will first generate the geometry column from raw columns, such as <code>latitude</code> and <code>lognitude</code> columns, using the <code>duckdb</code> implementation of the a method familiar to postgis, <code>ST_Point</code>:</p>
+<p><code>duckdb</code> can also understand a wide array of spatial data queries for spatial vector data, similar to operations found in the popular <code>sf</code> package. See <a href="https://github.com/duckdb/duckdb_spatial#supported-functions" class="external-link">the list of supported functions</a> for details. Most spatial query operations require an geometry column that expresses the simple feature geometry in <code>duckdb</code>’s internal geometry format (nearly but not exactly WKB).</p>
+<div class="section level3">
+<h3 id="generating-spatial-data-from-tabular">Generating spatial data from tabular<a class="anchor" aria-label="anchor" href="#generating-spatial-data-from-tabular"></a>
+</h3>
+<p>A common pattern will first generate the geometry column from raw columns, such as <code>latitude</code> and <code>lognitude</code> columns, using the <code>duckdb</code> implementation of the a method familiar to postgis, <code>st_point</code>:</p>
 <div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">spatial_ex</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/paste.html" class="external-link">paste0</a></span><span class="op">(</span><span class="st">"https://raw.githubusercontent.com/cboettig/duckdbfs/"</span>,</span>
 <span>                     <span class="st">"main/inst/extdata/spatial-test.csv"</span><span class="op">)</span> <span class="op">|&gt;</span></span>
 <span>  <span class="fu"><a href="reference/open_dataset.html">open_dataset</a></span><span class="op">(</span>format <span class="op">=</span> <span class="st">"csv"</span><span class="op">)</span> </span>
 <span></span>
 <span><span class="va">spatial_ex</span> <span class="op">|&gt;</span></span>
-<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate.html" class="external-link">mutate</a></span><span class="op">(</span>geometry <span class="op">=</span> <span class="fu">ST_Point</span><span class="op">(</span><span class="va">longitude</span>, <span class="va">latitude</span><span class="op">)</span><span class="op">)</span> <span class="op">|&gt;</span></span>
-<span>  <span class="fu"><a href="reference/to_sf.html">to_sf</a></span><span class="op">(</span><span class="op">)</span></span>
-<span><span class="co">#&gt; Simple feature collection with 10 features and 3 fields</span></span>
-<span><span class="co">#&gt; Geometry type: POINT</span></span>
-<span><span class="co">#&gt; Dimension:     XY</span></span>
-<span><span class="co">#&gt; Bounding box:  xmin: 1 ymin: 1 xmax: 10 ymax: 10</span></span>
-<span><span class="co">#&gt; CRS:           NA</span></span>
-<span><span class="co">#&gt;    site latitude longitude      geometry</span></span>
-<span><span class="co">#&gt; 1     a        1         1   POINT (1 1)</span></span>
-<span><span class="co">#&gt; 2     b        2         2   POINT (2 2)</span></span>
-<span><span class="co">#&gt; 3     c        3         3   POINT (3 3)</span></span>
-<span><span class="co">#&gt; 4     d        4         4   POINT (4 4)</span></span>
-<span><span class="co">#&gt; 5     e        5         5   POINT (5 5)</span></span>
-<span><span class="co">#&gt; 6     f        6         6   POINT (6 6)</span></span>
-<span><span class="co">#&gt; 7     g        7         7   POINT (7 7)</span></span>
-<span><span class="co">#&gt; 8     h        8         8   POINT (8 8)</span></span>
-<span><span class="co">#&gt; 9     i        9         9   POINT (9 9)</span></span>
-<span><span class="co">#&gt; 10    j       10        10 POINT (10 10)</span></span></code></pre></div>
-<p>Recall that when used against any sort of external database like <code>duckdb</code>, most <code>dplyr</code> functions like <code><a href="https://dplyr.tidyverse.org/reference/mutate.html" class="external-link">dplyr::mutate()</a></code> are being transcribed into SQL by <code>dbplyr</code>, and not actually ever run in R. This allows us to seamlessly pass along spatial functions like <code>ST_Point</code>, despite this not being an available R function. The <code><a href="reference/to_sf.html">to_sf()</a></code> coercion will parse its input into a SQL query that gets passed to <code>duckdb</code>, and the return object will be collected through <code><a href="https://r-spatial.github.io/sf/reference/st_read.html" class="external-link">sf::st_read</a></code>, returning an (in-memory) <code>sf</code> object.</p>
-<p>Note that we can add arbitrary spatial functions that operate on this geometry, provided we do so prior to our call to <code>to_sf</code>. For instance, here we first create our geometry column from lat/lon columns, and then compute the distance from each element to a spatial point:</p>
-<div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">spatial_ex</span> <span class="op">|&gt;</span> </span>
-<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate.html" class="external-link">mutate</a></span><span class="op">(</span>geometry <span class="op">=</span> <span class="fu">ST_Point</span><span class="op">(</span><span class="va">longitude</span>, <span class="va">latitude</span><span class="op">)</span><span class="op">)</span> <span class="op">|&gt;</span></span>
-<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate.html" class="external-link">mutate</a></span><span class="op">(</span>dist <span class="op">=</span> <span class="fu">ST_Distance</span><span class="op">(</span><span class="va">geometry</span>, <span class="fu">ST_Point</span><span class="op">(</span><span class="fl">0</span>,<span class="fl">0</span><span class="op">)</span><span class="op">)</span><span class="op">)</span> <span class="op">|&gt;</span> </span>
+<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate.html" class="external-link">mutate</a></span><span class="op">(</span>geometry <span class="op">=</span> <span class="fu">st_point</span><span class="op">(</span><span class="va">longitude</span>, <span class="va">latitude</span><span class="op">)</span><span class="op">)</span> <span class="op">|&gt;</span></span>
+<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate.html" class="external-link">mutate</a></span><span class="op">(</span>dist <span class="op">=</span> <span class="fu">st_distance</span><span class="op">(</span><span class="va">geometry</span>, <span class="fu">st_point</span><span class="op">(</span><span class="fl">0</span>,<span class="fl">0</span><span class="op">)</span><span class="op">)</span><span class="op">)</span> <span class="op">|&gt;</span> </span>
 <span>  <span class="fu"><a href="reference/to_sf.html">to_sf</a></span><span class="op">(</span><span class="op">)</span></span>
 <span><span class="co">#&gt; Simple feature collection with 10 features and 4 fields</span></span>
 <span><span class="co">#&gt; Geometry type: POINT</span></span>
 <span><span class="co">#&gt; Dimension:     XY</span></span>
 <span><span class="co">#&gt; Bounding box:  xmin: 1 ymin: 1 xmax: 10 ymax: 10</span></span>
 <span><span class="co">#&gt; CRS:           NA</span></span>
-<span><span class="co">#&gt;    site latitude longitude      dist      geometry</span></span>
+<span><span class="co">#&gt;    site latitude longitude      dist          geom</span></span>
 <span><span class="co">#&gt; 1     a        1         1  1.414214   POINT (1 1)</span></span>
 <span><span class="co">#&gt; 2     b        2         2  2.828427   POINT (2 2)</span></span>
 <span><span class="co">#&gt; 3     c        3         3  4.242641   POINT (3 3)</span></span>
@@ -178,20 +160,137 @@
 <span><span class="co">#&gt; 8     h        8         8 11.313708   POINT (8 8)</span></span>
 <span><span class="co">#&gt; 9     i        9         9 12.727922   POINT (9 9)</span></span>
 <span><span class="co">#&gt; 10    j       10        10 14.142136 POINT (10 10)</span></span></code></pre></div>
+<p>Recall that when used against any sort of external database like <code>duckdb</code>, most <code>dplyr</code> functions like <code><a href="https://dplyr.tidyverse.org/reference/mutate.html" class="external-link">dplyr::mutate()</a></code> are being transcribed into SQL by <code>dbplyr</code>, and not actually ever run in R. This allows us to seamlessly pass along spatial functions like <code>st_point</code>, despite this not being an available R function. (Also note that SQL is not case-sensitive, so this function is also written as <code>ST_Point</code>). Optionally, we can do additional operations on this geometry column, such as computing distances (<code>st_distance</code> shown here), spatial filters, and so forth. The <code><a href="reference/to_sf.html">to_sf()</a></code> coercion will parse its input into a SQL query that gets passed to <code>duckdb</code>, and the return object will be collected through <code><a href="https://r-spatial.github.io/sf/reference/st_read.html" class="external-link">sf::st_read</a></code>, returning an (in-memory) <code>sf</code> object.</p>
 <p>For more details including a complete list of the dozens of spatial operations currently supported and notes on performance and current limitations, see the <a href="https://github.com/duckdb/duckdb_spatial" class="external-link">duckdb spatial docs</a></p>
+</div>
+<div class="section level3">
+<h3 id="reading-spatial-vector-files">Reading spatial vector files<a class="anchor" aria-label="anchor" href="#reading-spatial-vector-files"></a>
+</h3>
+<p>The <code>duckdb</code> spatial package can also use GDAL to read large spatial vector files. This includes support for the GDAL virtual filesystem. This means that we can easily subset columns from a wide array of potentially remote file types and filter on rows and columns, and perform many spatial operations without ever reading the entire objects into memory in R.</p>
+<p>To read spatial vector (simple feature) files, indicate <code>format="sf"</code>. Use virtual filesystem prefixes to access range requests over http, S3, and other such systems.</p>
+<div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">url</span> <span class="op">&lt;-</span> <span class="st">"https://github.com/cboettig/duckdbfs/raw/25744032021cc2b9bbc560f95b77b3eb088c9abb/inst/extdata/world.gpkg"</span></span>
+<span></span>
+<span><span class="va">countries</span> <span class="op">&lt;-</span> </span>
+<span>  <span class="fu"><a href="https://rdrr.io/r/base/paste.html" class="external-link">paste0</a></span><span class="op">(</span><span class="st">"/vsicurl/"</span>, <span class="va">url</span><span class="op">)</span> <span class="op">|&gt;</span> </span>
+<span>  <span class="fu"><a href="reference/open_dataset.html">open_dataset</a></span><span class="op">(</span>format<span class="op">=</span><span class="st">"sf"</span><span class="op">)</span></span></code></pre></div>
+<p>Which country polygon contains Melbourne? Note the result is still a lazy read, we haven’t downloaded or read in the full spatial data object.</p>
+<div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://r-spatial.github.io/sf/" class="external-link">sf</a></span><span class="op">)</span></span>
+<span><span class="co">#&gt; Linking to GEOS 3.10.2, GDAL 3.4.1, PROJ 8.2.1; sf_use_s2() is TRUE</span></span>
+<span><span class="va">melbourne</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://r-spatial.github.io/sf/reference/st.html" class="external-link">st_point</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">144.9633</span>, <span class="op">-</span><span class="fl">37.814</span><span class="op">)</span><span class="op">)</span> <span class="op">|&gt;</span> <span class="fu"><a href="https://r-spatial.github.io/sf/reference/st_as_text.html" class="external-link">st_as_text</a></span><span class="op">(</span><span class="op">)</span></span>
+<span></span>
+<span><span class="va">countries</span> <span class="op">|&gt;</span> </span>
+<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html" class="external-link">filter</a></span><span class="op">(</span><span class="fu"><a href="https://r-spatial.github.io/sf/reference/geos_binary_pred.html" class="external-link">st_contains</a></span><span class="op">(</span><span class="va">geom</span>, <span class="fu">ST_GeomFromText</span><span class="op">(</span><span class="op">{</span><span class="va">melbourne</span><span class="op">}</span><span class="op">)</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="co">#&gt; # Source:   SQL [1 x 16]</span></span>
+<span><span class="co">#&gt; # Database: DuckDB v0.9.2 [unknown@Linux 6.5.6-76060506-generic:R 4.3.2/:memory:]</span></span>
+<span><span class="co">#&gt;   iso_a3 name      sovereignt continent    area  pop_est pop_est_dens economy   </span></span>
+<span><span class="co">#&gt;   &lt;chr&gt;  &lt;chr&gt;     &lt;chr&gt;      &lt;chr&gt;       &lt;dbl&gt;    &lt;dbl&gt;        &lt;dbl&gt; &lt;chr&gt;     </span></span>
+<span><span class="co">#&gt; 1 AUS    Australia Australia  Oceania   7682300 21262641         2.77 2. Develo…</span></span>
+<span><span class="co">#&gt; # ℹ 8 more variables: income_grp &lt;chr&gt;, gdp_cap_est &lt;dbl&gt;, life_exp &lt;dbl&gt;,</span></span>
+<span><span class="co">#&gt; #   well_being &lt;dbl&gt;, footprint &lt;dbl&gt;, inequality &lt;dbl&gt;, HPI &lt;dbl&gt;, geom &lt;list&gt;</span></span></code></pre></div>
+<p>As before, we use <code><a href="reference/to_sf.html">to_sf()</a></code> to read in the query results as a native (in-memory) <code>sf</code> object:</p>
+<div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">sf_obj</span> <span class="op">&lt;-</span> <span class="va">countries</span> <span class="op">|&gt;</span> <span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html" class="external-link">filter</a></span><span class="op">(</span><span class="va">continent</span> <span class="op">==</span> <span class="st">"Africa"</span><span class="op">)</span> <span class="op">|&gt;</span> <span class="fu"><a href="reference/to_sf.html">to_sf</a></span><span class="op">(</span><span class="op">)</span> </span>
+<span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">sf_obj</span><span class="op">[</span><span class="st">"name"</span><span class="op">]</span><span class="op">)</span></span></code></pre></div>
+<p><img src="reference/figures/README-unnamed-chunk-8-1.png" width="100%"></p>
+</div>
+</div>
+<div class="section level2">
+<h2 id="spatial-joins">Spatial joins<a class="anchor" aria-label="anchor" href="#spatial-joins"></a>
+</h2>
+<p>One very common operation are spatial joins, which can be a very powerful way to subset large data. For instance, we can return all points (cities) within a set of polygons</p>
+<div class="sourceCode" id="cb11"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">cities</span> <span class="op">&lt;-</span></span>
+<span>  <span class="fu"><a href="https://rdrr.io/r/base/paste.html" class="external-link">paste0</a></span><span class="op">(</span><span class="st">"/vsicurl/https://github.com/cboettig/duckdbfs/raw/"</span>,</span>
+<span>         <span class="st">"spatial-read/inst/extdata/metro.fgb"</span><span class="op">)</span> <span class="op">|&gt;</span></span>
+<span>  <span class="fu"><a href="reference/open_dataset.html">open_dataset</a></span><span class="op">(</span>format <span class="op">=</span> <span class="st">"sf"</span><span class="op">)</span></span>
+<span></span>
+<span><span class="va">countries</span> <span class="op">|&gt;</span></span>
+<span>   <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html" class="external-link">filter</a></span><span class="op">(</span><span class="va">continent</span> <span class="op">==</span> <span class="st">"Oceania"</span><span class="op">)</span> <span class="op">|&gt;</span></span>
+<span>   <span class="fu"><a href="reference/spatial_join.html">spatial_join</a></span><span class="op">(</span><span class="va">cities</span>, by <span class="op">=</span> <span class="st">"st_intersects"</span>, join<span class="op">=</span><span class="st">"inner"</span><span class="op">)</span> <span class="op">|&gt;</span></span>
+<span>   <span class="fu"><a href="https://dplyr.tidyverse.org/reference/select.html" class="external-link">select</a></span><span class="op">(</span><span class="va">name_long</span>, <span class="va">sovereignt</span>, <span class="va">pop2020</span><span class="op">)</span> </span>
+<span><span class="co">#&gt; # Source:   SQL [6 x 3]</span></span>
+<span><span class="co">#&gt; # Database: DuckDB v0.9.2 [unknown@Linux 6.5.6-76060506-generic:R 4.3.2/:memory:]</span></span>
+<span><span class="co">#&gt;   name_long sovereignt  pop2020</span></span>
+<span><span class="co">#&gt;   &lt;chr&gt;     &lt;chr&gt;         &lt;dbl&gt;</span></span>
+<span><span class="co">#&gt; 1 Brisbane  Australia   2388517</span></span>
+<span><span class="co">#&gt; 2 Perth     Australia   2036118</span></span>
+<span><span class="co">#&gt; 3 Sydney    Australia   4729406</span></span>
+<span><span class="co">#&gt; 4 Adelaide  Australia   1320783</span></span>
+<span><span class="co">#&gt; 5 Auckland  New Zealand 1426070</span></span>
+<span><span class="co">#&gt; 6 Melbourne Australia   4500501</span></span></code></pre></div>
+<p>Possible <a href="https://postgis.net/workshops/postgis-intro/spatial_relationships.html" class="external-link">spatial joins</a> include:</p>
+<table class="table">
+<colgroup>
+<col width="15%">
+<col width="84%">
+</colgroup>
+<thead><tr class="header">
+<th>Function</th>
+<th>Description</th>
+</tr></thead>
+<tbody>
+<tr class="odd">
+<td>st_intersects</td>
+<td>Geometry A intersects with geometry B</td>
+</tr>
+<tr class="even">
+<td>st_disjoint</td>
+<td>The complement of intersects</td>
+</tr>
+<tr class="odd">
+<td>st_within</td>
+<td>Geometry A is within geometry B (complement of contains)</td>
+</tr>
+<tr class="even">
+<td>st_dwithin</td>
+<td>Geometries are within a specified distance, expressed in the same units as the coordinate reference system.</td>
+</tr>
+<tr class="odd">
+<td>st_touches</td>
+<td>Two polygons touch if the that have at least one point in common, even if their interiors do not touch.</td>
+</tr>
+<tr class="even">
+<td>st_contains</td>
+<td>Geometry A entirely contains to geometry B. (complement of within)</td>
+</tr>
+<tr class="odd">
+<td>st_containsproperly</td>
+<td>stricter version of <code>st_contains</code> (boundary counts as external)</td>
+</tr>
+<tr class="even">
+<td>st_covers</td>
+<td>geometry B is inside or on boundary of A. (A polygon covers a point on its boundary but does not contain it.)</td>
+</tr>
+<tr class="odd">
+<td>st_overlaps</td>
+<td>geometry A intersects but does not completely contain geometry B</td>
+</tr>
+<tr class="even">
+<td>st_equals</td>
+<td>geometry A is equal to geometry B</td>
+</tr>
+<tr class="odd">
+<td>st_crosses</td>
+<td>Lines or points in geometry A cross geometry B.</td>
+</tr>
+</tbody>
+</table>
+<p>Note that while SQL functions are not case-sensitive, <code>spatial_join</code> expects lower-case names.</p>
 </div>
 <div class="section level2">
 <h2 id="writing-datasets">Writing datasets<a class="anchor" aria-label="anchor" href="#writing-datasets"></a>
 </h2>
 <p>Like <code>arrow::write_dataset()</code>, <code><a href="reference/write_dataset.html">duckdbfs::write_dataset()</a></code> can write partitioned parquet files to local disks and also directly to an S3 bucket. Partitioned writes should take advantage of threading. Partition variables can be specified explicitly, or any <code>dplyr</code> grouping variables will be used by default:</p>
-<div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb12"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">mtcars</span> <span class="op">|&gt;</span> <span class="fu"><a href="https://dplyr.tidyverse.org/reference/group_by.html" class="external-link">group_by</a></span><span class="op">(</span><span class="va">cyl</span>, <span class="va">gear</span><span class="op">)</span> <span class="op">|&gt;</span> <span class="fu"><a href="reference/write_dataset.html">write_dataset</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/tempfile.html" class="external-link">tempfile</a></span><span class="op">(</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
 </div>
 <div class="section level2">
 <h2 id="local-files">Local files<a class="anchor" aria-label="anchor" href="#local-files"></a>
 </h2>
 <p>Of course, <code><a href="reference/open_dataset.html">open_dataset()</a></code> and <code><a href="reference/write_dataset.html">write_dataset()</a></code> also be used with local files. Remember that parquet format is not required, we can read csv files (including multiple and hive-partitioned csv files).</p>
-<div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb13"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/utils/write.table.html" class="external-link">write.csv</a></span><span class="op">(</span><span class="va">mtcars</span>, <span class="st">"mtcars.csv"</span>, row.names<span class="op">=</span><span class="cn">FALSE</span><span class="op">)</span></span>
 <span><span class="va">lazy_cars</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/open_dataset.html">open_dataset</a></span><span class="op">(</span><span class="st">"mtcars.csv"</span>, format <span class="op">=</span> <span class="st">"csv"</span><span class="op">)</span></span></code></pre></div>
 </div>

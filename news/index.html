@@ -46,9 +46,11 @@
 
     <div class="section level2">
 <h2 class="pkg-version" data-toc-text="0.0.4" id="duckdbfs-004">duckdbfs 0.0.4<a class="anchor" aria-label="anchor" href="#duckdbfs-004"></a></h2>
-<ul><li>
-<code><a href="../reference/open_dataset.html">open_dataset()</a></code> gains option <code>sf</code> to format, allowing users to parse spatial vector data in simple features standard (objects read by <code>sf</code>)</li>
-<li>default geometry column in <code><a href="../reference/to_sf.html">to_sf()</a></code> is now termed <code>geom</code>, to match the default used in <code>duckdb</code>’s <code>st_read()</code> function.</li>
+<ul><li><p><code><a href="../reference/open_dataset.html">open_dataset()</a></code> gains the ability to read spatial vector data formats (objects read by <code>sf</code>) using <code>format="sf"</code></p></li>
+<li><p>default geometry column in <code><a href="../reference/to_sf.html">to_sf()</a></code> is now termed <code>geom</code>, to match the default used in <code>duckdb</code>’s <code><a href="https://r-spatial.github.io/sf/reference/st_read.html" class="external-link">st_read()</a></code> function.</p></li>
+<li><p><code><a href="../reference/open_dataset.html">open_dataset()</a></code> now tries to guess the data format instead of defaulting to parquet when no format is explicitly provided.</p></li>
+<li><p>new function, <code><a href="../reference/spatial_join.html">spatial_join()</a></code>, allows a variety of spatial joins.<br></p></li>
+<li><p>new helper function, <code><a href="../reference/as_view.html">as_view()</a></code>, creates a temporary view of a query.</p></li>
 </ul></div>
     <div class="section level2">
 <h2 class="pkg-version" data-toc-text="0.0.3" id="duckdbfs-003">duckdbfs 0.0.3<a class="anchor" aria-label="anchor" href="#duckdbfs-003"></a></h2><p class="text-muted">CRAN release: 2023-10-19</p>
@@ -57,7 +59,7 @@
 </ul></div>
     <div class="section level2">
 <h2 class="pkg-version" data-toc-text="0.0.2" id="duckdbfs-002">duckdbfs 0.0.2<a class="anchor" aria-label="anchor" href="#duckdbfs-002"></a></h2><p class="text-muted">CRAN release: 2023-09-06</p>
-<ul><li><p>duckdbfs now has spatial data query support! Users can leverage spatial data operations like <code>st_distance()</code> and <code>st_area()</code> and request return values as <code>sf</code> objects. Supports network-based access too. See README.md</p></li>
+<ul><li><p>duckdbfs now has spatial data query support! Users can leverage spatial data operations like <code><a href="https://r-spatial.github.io/sf/reference/geos_measures.html" class="external-link">st_distance()</a></code> and <code><a href="https://r-spatial.github.io/sf/reference/geos_measures.html" class="external-link">st_area()</a></code> and request return values as <code>sf</code> objects. Supports network-based access too. See README.md</p></li>
 <li><p>Added <code><a href="../reference/write_dataset.html">write_dataset()</a></code> which can write to (potentially partitioned) parquet to local directories or remote (S3) buckets.</p></li>
 <li>
 <p>The S3 interface supports <code>arrow</code>-compatible URI notation:</p>
