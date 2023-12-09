@@ -9,7 +9,7 @@ open_dataset(
   schema = NULL,
   hive_style = TRUE,
   unify_schemas = FALSE,
-  format = c("parquet", "csv", "tsv", "text", "sf"),
+  format = c("parquet", "csv", "tsv", "sf"),
   conn = cached_connection(),
   tblname = tmp_tbl_name(),
   mode = "VIEW",
@@ -33,8 +33,9 @@ column name across all files (NOTE: this can add considerably to
 the initial execution time)}
 
 \item{format}{The format of the dataset files. One of \code{"parquet"}, \code{"csv"},
-\code{"tsv"}, \code{"text"} or \code{"sf"} (for any Simple Features spatial dataset supported
-by the sf package).}
+\code{"tsv"}, or \code{"sf"} (spatial vector files supported by the sf package / GDAL).
+if no argument is provided, the function will try to guess the type based
+on minimal heuristics.}
 
 \item{conn}{A connection to a database.}
 

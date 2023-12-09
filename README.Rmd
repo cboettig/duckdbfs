@@ -162,6 +162,42 @@ sf_obj <- countries |> filter(continent == "Africa") |> to_sf()
 plot(sf_obj["name"])
 ```
 
+## Spatial joins
+
+One very common operation are spatial joins, which can be a very powerful way to subset large data. 
+For instance, we can return all points (cities) within a set of polygons
+
+```{r}
+cities <-
+  paste0("/vsicurl/https://github.com/cboettig/duckdbfs/raw/",
+         "spatial-read/inst/extdata/metro.fgb") |>
+  open_dataset(format = "sf")
+
+countries |>
+   dplyr::filter(continent == "Oceania") |>
+   spatial_join(cities, by = "st_intersects", join="inner") |>
+   select(name_long, sovereignt, pop2020) 
+
+```
+
+
+Possible [spatial joins](https://postgis.net/workshops/postgis-intro/spatial_relationships.html) include:
+
+ Function            | Description
+-------------------- | --------------------------------------------------------------------------------------------
+ st_intersects       | Geometry A intersects with geometry B
+ st_disjoint         | The complement of intersects
+ st_within           | Geometry A is within geometry B (complement of contains)
+ st_dwithin          | Geometries are within a specified distance, expressed in the same units as the coordinate reference system.
+ st_touches          | Two polygons touch if the that have at least one point in common, even if their interiors do not touch.
+ st_contains         | Geometry A entirely contains to geometry B. (complement of within)
+ st_containsproperly | stricter version of `st_contains` (boundary counts as external)
+ st_covers           | geometry B is inside or on boundary of A. (A polygon covers a point on its boundary but does not contain it.)
+ st_overlaps         | geometry A intersects but does not completely contain geometry B
+ st_equals           | geometry A is equal to geometry B
+ st_crosses          | Lines or points in geometry A cross geometry B.  
+
+Note that while SQL functions are not case-sensitive, `spatial_join` expects lower-case names.
 
 ## Writing datasets
 

@@ -32,9 +32,7 @@ write_dataset <- function(dataset,
     DBI::dbWriteTable(conn, name = tblname, value = dataset)
 
   } else {
-
     tblname <- as.character(remote_name(dataset, conn))
-
   }
 
   path <- parse_uri(path, conn = conn, recursive = FALSE)

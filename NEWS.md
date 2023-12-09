@@ -1,9 +1,14 @@
 # duckdbfs 0.0.4
 
-* `open_dataset()` gains option `sf` to format, allowing users to parse
-  spatial vector data in simple features standard (objects read by `sf`)
+* `open_dataset()` gains the ability to read spatial vector data formats
+  (objects read by `sf`) using `format="sf"`
 * default geometry column in `to_sf()` is now termed `geom`, to match the default
   used in `duckdb`'s `st_read()` function.
+* `open_dataset()` now tries to guess the data format instead of defaulting to
+  parquet when no format is explicitly provided. 
+
+* new function, `spatial_join()`, allows a variety of spatial joins.  
+* new helper function, `as_view()`, creates a temporary view of a query.
 
 # duckdbfs 0.0.3
 
