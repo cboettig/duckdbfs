@@ -125,12 +125,19 @@ enable_parallel <- function(conn = cached_connection(),
 #' @return loads the extension and returns status invisibly.
 #' @references <https://duckdb.org/docs/extensions/spatial.html>
 #' @export
-load_spatial <- function(conn = cached_connection()) {
+load_spatial <- function(conn = cached_connection(), nightly = FALSE) {
 
   module <- "spatial"
   ext <- duckdb_extensions(conn)
   i <- which(ext$extension_name == module)
   status <- 0
+  nightly <- "FORCE INSTALL spatial FROM 'http://nightly-extensions.duckdb.org';"
+  if(is_windows()) {
+    status <- DBI::dbExecute(conn, nightly)
+    status <- DBI::dbExecute(conn, paste0("LOAD '", module, "';"))
+    return(status)
+  }
+
   if(!ext$installed[[i]]) {
     status <- DBI::dbExecute(conn, paste0("INSTALL '", module, "';"))
   }
