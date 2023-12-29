@@ -130,7 +130,7 @@ load_spatial <- function(conn = cached_connection()) {
   module <- "spatial"
   ext <- duckdb_extensions(conn)
   i <- which(ext$extension_name == module)
-
+  status <- 0
   if(!ext$installed[[i]]) {
     status <- DBI::dbExecute(conn, paste0("INSTALL '", module, "';"))
   }
