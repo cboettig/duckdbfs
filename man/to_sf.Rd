@@ -36,15 +36,15 @@ csv_file <- system.file("extdata/spatial-test.csv", package="duckdbfs")
 # from lat/long columns using the `st_point` method.
 sf <-
   open_dataset(csv_file, format = "csv") |>
-  mutate(geometry = ST_Point(longitude, latitude)) |>
+  mutate(geom = ST_Point(longitude, latitude)) |>
   to_sf()
 
 # We can use the full space of spatial operations, including spatial
 # and normal dplyr filters.  All operations are translated into a
 # spatial SQL query by `to_sf`:
 open_dataset(csv_file, format = "csv") |>
-  mutate(geometry = ST_Point(longitude, latitude)) |>
-  mutate(dist = ST_Distance(geometry, ST_Point(0,0))) |>
+  mutate(geom = ST_Point(longitude, latitude)) |>
+  mutate(dist = ST_Distance(geom, ST_Point(0,0))) |>
   filter(site \%in\% c("a", "b", "e")) |>
   to_sf()
 

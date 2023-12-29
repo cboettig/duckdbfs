@@ -14,7 +14,9 @@
 #'  column name across all files (NOTE: this can add considerably to
 #'  the initial execution time)
 #' @param format The format of the dataset files. One of `"parquet"`, `"csv"`,
-#' `"tsv"`, or `"text"`.
+#' `"tsv"`, or `"sf"` (spatial vector files supported by the sf package / GDAL).
+#'  if no argument is provided, the function will try to guess the type based
+#'  on minimal heuristics.
 #' @param conn A connection to a database.
 #' @param tblname The name of the table to create in the database.
 #' @param mode The mode to create the table in. One of `"VIEW"` or `"TABLE"`.
@@ -59,13 +61,15 @@ open_dataset <- function(sources,
                          schema = NULL,
                          hive_style = TRUE,
                          unify_schemas = FALSE,
-                         format = c("parquet", "csv", "tsv", "text"),
+                         format = c("parquet", "csv", "tsv", "sf"),
                          conn = cached_connection(),
                          tblname = tmp_tbl_name(),
                          mode = "VIEW",
                          filename = FALSE,
                          recursive = TRUE,
                          ...) {
+
+  format <- select_format(sources, format)
 
   sources <- parse_uri(sources, conn = conn, recursive = recursive)
 
@@ -76,8 +80,9 @@ open_dataset <- function(sources,
   # ensure active connection
   version <- DBI::dbExecute(conn, "PRAGMA version;")
 
-
-  format <- match.arg(format)
+  if(format == "sf") {
+    load_spatial(conn = conn)
+  }
   view_query <- query_string(tblname,
                              sources,
                              format = format,
@@ -91,6 +96,46 @@ open_dataset <- function(sources,
   dplyr::tbl(conn, tblname)
 }
 
+select_format <- function(sources, format) {
+  ## does not guess file types in s3 buckets.
+
+  if(length(format) == 1) {
+    return(format)
+  }
+
+  # format for vector sources always based on first element
+  sources <- sources[[1]]
+
+  # default to parquet for S3 addresses
+  if(grepl("^s3://", sources)) {
+    return("parquet")
+  }
+
+  if( fs::is_dir(sources) ) {
+    sources <- fs::dir_ls(sources, recurse = TRUE, type="file")
+    sources <- sources[[1]]
+  }
+  format <- tools::file_ext(sources)
+
+  # detect spatial types
+  if(grepl("^/vsi", sources)) {
+    return("sf")
+  }
+  if(format %in% c("fgb", "shp", "json", "geojson", "gdb", "gpkg",
+                   "kml", "gmt")) {
+    return("sf")
+  }
+
+
+  # default
+  if (format == "") {
+    return("parquet")
+  }
+
+  format
+}
+
+
 use_recursive <- function(sources) {
   !all(identical(tools::file_ext(sources), ""))
 }
@@ -102,13 +147,20 @@ vec_as_str <- function(x) {
 
 query_string <- function(tblname,
                          sources,
-                         format = c("parquet", "csv", "tsv", "text"),
+                         format = c("parquet", "csv", "tsv", "text", "sf"),
                          mode = c("VIEW", "TABLE"),
                          hive_partitioning = TRUE,
                          union_by_name = FALSE,
                          filename = FALSE) {
 
-  format <- match.arg(format)
+ # format <- match.arg(format)
+  scanner <- switch(format,
+                    "parquet" = "parquet_scan(",
+                    "csv"  = "read_csv_auto(",
+                    "sf" = "st_read(",
+                    "read_csv_auto("
+  )
+
   source_uris <- vec_as_str(sources)
 
   ## Allow overwrites on VIEW
@@ -116,15 +168,20 @@ query_string <- function(tblname,
          "VIEW" = "OR REPLACE TEMPORARY VIEW",
          "TABLE" = "TABLE")
 
-  scanner <- switch(format,
-                    "parquet" = "parquet_scan(",
-                    "read_csv_auto(")
+  tabular_options <- paste0(
+    ", HIVE_PARTITIONING=",hive_partitioning,
+    ", UNION_BY_NAME=",union_by_name,
+    ", FILENAME=",filename)
+
+  options <- switch(format,
+                    "parquet" = tabular_options,
+                    "csv"  = tabular_options,
+                    "sf" = "",
+                    tabular_options
+  )
   paste0(
     paste("CREATE", mode, tblname, "AS SELECT * FROM "),
-    paste0(scanner, source_uris,
-           ", HIVE_PARTITIONING=",hive_partitioning,
-           ", UNION_BY_NAME=",union_by_name,
-           ", FILENAME=",filename,
+    paste0(scanner, source_uris, options,
            ");")
   )
 }
@@ -132,8 +189,6 @@ query_string <- function(tblname,
 tmp_tbl_name <- function(n = 15) {
   paste0(sample(letters, n, replace = TRUE), collapse = "")
 }
-
-
 remote_src <- function(conn) {
   dbplyr::remote_src(conn)
 }

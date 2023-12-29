@@ -61,13 +61,13 @@ explicitly request `duckdb` join the two schemas. Leave this as default,
 ``` r
 ds <- open_dataset(urls, unify_schemas = TRUE)
 ds
-#> # Source:   table<kkkmtknecathhep> [3 x 4]
-#> # Database: DuckDB 0.8.1 [unknown@Linux 6.4.6-76060406-generic:R 4.3.1/:memory:]
-#>       i     j x         k
-#>   <int> <int> <chr> <int>
-#> 1    42    84 1        NA
-#> 2    42    84 1        NA
-#> 3    NA   128 2        33
+#> # Source:   table<fkyaqxufdlsawiy> [3 x 4]
+#> # Database: DuckDB v0.9.2 [unknown@Linux 6.5.6-76060506-generic:R 4.3.2/:memory:]
+#>       i     j     x     k
+#>   <int> <int> <dbl> <int>
+#> 1    42    84     1    NA
+#> 2    42    84     1    NA
+#> 3    NA   128     2    33
 ```
 
 Use `filter()`, `select()`, etc from dplyr to subset and process data –
@@ -107,12 +107,17 @@ efi <- open_dataset("s3://anonymous@neon4cast-scores/parquet/aquatics?endpoint_o
 
 `duckdb` can also understand a wide array of spatial data queries for
 spatial vector data, similar to operations found in the popular `sf`
-package. Most spatial query operations require an geometry column that
-expresses the simple feature geometry in `duckdb`’s internal geometry
-format (nearly but not exactly WKB). A common pattern will first
-generate the geometry column from raw columns, such as `latitude` and
-`lognitude` columns, using the `duckdb` implementation of the a method
-familiar to postgis, `ST_Point`:
+package. See [the list of supported
+functions](https://github.com/duckdb/duckdb_spatial#supported-functions)
+for details. Most spatial query operations require an geometry column
+that expresses the simple feature geometry in `duckdb`’s internal
+geometry format (nearly but not exactly WKB).
+
+### Generating spatial data from tabular
+
+A common pattern will first generate the geometry column from raw
+columns, such as `latitude` and `lognitude` columns, using the `duckdb`
+implementation of the a method familiar to postgis, `st_point`:
 
 ``` r
 spatial_ex <- paste0("https://raw.githubusercontent.com/cboettig/duckdbfs/",
@@ -120,51 +125,15 @@ spatial_ex <- paste0("https://raw.githubusercontent.com/cboettig/duckdbfs/",
   open_dataset(format = "csv") 
 
 spatial_ex |>
-  mutate(geometry = ST_Point(longitude, latitude)) |>
-  to_sf()
-#> Simple feature collection with 10 features and 3 fields
-#> Geometry type: POINT
-#> Dimension:     XY
-#> Bounding box:  xmin: 1 ymin: 1 xmax: 10 ymax: 10
-#> CRS:           NA
-#>    site latitude longitude      geometry
-#> 1     a        1         1   POINT (1 1)
-#> 2     b        2         2   POINT (2 2)
-#> 3     c        3         3   POINT (3 3)
-#> 4     d        4         4   POINT (4 4)
-#> 5     e        5         5   POINT (5 5)
-#> 6     f        6         6   POINT (6 6)
-#> 7     g        7         7   POINT (7 7)
-#> 8     h        8         8   POINT (8 8)
-#> 9     i        9         9   POINT (9 9)
-#> 10    j       10        10 POINT (10 10)
-```
-
-Recall that when used against any sort of external database like
-`duckdb`, most `dplyr` functions like `dplyr::mutate()` are being
-transcribed into SQL by `dbplyr`, and not actually ever run in R. This
-allows us to seamlessly pass along spatial functions like `ST_Point`,
-despite this not being an available R function. The `to_sf()` coercion
-will parse its input into a SQL query that gets passed to `duckdb`, and
-the return object will be collected through `sf::st_read`, returning an
-(in-memory) `sf` object.
-
-Note that we can add arbitrary spatial functions that operate on this
-geometry, provided we do so prior to our call to `to_sf`. For instance,
-here we first create our geometry column from lat/lon columns, and then
-compute the distance from each element to a spatial point:
-
-``` r
-spatial_ex |> 
-  mutate(geometry = ST_Point(longitude, latitude)) |>
-  mutate(dist = ST_Distance(geometry, ST_Point(0,0))) |> 
+  mutate(geometry = st_point(longitude, latitude)) |>
+  mutate(dist = st_distance(geometry, st_point(0,0))) |> 
   to_sf()
 #> Simple feature collection with 10 features and 4 fields
 #> Geometry type: POINT
 #> Dimension:     XY
 #> Bounding box:  xmin: 1 ymin: 1 xmax: 10 ymax: 10
 #> CRS:           NA
-#>    site latitude longitude      dist      geometry
+#>    site latitude longitude      dist          geom
 #> 1     a        1         1  1.414214   POINT (1 1)
 #> 2     b        2         2  2.828427   POINT (2 2)
 #> 3     c        3         3  4.242641   POINT (3 3)
@@ -177,10 +146,122 @@ spatial_ex |>
 #> 10    j       10        10 14.142136 POINT (10 10)
 ```
 
+Recall that when used against any sort of external database like
+`duckdb`, most `dplyr` functions like `dplyr::mutate()` are being
+transcribed into SQL by `dbplyr`, and not actually ever run in R. This
+allows us to seamlessly pass along spatial functions like `st_point`,
+despite this not being an available R function. (Also note that SQL is
+not case-sensitive, so this function is also written as `ST_Point`).
+Optionally, we can do additional operations on this geometry column,
+such as computing distances (`st_distance` shown here), spatial filters,
+and so forth. The `to_sf()` coercion will parse its input into a SQL
+query that gets passed to `duckdb`, and the return object will be
+collected through `sf::st_read`, returning an (in-memory) `sf` object.
+
 For more details including a complete list of the dozens of spatial
 operations currently supported and notes on performance and current
 limitations, see the [duckdb spatial
 docs](https://github.com/duckdb/duckdb_spatial)
+
+### Reading spatial vector files
+
+The `duckdb` spatial package can also use GDAL to read large spatial
+vector files. This includes support for the GDAL virtual filesystem.
+This means that we can easily subset columns from a wide array of
+potentially remote file types and filter on rows and columns, and
+perform many spatial operations without ever reading the entire objects
+into memory in R.
+
+To read spatial vector (simple feature) files, indicate `format="sf"`.
+Use virtual filesystem prefixes to access range requests over http, S3,
+and other such systems.
+
+``` r
+url <- "https://github.com/cboettig/duckdbfs/raw/25744032021cc2b9bbc560f95b77b3eb088c9abb/inst/extdata/world.gpkg"
+
+countries <- 
+  paste0("/vsicurl/", url) |> 
+  open_dataset(format="sf")
+```
+
+Which country polygon contains Melbourne? Note the result is still a
+lazy read, we haven’t downloaded or read in the full spatial data
+object.
+
+``` r
+library(sf)
+#> Linking to GEOS 3.10.2, GDAL 3.4.1, PROJ 8.2.1; sf_use_s2() is TRUE
+melbourne <- st_point(c(144.9633, -37.814)) |> st_as_text()
+
+countries |> 
+  filter(st_contains(geom, ST_GeomFromText({melbourne})))
+#> # Source:   SQL [1 x 16]
+#> # Database: DuckDB v0.9.2 [unknown@Linux 6.5.6-76060506-generic:R 4.3.2/:memory:]
+#>   iso_a3 name      sovereignt continent    area  pop_est pop_est_dens economy   
+#>   <chr>  <chr>     <chr>      <chr>       <dbl>    <dbl>        <dbl> <chr>     
+#> 1 AUS    Australia Australia  Oceania   7682300 21262641         2.77 2. Develo…
+#> # ℹ 8 more variables: income_grp <chr>, gdp_cap_est <dbl>, life_exp <dbl>,
+#> #   well_being <dbl>, footprint <dbl>, inequality <dbl>, HPI <dbl>, geom <list>
+```
+
+As before, we use `to_sf()` to read in the query results as a native
+(in-memory) `sf` object:
+
+``` r
+sf_obj <- countries |> filter(continent == "Africa") |> to_sf() 
+plot(sf_obj["name"])
+```
+
+<img src="man/figures/README-unnamed-chunk-8-1.png" width="100%" />
+
+## Spatial joins
+
+One very common operation are spatial joins, which can be a very
+powerful way to subset large data. For instance, we can return all
+points (cities) within a set of polygons
+
+``` r
+cities <-
+  paste0("/vsicurl/https://github.com/cboettig/duckdbfs/raw/",
+         "spatial-read/inst/extdata/metro.fgb") |>
+  open_dataset(format = "sf")
+
+countries |>
+   dplyr::filter(continent == "Oceania") |>
+   spatial_join(cities, by = "st_intersects", join="inner") |>
+   select(name_long, sovereignt, pop2020) 
+#> # Source:   SQL [6 x 3]
+#> # Database: DuckDB v0.9.2 [unknown@Linux 6.5.6-76060506-generic:R 4.3.2/:memory:]
+#>   name_long sovereignt  pop2020
+#>   <chr>     <chr>         <dbl>
+#> 1 Brisbane  Australia   2388517
+#> 2 Perth     Australia   2036118
+#> 3 Sydney    Australia   4729406
+#> 4 Adelaide  Australia   1320783
+#> 5 Auckland  New Zealand 1426070
+#> 6 Melbourne Australia   4500501
+```
+
+Possible [spatial
+joins](https://postgis.net/workshops/postgis-intro/spatial_relationships.html)
+include:
+
+| Function            | Description                                                                                                   |
+|---------------------|---------------------------------------------------------------------------------------------------------------|
+| st_intersects       | Geometry A intersects with geometry B                                                                         |
+| st_disjoint         | The complement of intersects                                                                                  |
+| st_within           | Geometry A is within geometry B (complement of contains)                                                      |
+| st_dwithin          | Geometries are within a specified distance, expressed in the same units as the coordinate reference system.   |
+| st_touches          | Two polygons touch if the that have at least one point in common, even if their interiors do not touch.       |
+| st_contains         | Geometry A entirely contains to geometry B. (complement of within)                                            |
+| st_containsproperly | stricter version of `st_contains` (boundary counts as external)                                               |
+| st_covers           | geometry B is inside or on boundary of A. (A polygon covers a point on its boundary but does not contain it.) |
+| st_overlaps         | geometry A intersects but does not completely contain geometry B                                              |
+| st_equals           | geometry A is equal to geometry B                                                                             |
+| st_crosses          | Lines or points in geometry A cross geometry B.                                                               |
+
+Note that while SQL functions are not case-sensitive, `spatial_join`
+expects lower-case names.
 
 ## Writing datasets
 
