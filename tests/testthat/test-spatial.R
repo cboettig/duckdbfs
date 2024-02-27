@@ -74,6 +74,11 @@ test_that("spatial_join", {
 ## Test st_read_meta
 
 test_that("st_read_meta", {
+  skip_on_os("windows") # come on duckdb, support extensions on windows
+  skip_if_offline() # needs to be able to load the spatial module
+  skip_if_not_installed("sf")
+  skip_on_cran()
+
   df <-
     "https://github.com/duckdb/duckdb_spatial/raw/main/test/data/amsterdam_roads.fgb"|>
     st_read_meta()
