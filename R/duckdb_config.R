@@ -133,7 +133,10 @@ load_spatial <- function(conn = cached_connection()) {
   # Then, we should attempt to download http addresses to tempfile
   # S3:// URIs on Windows should throw a "not supported on Windows" error.
 
-  status <- DBI::dbExecute(conn, "INSTALL 'spatial';")
+  status <- DBI::dbExecute(conn,
+                           paste0("FORCE INSTALL 'spatial'",
+                           " FROM 'http://nightly-extensions.duckdb.org'",
+                           ";"))
   status <- DBI::dbExecute(conn, "LOAD 'spatial';")
   invisible(status)
 }

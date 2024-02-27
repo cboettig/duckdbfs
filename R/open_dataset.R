@@ -70,7 +70,6 @@ open_dataset <- function(sources,
                          ...) {
 
   format <- select_format(sources, format)
-
   sources <- parse_uri(sources, conn = conn, recursive = recursive)
 
   if(length(list(...)) > 0) { # can also be specified in URI query notation
@@ -95,6 +94,8 @@ open_dataset <- function(sources,
   DBI::dbSendQuery(conn, view_query)
   dplyr::tbl(conn, tblname)
 }
+
+
 
 select_format <- function(sources, format) {
   ## does not guess file types in s3 buckets.
@@ -152,7 +153,6 @@ query_string <- function(tblname,
                          hive_partitioning = TRUE,
                          union_by_name = FALSE,
                          filename = FALSE) {
-
  # format <- match.arg(format)
   scanner <- switch(format,
                     "parquet" = "parquet_scan(",
@@ -186,9 +186,3 @@ query_string <- function(tblname,
   )
 }
 
-tmp_tbl_name <- function(n = 15) {
-  paste0(sample(letters, n, replace = TRUE), collapse = "")
-}
-remote_src <- function(conn) {
-  dbplyr::remote_src(conn)
-}
