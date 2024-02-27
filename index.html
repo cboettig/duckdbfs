@@ -106,7 +106,7 @@
 <div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">ds</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/open_dataset.html">open_dataset</a></span><span class="op">(</span><span class="va">urls</span>, unify_schemas <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
 <span><span class="va">ds</span></span>
-<span><span class="co">#&gt; # Source:   table&lt;hcfyrrozkwmcbqp&gt; [3 x 4]</span></span>
+<span><span class="co">#&gt; # Source:   table&lt;zqnqubmcxivitjr&gt; [3 x 4]</span></span>
 <span><span class="co">#&gt; # Database: DuckDB v0.9.2 [unknown@Linux 6.6.10-76060610-generic:R 4.3.2/:memory:]</span></span>
 <span><span class="co">#&gt;       i     j     x     k</span></span>
 <span><span class="co">#&gt;   &lt;int&gt; &lt;int&gt; &lt;dbl&gt; &lt;int&gt;</span></span>
@@ -160,7 +160,7 @@
 <span><span class="co">#&gt; 8     h        8         8 11.313708   POINT (8 8)</span></span>
 <span><span class="co">#&gt; 9     i        9         9 12.727922   POINT (9 9)</span></span>
 <span><span class="co">#&gt; 10    j       10        10 14.142136 POINT (10 10)</span></span></code></pre></div>
-<p>Note that when coercing generic tabular such as CSV into spatial data, the user is responsible for specifying the coordinate reference system (crs) used by the columns. For instance, in this case our data is latitude-longitude, so we specify the corresponding EPSG code. This is optional (sf allows objects to have unknown CRS), but avisable.</p>
+<p>Note that when coercing generic tabular such as CSV into spatial data, the user is responsible for specifying the coordinate reference system (crs) used by the columns. For instance, in this case our data is latitude-longitude, so we specify the corresponding EPSG code. This is optional (sf allows objects to have unknown CRS), but advisable.</p>
 <p>Recall that when used against any sort of external database like <code>duckdb</code>, most <code>dplyr</code> functions like <code><a href="https://dplyr.tidyverse.org/reference/mutate.html" class="external-link">dplyr::mutate()</a></code> are being transcribed into SQL by <code>dbplyr</code>, and not actually ever run in R. This allows us to seamlessly pass along spatial functions like <code>st_point</code>, despite this not being an available R function. (Also note that SQL is not case-sensitive, so this function is also written as <code>ST_Point</code>). Optionally, we can do additional operations on this geometry column, such as computing distances (<code>st_distance</code> shown here), spatial filters, and so forth. The <code><a href="reference/to_sf.html">to_sf()</a></code> coercion will parse its input into a SQL query that gets passed to <code>duckdb</code>, and the return object will be collected through <code><a href="https://r-spatial.github.io/sf/reference/st_read.html" class="external-link">sf::st_read</a></code>, returning an (in-memory) <code>sf</code> object.</p>
 <p>For more details including a complete list of the dozens of spatial operations currently supported and notes on performance and current limitations, see the <a href="https://github.com/duckdb/duckdb_spatial" class="external-link">duckdb spatial docs</a></p>
 </div>
