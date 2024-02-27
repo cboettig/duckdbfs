@@ -61,8 +61,8 @@ explicitly request `duckdb` join the two schemas. Leave this as default,
 ``` r
 ds <- open_dataset(urls, unify_schemas = TRUE)
 ds
-#> # Source:   table<fkyaqxufdlsawiy> [3 x 4]
-#> # Database: DuckDB v0.9.2 [unknown@Linux 6.5.6-76060506-generic:R 4.3.2/:memory:]
+#> # Source:   table<ajasscfsgwzyffz> [3 x 4]
+#> # Database: DuckDB v0.9.2 [unknown@Linux 6.6.10-76060610-generic:R 4.3.2/:memory:]
 #>       i     j     x     k
 #>   <int> <int> <dbl> <int>
 #> 1    42    84     1    NA
@@ -166,22 +166,14 @@ docs](https://github.com/duckdb/duckdb_spatial)
 ### Reading spatial vector files
 
 The `duckdb` spatial package can also use GDAL to read large spatial
-vector files. This includes support for the GDAL virtual filesystem.
-This means that we can easily subset columns from a wide array of
-potentially remote file types and filter on rows and columns, and
-perform many spatial operations without ever reading the entire objects
-into memory in R.
-
-To read spatial vector (simple feature) files, indicate `format="sf"`.
-Use virtual filesystem prefixes to access range requests over http, S3,
-and other such systems.
+vector files. This includes support for remote files. This means that we
+can easily subset columns from a wide array of potentially remote file
+types and filter on rows and columns, and perform many spatial
+operations without ever reading the entire objects into memory in R.
 
 ``` r
-url <- "https://github.com/cboettig/duckdbfs/raw/25744032021cc2b9bbc560f95b77b3eb088c9abb/inst/extdata/world.gpkg"
-
-countries <- 
-  paste0("/vsicurl/", url) |> 
-  open_dataset(format="sf")
+url <- "https://github.com/cboettig/duckdbfs/raw/main/inst/extdata/world.fgb"
+countries <- open_dataset(url, format = "sf")
 ```
 
 Which country polygon contains Melbourne? Note the result is still a
@@ -190,18 +182,17 @@ object.
 
 ``` r
 library(sf)
-#> Linking to GEOS 3.10.2, GDAL 3.4.1, PROJ 8.2.1; sf_use_s2() is TRUE
+#> Linking to GEOS 3.12.1, GDAL 3.8.3, PROJ 9.3.1; sf_use_s2() is TRUE
 melbourne <- st_point(c(144.9633, -37.814)) |> st_as_text()
 
 countries |> 
   filter(st_contains(geom, ST_GeomFromText({melbourne})))
 #> # Source:   SQL [1 x 16]
-#> # Database: DuckDB v0.9.2 [unknown@Linux 6.5.6-76060506-generic:R 4.3.2/:memory:]
-#>   iso_a3 name      sovereignt continent    area  pop_est pop_est_dens economy   
-#>   <chr>  <chr>     <chr>      <chr>       <dbl>    <dbl>        <dbl> <chr>     
-#> 1 AUS    Australia Australia  Oceania   7682300 21262641         2.77 2. Develo…
-#> # ℹ 8 more variables: income_grp <chr>, gdp_cap_est <dbl>, life_exp <dbl>,
-#> #   well_being <dbl>, footprint <dbl>, inequality <dbl>, HPI <dbl>, geom <list>
+#> # Database: DuckDB v0.9.2 [unknown@Linux 6.6.10-76060610-generic:R 4.3.2/:memory:]
+#>   iso_a3 name      sovereignt continent    area pop_est pop_est_dens economy income_grp gdp_cap_est life_exp well_being footprint inequality   HPI
+#>   <chr>  <chr>     <chr>      <chr>       <dbl>   <dbl>        <dbl> <chr>   <chr>            <dbl>    <dbl>      <dbl>     <dbl>      <dbl> <dbl>
+#> 1 AUS    Australia Australia  Oceania   7682300  2.13e7         2.77 2. Dev… 1. High i…      37634.     82.1        7.2      9.31     0.0807  21.2
+#> # ℹ 1 more variable: geom <list>
 ```
 
 As before, we use `to_sf()` to read in the query results as a native
@@ -221,17 +212,16 @@ powerful way to subset large data. For instance, we can return all
 points (cities) within a set of polygons
 
 ``` r
-cities <-
-  paste0("/vsicurl/https://github.com/cboettig/duckdbfs/raw/",
-         "spatial-read/inst/extdata/metro.fgb") |>
-  open_dataset(format = "sf")
+cities <- open_dataset(paste0("https://github.com/cboettig/duckdbfs/raw/",
+                              "spatial-read/inst/extdata/metro.fgb"),
+                       format="sf")
 
 countries |>
    dplyr::filter(continent == "Oceania") |>
    spatial_join(cities, by = "st_intersects", join="inner") |>
    select(name_long, sovereignt, pop2020) 
 #> # Source:   SQL [6 x 3]
-#> # Database: DuckDB v0.9.2 [unknown@Linux 6.5.6-76060506-generic:R 4.3.2/:memory:]
+#> # Database: DuckDB v0.9.2 [unknown@Linux 6.6.10-76060610-generic:R 4.3.2/:memory:]
 #>   name_long sovereignt  pop2020
 #>   <chr>     <chr>         <dbl>
 #> 1 Brisbane  Australia   2388517

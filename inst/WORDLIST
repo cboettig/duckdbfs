@@ -1,6 +1,8 @@
 CMD
 GBIF
 GC
+GDAL
+Geospatial
 MINIO
 Quickstart
 README
@@ -10,12 +12,14 @@ URIs
 WKB
 behaviour
 cachable
+containsproperly
 csv
 dbpylr
 dplyr
 duckdb
 duckdb's
 duckdb’s
+dwithin
 filesize
 finalizer
 gc
@@ -24,7 +28,6 @@ globbing
 http
 httpfs
 https
-lon
 md
 minio
 pipline

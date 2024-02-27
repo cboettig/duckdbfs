@@ -126,21 +126,15 @@ For more details including a complete list of the dozens of spatial operations c
 ### Reading spatial vector files
 
 The `duckdb` spatial package can also use GDAL to read large spatial vector files.
-This includes support for the GDAL virtual filesystem. This means that we can
+This includes support for remote files. This means that we can
 easily subset columns from a wide array of potentially remote file types and
 filter on rows and columns, and perform many spatial operations without ever
 reading the entire objects into memory in R.  
 
-To read spatial vector (simple feature) files, indicate `format="sf"`. 
-Use virtual filesystem prefixes to access range requests over http, S3, and other such systems.
 
 ```{r}
-url <- "https://github.com/cboettig/duckdbfs/raw/25744032021cc2b9bbc560f95b77b3eb088c9abb/inst/extdata/world.gpkg"
-
-countries <- 
-  paste0("/vsicurl/", url) |> 
-  open_dataset(format="sf")
-
+url <- "https://github.com/cboettig/duckdbfs/raw/main/inst/extdata/world.fgb"
+countries <- open_dataset(url, format = "sf")
 ```
 
 Which country polygon contains Melbourne?  Note the result is still a lazy read,
@@ -168,10 +162,9 @@ One very common operation are spatial joins, which can be a very powerful way to
 For instance, we can return all points (cities) within a set of polygons
 
 ```{r}
-cities <-
-  paste0("/vsicurl/https://github.com/cboettig/duckdbfs/raw/",
-         "spatial-read/inst/extdata/metro.fgb") |>
-  open_dataset(format = "sf")
+cities <- open_dataset(paste0("https://github.com/cboettig/duckdbfs/raw/",
+                              "spatial-read/inst/extdata/metro.fgb"),
+                       format="sf")
 
 countries |>
    dplyr::filter(continent == "Oceania") |>

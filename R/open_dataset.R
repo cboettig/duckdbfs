@@ -107,7 +107,7 @@ select_format <- function(sources, format) {
   # format for vector sources always based on first element
   sources <- sources[[1]]
 
-  # default to parquet for S3 addresses
+   # default to parquet for S3 addresses
   if(grepl("^s3://", sources)) {
     return("parquet")
   }
@@ -116,17 +116,18 @@ select_format <- function(sources, format) {
     sources <- fs::dir_ls(sources, recurse = TRUE, type="file")
     sources <- sources[[1]]
   }
+
   format <- tools::file_ext(sources)
 
+  #if(grepl("^/vsi", sources)) {
+  #  return("sf")
+  #}
+
   # detect spatial types
-  if(grepl("^/vsi", sources)) {
-    return("sf")
-  }
   if(format %in% c("fgb", "shp", "json", "geojson", "gdb", "gpkg",
                    "kml", "gmt")) {
     return("sf")
   }
-
 
   # default
   if (format == "") {
