@@ -49,7 +49,8 @@
 <ul><li><p><code><a href="../reference/open_dataset.html">open_dataset()</a></code> gains the ability to read spatial vector data formats (objects read by <code>sf</code>) using <code>format="sf"</code></p></li>
 <li><p>default geometry column in <code><a href="../reference/to_sf.html">to_sf()</a></code> is now termed <code>geom</code>, to match the default used in <code>duckdb</code>’s <code><a href="https://r-spatial.github.io/sf/reference/st_read.html" class="external-link">st_read()</a></code> function.</p></li>
 <li><p><code><a href="../reference/open_dataset.html">open_dataset()</a></code> now tries to guess the data format instead of defaulting to parquet when no format is explicitly provided.</p></li>
-<li><p>new function, <code><a href="../reference/spatial_join.html">spatial_join()</a></code>, allows a variety of spatial joins.<br></p></li>
+<li><p>a new function, <code><a href="../reference/spatial_join.html">spatial_join()</a></code>, allows a variety of spatial joins.<br></p></li>
+<li><p>a new function, <code><a href="../reference/st_read_meta.html">st_read_meta()</a></code>, exposes the spatial metadata of remote spatial objects.</p></li>
 <li><p>new helper function, <code><a href="../reference/as_view.html">as_view()</a></code>, creates a temporary view of a query.</p></li>
 </ul></div>
     <div class="section level2">
