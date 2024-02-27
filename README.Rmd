@@ -113,7 +113,7 @@ Note that when coercing generic tabular such as CSV into spatial data, the user
 is responsible for specifying the coordinate reference system (crs) used by the columns.
 For instance, in this case our data is latitude-longitude, so we specify the 
 corresponding EPSG code.  This is optional (sf allows objects to have unknown CRS),
-but avisable. 
+but advisable. 
 
 
 Recall that when used against any sort of external database like `duckdb`, 

@@ -61,7 +61,7 @@ explicitly request `duckdb` join the two schemas. Leave this as default,
 ``` r
 ds <- open_dataset(urls, unify_schemas = TRUE)
 ds
-#> # Source:   table<hcfyrrozkwmcbqp> [3 x 4]
+#> # Source:   table<zqnqubmcxivitjr> [3 x 4]
 #> # Database: DuckDB v0.9.2 [unknown@Linux 6.6.10-76060610-generic:R 4.3.2/:memory:]
 #>       i     j     x     k
 #>   <int> <int> <dbl> <int>
@@ -150,7 +150,7 @@ Note that when coercing generic tabular such as CSV into spatial data,
 the user is responsible for specifying the coordinate reference system
 (crs) used by the columns. For instance, in this case our data is
 latitude-longitude, so we specify the corresponding EPSG code. This is
-optional (sf allows objects to have unknown CRS), but avisable.
+optional (sf allows objects to have unknown CRS), but advisable.
 
 Recall that when used against any sort of external database like
 `duckdb`, most `dplyr` functions like `dplyr::mutate()` are being
