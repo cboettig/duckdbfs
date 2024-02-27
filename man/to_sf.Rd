@@ -4,10 +4,12 @@
 \alias{to_sf}
 \title{Convert output to sf object}
 \usage{
-to_sf(x, conn = cached_connection())
+to_sf(x, crs = NA, conn = cached_connection())
 }
 \arguments{
 \item{x}{a remote duckdb \code{tbl} (from \code{open_dataset}) or dplyr-pipeline thereof.}
+
+\item{crs}{The coordinate reference system, any format understood by \code{sf::st_crs}.}
 
 \item{conn}{the connection object from the tbl.
 Takes a duckdb table (from \code{open_dataset}) or a dataset or dplyr

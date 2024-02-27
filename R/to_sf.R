@@ -3,6 +3,7 @@
 #' Convert output to sf object
 #'
 #' @param x a remote duckdb `tbl` (from `open_dataset`) or dplyr-pipeline thereof.
+#' @param crs The coordinate reference system, any format understood by `sf::st_crs`.
 #' @param conn the connection object from the tbl.
 #' Takes a duckdb table (from `open_dataset`) or a dataset or dplyr
 #' pipline and returns an sf object. **Important**: the table must have
@@ -38,17 +39,26 @@
 #'
 #'
 #' @export
-to_sf <- function(x, conn = cached_connection()) {
+to_sf <- function(x,
+                  crs = NA,
+                  conn = cached_connection()) {
+
   load_spatial(conn)
+
   if("geometry" %in% colnames(x)) {
     x <- x |> dplyr::rename(geom=geometry)
+    geometry_column <- "geom"
   }
   sql <- x |>
     dplyr::mutate(geom = ST_AsWKB(geom)) |>
     dbplyr::sql_render()
 
   requireNamespace("sf", quietly = TRUE)
-  sf::st_read(conn, query=sql, geometry_column = "geom")
+  out <- sf::st_read(conn, query=sql, geometry_column = "geom")
+  if (!is.na(crs)) {
+    sf::st_crs(out) <- crs
+  }
+  out
 }
 
 utils::globalVariables(c("ST_AsWKB", "geom", "geometry"), package = "duckdbfs")

@@ -13,6 +13,7 @@
 #' @inheritParams open_dataset
 #' @return  A lazy `dplyr::tbl` object containing core spatial metadata such
 #' as projection information.
+#' @export
 #' @examplesIf interactive()
 #' st_read_meta("https://github.com/duckdb/duckdb_spatial/raw/main/test/data/amsterdam_roads.fgb")
 #'

@@ -61,7 +61,7 @@ explicitly request `duckdb` join the two schemas. Leave this as default,
 ``` r
 ds <- open_dataset(urls, unify_schemas = TRUE)
 ds
-#> # Source:   table<ajasscfsgwzyffz> [3 x 4]
+#> # Source:   table<hcfyrrozkwmcbqp> [3 x 4]
 #> # Database: DuckDB v0.9.2 [unknown@Linux 6.6.10-76060610-generic:R 4.3.2/:memory:]
 #>       i     j     x     k
 #>   <int> <int> <dbl> <int>
@@ -127,12 +127,12 @@ spatial_ex <- paste0("https://raw.githubusercontent.com/cboettig/duckdbfs/",
 spatial_ex |>
   mutate(geometry = st_point(longitude, latitude)) |>
   mutate(dist = st_distance(geometry, st_point(0,0))) |> 
-  to_sf()
+  to_sf(crs = 4326)
 #> Simple feature collection with 10 features and 4 fields
 #> Geometry type: POINT
 #> Dimension:     XY
 #> Bounding box:  xmin: 1 ymin: 1 xmax: 10 ymax: 10
-#> CRS:           NA
+#> Geodetic CRS:  WGS 84
 #>    site latitude longitude      dist          geom
 #> 1     a        1         1  1.414214   POINT (1 1)
 #> 2     b        2         2  2.828427   POINT (2 2)
@@ -145,6 +145,12 @@ spatial_ex |>
 #> 9     i        9         9 12.727922   POINT (9 9)
 #> 10    j       10        10 14.142136 POINT (10 10)
 ```
+
+Note that when coercing generic tabular such as CSV into spatial data,
+the user is responsible for specifying the coordinate reference system
+(crs) used by the columns. For instance, in this case our data is
+latitude-longitude, so we specify the corresponding EPSG code. This is
+optional (sf allows objects to have unknown CRS), but avisable.
 
 Recall that when used against any sort of external database like
 `duckdb`, most `dplyr` functions like `dplyr::mutate()` are being
@@ -176,9 +182,35 @@ url <- "https://github.com/cboettig/duckdbfs/raw/main/inst/extdata/world.fgb"
 countries <- open_dataset(url, format = "sf")
 ```
 
-Which country polygon contains Melbourne? Note the result is still a
-lazy read, we haven’t downloaded or read in the full spatial data
-object.
+Note that `open_dataset()` always returns a lazy remote table – we have
+not yet downloaded the data, let alone read it into R. We simply have a
+connection allowing us to stream the data.
+
+We can examine the spatial metadata associated with this remote dataset
+using the duckdbfs spatial helper function, `st_read_meta`,
+
+``` r
+countries_meta <- st_read_meta(url)
+countries_meta
+#> # A tibble: 1 × 7
+#>   feature_count geom_column_name geom_type     name  code  wkt             proj4
+#>           <dbl> <chr>            <chr>         <chr> <chr> <chr>           <chr>
+#> 1           177 geom             Multi Polygon EPSG  4326  "GEOGCS[\"WGS … +pro…
+```
+
+Because this is a small dataset, we can bring the entire data into R (in
+memory) using `to_sf()`, specifying the CRS indicated in this metadata:
+
+``` r
+in_mem <- countries |> to_sf(crs = countries_meta$wkt)
+```
+
+However, we can also do a wide range of spatial observations without
+importing the data. This can be particularly helpful when working with
+very large datasets. For example: which country polygon contains
+Melbourne?  
+Note the result is still a lazy read, we haven’t downloaded or read in
+the full spatial data object.
 
 ``` r
 library(sf)
@@ -189,10 +221,11 @@ countries |>
   filter(st_contains(geom, ST_GeomFromText({melbourne})))
 #> # Source:   SQL [1 x 16]
 #> # Database: DuckDB v0.9.2 [unknown@Linux 6.6.10-76060610-generic:R 4.3.2/:memory:]
-#>   iso_a3 name      sovereignt continent    area pop_est pop_est_dens economy income_grp gdp_cap_est life_exp well_being footprint inequality   HPI
-#>   <chr>  <chr>     <chr>      <chr>       <dbl>   <dbl>        <dbl> <chr>   <chr>            <dbl>    <dbl>      <dbl>     <dbl>      <dbl> <dbl>
-#> 1 AUS    Australia Australia  Oceania   7682300  2.13e7         2.77 2. Dev… 1. High i…      37634.     82.1        7.2      9.31     0.0807  21.2
-#> # ℹ 1 more variable: geom <list>
+#>   iso_a3 name      sovereignt continent    area  pop_est pop_est_dens economy   
+#>   <chr>  <chr>     <chr>      <chr>       <dbl>    <dbl>        <dbl> <chr>     
+#> 1 AUS    Australia Australia  Oceania   7682300 21262641         2.77 2. Develo…
+#> # ℹ 8 more variables: income_grp <chr>, gdp_cap_est <dbl>, life_exp <dbl>,
+#> #   well_being <dbl>, footprint <dbl>, inequality <dbl>, HPI <dbl>, geom <list>
 ```
 
 As before, we use `to_sf()` to read in the query results as a native
@@ -203,19 +236,35 @@ sf_obj <- countries |> filter(continent == "Africa") |> to_sf()
 plot(sf_obj["name"])
 ```
 
-<img src="man/figures/README-unnamed-chunk-8-1.png" width="100%" />
+<img src="man/figures/README-unnamed-chunk-10-1.png" width="100%" />
 
 ## Spatial joins
 
 One very common operation are spatial joins, which can be a very
-powerful way to subset large data. For instance, we can return all
-points (cities) within a set of polygons
+powerful way to subset large data. Lets consider a set of point
+geometries representing the coordinates of major cities around the
+world:
 
 ``` r
-cities <- open_dataset(paste0("https://github.com/cboettig/duckdbfs/raw/",
-                              "spatial-read/inst/extdata/metro.fgb"),
-                       format="sf")
+url_cities <- "https://github.com/cboettig/duckdbfs/raw/spatial-read/inst/extdata/metro.fgb"
+cities <- open_dataset(url_cities, format="sf")
+```
 
+Note that metadata must be read directly from the source file, it is not
+embedded into the duckdb table view. Before combining this data with the
+countries data, we confirm that the CRS is the same for both datasets:
+
+``` r
+countries_meta$proj4
+#> [1] "+proj=longlat +datum=WGS84 +no_defs"
+st_read_meta(url_cities)$proj4
+#> [1] "+proj=longlat +datum=WGS84 +no_defs"
+```
+
+For instance, we can return all points (cities) within a collection of
+polygons (all country boundaries in Oceania continent):
+
+``` r
 countries |>
    dplyr::filter(continent == "Oceania") |>
    spatial_join(cities, by = "st_intersects", join="inner") |>
