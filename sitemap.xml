@@ -43,6 +43,9 @@
     <loc>https://cboettig.github.io/duckdbfs/reference/spatial_join.html</loc>
   </url>
   <url>
+    <loc>https://cboettig.github.io/duckdbfs/reference/st_read_meta.html</loc>
+  </url>
+  <url>
     <loc>https://cboettig.github.io/duckdbfs/reference/to_sf.html</loc>
   </url>
   <url>
