@@ -81,6 +81,8 @@ open_dataset <- function(sources,
 
   if(format == "sf") {
     load_spatial(conn = conn)
+    # for now VSI prefixes are not supported, but httpfs can handle spatial
+    sources <- strip_vsi(sources)
   }
   view_query <- query_string(tblname,
                              sources,

@@ -1,4 +1,6 @@
 CMD
+CRS
+EPSG
 GBIF
 GC
 GDAL
@@ -13,6 +15,7 @@ WKB
 behaviour
 cachable
 containsproperly
+crs
 csv
 dbpylr
 dplyr
