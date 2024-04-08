@@ -1,7 +1,7 @@
 
 
 test_that("spatial", {
-  skip_on_os("windows") # come on duckdb, support extensions on windows
+  # skip_on_os("windows") # come on duckdb, support extensions on windows
   skip_if_offline() # needs to be able to load the spatial module
   skip_if_not_installed("sf")
   skip_on_cran()
@@ -20,7 +20,7 @@ test_that("spatial", {
 test_that("spatial vector read", {
 
   skip_if_not_installed("sf")
-  skip_on_os("windows") # come on duckdb, support extensions on windows
+#   skip_on_os("windows") # come on duckdb, support extensions on windows
   skip_if_offline() # needs to be able to load the spatial module
   skip_on_cran()
 
