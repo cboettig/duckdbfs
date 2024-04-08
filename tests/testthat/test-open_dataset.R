@@ -14,7 +14,6 @@ test_that("local csv files", {
 test_that("duckdb_s3_config", {
 
   skip_if_offline()
-  skip_on_os("windows")
   skip_on_cran()
   status <- duckdb_s3_config(
              s3_access_key_id = "YOUR_ACCESS_KEY_ID",
