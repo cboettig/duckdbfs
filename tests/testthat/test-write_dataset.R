@@ -77,6 +77,7 @@ test_that("write_dataset to s3:", {
   skip_if_not_installed("minioclient")
   minioclient::install_mc(force = TRUE)
 
+  skip_on_os("windows")
   p <- minioclient::mc_alias_ls("play --json")
   config <- jsonlite::fromJSON(p$stdout)
 
