@@ -123,12 +123,12 @@ enable_parallel <- function(conn = cached_connection(),
 #'
 #' @inheritParams duckdb_s3_config
 #' @param nightly should we use the nightly version or not?
-#'   default TRUE, configurable as `duckdbfs_use_nightly` option.
+#'   default FALSE, configurable as `duckdbfs_use_nightly` option.
 #' @return loads the extension and returns status invisibly.
 #' @references <https://duckdb.org/docs/extensions/spatial.html>
 #' @export
 load_spatial <- function(conn = cached_connection(),
-                         nightly=getOption("duckdbfs_use_nightly", TRUE)) {
+                         nightly=getOption("duckdbfs_use_nightly", FALSE)) {
 
   if (nightly) {
     status <- DBI::dbExecute(conn,
