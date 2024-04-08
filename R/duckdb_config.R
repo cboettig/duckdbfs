@@ -106,8 +106,6 @@ duckdb_s3_config <- function(conn = cached_connection(),
 }
 
 load_httpfs <- function(conn = cached_connection()) {
-  # NOTE: remote access (http or S3 paths) are not supported on Windows.
-  # Does duckdb now throw a helpful error about this?
 
   status <- DBI::dbExecute(conn, "INSTALL 'httpfs';")
   status <- DBI::dbExecute(conn, "LOAD 'httpfs';")
@@ -127,16 +125,17 @@ enable_parallel <- function(conn = cached_connection(),
 #' @return loads the extension and returns status invisibly.
 #' @references <https://duckdb.org/docs/extensions/spatial.html>
 #' @export
-load_spatial <- function(conn = cached_connection()) {
-  # NOTE: remote access (http or S3 paths) are not supported on Windows.
-  # If OS is Windows, this call should be skipped with non-zero return status
-  # Then, we should attempt to download http addresses to tempfile
-  # S3:// URIs on Windows should throw a "not supported on Windows" error.
+load_spatial <- function(conn = cached_connection(), nightly=TRUE) {
 
-  status <- DBI::dbExecute(conn,
-                           paste0("FORCE INSTALL 'spatial'",
-                           " FROM 'http://nightly-extensions.duckdb.org'",
-                           ";"))
+  if (nightly) {
+    status <- DBI::dbExecute(conn,
+                             paste0("FORCE INSTALL 'spatial'",
+                             " FROM 'http://nightly-extensions.duckdb.org'",
+                             ";"))
+  } else {
+    status <- DBI::dbExecute(conn,
+                             paste0("INSTALL 'spatial';"))
+  }
   status <- DBI::dbExecute(conn, "LOAD 'spatial';")
   invisible(status)
 }
