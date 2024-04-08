@@ -8,10 +8,13 @@ cached_connection(dbdir = ":memory:", read_only = FALSE)
 }
 \arguments{
 \item{dbdir}{Location for database files. Should be a path to an existing
-directory in the file system. With the default, all
-data is kept in RAM}
+directory in the file system. With the default (or \code{""}), all
+data is kept in RAM.}
 
-\item{read_only}{Set to \code{TRUE} for read-only operation}
+\item{read_only}{Set to \code{TRUE} for read-only operation.
+For file-based databases, this is only applied when the database file is opened for the first time.
+Subsequent connections (via the same \code{drv} object or a \code{drv} object pointing to the same path)
+will silently ignore this flag.}
 }
 \value{
 a \code{\link[duckdb:duckdb]{duckdb::duckdb()}} connection object

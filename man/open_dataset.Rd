@@ -11,7 +11,7 @@ open_dataset(
   unify_schemas = FALSE,
   format = c("parquet", "csv", "tsv", "sf"),
   conn = cached_connection(),
-  tblname = tmp_tbl_name(),
+  tblname = tbl_name(sources),
   mode = "VIEW",
   filename = FALSE,
   recursive = TRUE,
