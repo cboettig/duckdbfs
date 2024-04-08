@@ -77,7 +77,8 @@ test_that("write_dataset to s3:", {
   skip_if_not_installed("minioclient")
   minioclient::install_mc(force = TRUE)
 
-  config <- mc_config_get("play")
+  p <- minioclient::mc_alias_ls(paste(alias, "--json"))
+  config <- jsonlite::fromJSON(p$stdout)
 
   minioclient::mc_mb("play/duckdbfs")
   mtcars |> dplyr::group_by(cyl, gear) |>
@@ -94,5 +95,20 @@ test_that("write_dataset to s3:", {
   minioclient::mc("rb --force play/duckdbfs")
 
 })
+
+mc_config_get <- function(alias="play"){
+
+  # this can fail tp parse on windows, stdout is not pure json
+  # p <- minioclient::mc_alias_ls(paste(alias, "--json"))
+  # config <- jsonlite::fromJSON(p$stdout)
+
+  ## fails to find config on remote
+  path <- getOption("minioclient.dir", tools::R_user_dir("minioclient", "data"))
+  json <- jsonlite::read_json(file.path(path, "config.json"))
+  config <- json$aliases[[alias]]
+  config$alias <- alias
+  config$URL <- config$url
+  config
+}
 
 
