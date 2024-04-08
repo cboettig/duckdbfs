@@ -77,7 +77,7 @@ test_that("write_dataset to s3:", {
   skip_if_not_installed("minioclient")
   minioclient::install_mc(force = TRUE)
 
-  p <- minioclient::mc_alias_ls(paste(alias, "--json"))
+  p <- minioclient::mc_alias_ls("play --json")
   config <- jsonlite::fromJSON(p$stdout)
 
   minioclient::mc_mb("play/duckdbfs")
