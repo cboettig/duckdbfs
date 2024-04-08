@@ -76,22 +76,16 @@ test_that("write_dataset to s3:", {
   skip_if_not_installed("jsonlite")
   skip_if_not_installed("minioclient")
   minioclient::install_mc(force = TRUE)
-  p <- minioclient::mc_alias_ls("play --json")
 
-  # this fails on windows, stdout is not pure json
-  # config <- jsonlite::fromJSON(p$stdout)
-
-  path <- getOption("minioclient.dir", tools::R_user_dir("minioclient", "data"))
-  json <- jsonlite::read_json(file.path(path, "config.json"))
-  config <- json$aliases[["play"]]
+  config <- mc_config_get("play")
 
   minioclient::mc_mb("play/duckdbfs")
-  mtcars |> group_by(cyl, gear) |>
+  mtcars |> dplyr::group_by(cyl, gear) |>
   write_dataset(
                 "s3://duckdbfs/mtcars.parquet",
                 s3_access_key_id = config$accessKey,
                 s3_secret_access_key = config$secretKey,
-                s3_endpoint = config$URL,
+                s3_endpoint = config$url,
                 s3_use_ssl=TRUE,
                 s3_url_style="path"
                 )
@@ -100,3 +94,5 @@ test_that("write_dataset to s3:", {
   minioclient::mc("rb --force play/duckdbfs")
 
 })
+
+
