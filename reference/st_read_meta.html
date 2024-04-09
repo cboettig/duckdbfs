@@ -57,7 +57,7 @@ This is similar to what is reported by <code>ogrinfo -json</code></p>
     <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">st_read_meta</span><span class="op">(</span></span>
 <span>  <span class="va">path</span>,</span>
 <span>  layer <span class="op">=</span> <span class="fl">1L</span>,</span>
-<span>  tblname <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/basename.html" class="external-link">basename</a></span><span class="op">(</span><span class="fu">tools</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/r/tools/fileutils.html" class="external-link">file_path_sans_ext</a></span><span class="op">(</span><span class="va">path</span><span class="op">)</span><span class="op">)</span>,</span>
+<span>  tblname <span class="op">=</span> <span class="fu">tbl_name</span><span class="op">(</span><span class="va">path</span><span class="op">)</span>,</span>
 <span>  conn <span class="op">=</span> <span class="fu"><a href="cached_connection.html">cached_connection</a></span><span class="op">(</span><span class="op">)</span>,</span>
 <span>  <span class="va">...</span></span>
 <span><span class="op">)</span></span></code></pre></div>

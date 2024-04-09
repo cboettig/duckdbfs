@@ -67,19 +67,22 @@ connection object.</p>
     <h2 id="arguments">Arguments<a class="anchor" aria-label="anchor" href="#arguments"></a></h2>
     <dl><dt>dbdir</dt>
 <dd><p>Location for database files. Should be a path to an existing
-directory in the file system. With the default, all
-data is kept in RAM</p></dd>
+directory in the file system. With the default (or <code>""</code>), all
+data is kept in RAM.</p></dd>
 
 
 <dt>read_only</dt>
-<dd><p>Set to <code>TRUE</code> for read-only operation</p></dd>
+<dd><p>Set to <code>TRUE</code> for read-only operation.
+For file-based databases, this is only applied when the database file is opened for the first time.
+Subsequent connections (via the same <code>drv</code> object or a <code>drv</code> object pointing to the same path)
+will silently ignore this flag.</p></dd>
 
 </dl></div>
     <div class="section level2">
     <h2 id="value">Value<a class="anchor" aria-label="anchor" href="#value"></a></h2>
     
 
-<p>a <code><a href="https://rdrr.io/pkg/duckdb/man/duckdb.html" class="external-link">duckdb::duckdb()</a></code> connection object</p>
+<p>a <code><a href="https://r.duckdb.org/reference/duckdb.html" class="external-link">duckdb::duckdb()</a></code> connection object</p>
     </div>
     <div class="section level2">
     <h2 id="details">Details<a class="anchor" aria-label="anchor" href="#details"></a></h2>
