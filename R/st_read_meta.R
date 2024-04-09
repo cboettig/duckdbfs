@@ -19,7 +19,7 @@
 #'
 st_read_meta <- function(path,
                          layer = 1L,
-                         tblname = basename(tools::file_path_sans_ext(path)),
+                         tblname = tbl_name(path),
                          conn = cached_connection(),
                          ...){
 

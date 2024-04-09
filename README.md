@@ -61,8 +61,8 @@ explicitly request `duckdb` join the two schemas. Leave this as default,
 ``` r
 ds <- open_dataset(urls, unify_schemas = TRUE)
 ds
-#> # Source:   table<zqnqubmcxivitjr> [3 x 4]
-#> # Database: DuckDB v0.9.2 [unknown@Linux 6.6.10-76060610-generic:R 4.3.2/:memory:]
+#> # Source:   table<f1> [3 x 4]
+#> # Database: DuckDB v0.10.1 [unknown@Linux 6.6.10-76060610-generic:R 4.3.2/:memory:]
 #>       i     j     x     k
 #>   <int> <int> <dbl> <int>
 #> 1    42    84     1    NA
@@ -214,13 +214,13 @@ the full spatial data object.
 
 ``` r
 library(sf)
-#> Linking to GEOS 3.12.1, GDAL 3.8.3, PROJ 9.3.1; sf_use_s2() is TRUE
+#> Linking to GEOS 3.12.1, GDAL 3.8.4, PROJ 9.4.0; sf_use_s2() is TRUE
 melbourne <- st_point(c(144.9633, -37.814)) |> st_as_text()
 
 countries |> 
   filter(st_contains(geom, ST_GeomFromText({melbourne})))
 #> # Source:   SQL [1 x 16]
-#> # Database: DuckDB v0.9.2 [unknown@Linux 6.6.10-76060610-generic:R 4.3.2/:memory:]
+#> # Database: DuckDB v0.10.1 [unknown@Linux 6.6.10-76060610-generic:R 4.3.2/:memory:]
 #>   iso_a3 name      sovereignt continent    area  pop_est pop_est_dens economy   
 #>   <chr>  <chr>     <chr>      <chr>       <dbl>    <dbl>        <dbl> <chr>     
 #> 1 AUS    Australia Australia  Oceania   7682300 21262641         2.77 2. Develo…
@@ -270,7 +270,7 @@ countries |>
    spatial_join(cities, by = "st_intersects", join="inner") |>
    select(name_long, sovereignt, pop2020) 
 #> # Source:   SQL [6 x 3]
-#> # Database: DuckDB v0.9.2 [unknown@Linux 6.6.10-76060610-generic:R 4.3.2/:memory:]
+#> # Database: DuckDB v0.10.1 [unknown@Linux 6.6.10-76060610-generic:R 4.3.2/:memory:]
 #>   name_long sovereignt  pop2020
 #>   <chr>     <chr>         <dbl>
 #> 1 Brisbane  Australia   2388517
@@ -324,11 +324,6 @@ csv files (including multiple and hive-partitioned csv files).
 write.csv(mtcars, "mtcars.csv", row.names=FALSE)
 lazy_cars <- open_dataset("mtcars.csv", format = "csv")
 ```
-
-## Limitations
-
-- ***NOTE***: at this time, the duckdb httpfs file system extension in R
-  does not support Windows.
 
 ## Mechanism / motivation
 

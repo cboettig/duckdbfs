@@ -1,7 +1,6 @@
 
 test_that("s3 minio", {
 
-  skip_on_os("windows")
   skip_if_offline()
   skip_on_cran()
   skip_if_not_installed("minioclient")
@@ -36,7 +35,6 @@ test_that("s3 minio", {
 test_that("write_dataset to s3:", {
 
   #  skip("S3 write not enabled")
-  skip_on_os("windows")
   skip_if_offline()
   skip_on_cran()
   skip_if_not_installed("jsonlite")

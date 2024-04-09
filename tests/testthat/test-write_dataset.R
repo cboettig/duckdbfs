@@ -53,7 +53,6 @@ test_that("write_dataset partitions", {
 
 test_that("write_dataset, remote input", {
   skip_on_cran()
-  skip_on_os("windows")
   skip_if_offline()
 
   tbl <- open_dataset(
@@ -72,19 +71,18 @@ test_that("write_dataset, remote input", {
 
 test_that("write_dataset to s3:", {
 
-#  skip("S3 write not enabled")
-  skip_on_os("windows")
   skip_if_offline()
   skip_on_cran()
   skip_if_not_installed("jsonlite")
   skip_if_not_installed("minioclient")
   minioclient::install_mc(force = TRUE)
+
+  skip_on_os("windows")
   p <- minioclient::mc_alias_ls("play --json")
   config <- jsonlite::fromJSON(p$stdout)
 
   minioclient::mc_mb("play/duckdbfs")
-
-  mtcars |> group_by(cyl, gear) |>
+  mtcars |> dplyr::group_by(cyl, gear) |>
   write_dataset(
                 "s3://duckdbfs/mtcars.parquet",
                 s3_access_key_id = config$accessKey,
@@ -98,3 +96,20 @@ test_that("write_dataset to s3:", {
   minioclient::mc("rb --force play/duckdbfs")
 
 })
+
+mc_config_get <- function(alias="play"){
+
+  # this can fail tp parse on windows, stdout is not pure json
+  # p <- minioclient::mc_alias_ls(paste(alias, "--json"))
+  # config <- jsonlite::fromJSON(p$stdout)
+
+  ## fails to find config on remote
+  path <- getOption("minioclient.dir", tools::R_user_dir("minioclient", "data"))
+  json <- jsonlite::read_json(file.path(path, "config.json"))
+  config <- json$aliases[[alias]]
+  config$alias <- alias
+  config$URL <- config$url
+  config
+}
+
+

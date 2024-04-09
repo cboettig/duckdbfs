@@ -4,11 +4,17 @@
 \alias{load_spatial}
 \title{load the duckdb geospatial data plugin}
 \usage{
-load_spatial(conn = cached_connection())
+load_spatial(
+  conn = cached_connection(),
+  nightly = getOption("duckdbfs_use_nightly", FALSE)
+)
 }
 \arguments{
 \item{conn}{A database connection object created using the
 \code{cache_connection} function (default: \code{cache_connection()}).}
+
+\item{nightly}{should we use the nightly version or not?
+default FALSE, configurable as \code{duckdbfs_use_nightly} option.}
 }
 \value{
 loads the extension and returns status invisibly.
