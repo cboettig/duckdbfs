@@ -5,7 +5,10 @@ tbl_name <- function(path) {
   }
   # sql-safe names based on path
   name <- basename(tools::file_path_sans_ext(path))
-  gsub("[^a-zA-Z0-9]", "_", name)
+  name <- gsub("[^a-zA-Z0-9]", "_", name)
+  ## what if it starts with a digit
+  if (grepl("^[0-9]", name)) name <- paste0("file_", name)
+  name
 }
 
 tmp_tbl_name <- function(n = 15) {
