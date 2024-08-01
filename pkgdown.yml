@@ -1,9 +1,8 @@
 pandoc: 3.1.11
-pkgdown: 2.0.9
+pkgdown: 2.1.0
 pkgdown_sha: ~
 articles: {}
-last_built: 2024-04-19T16:36Z
+last_built: 2024-08-01T03:39Z
 urls:
   reference: https://cboettig.github.io/duckdbfs/reference
   article: https://cboettig.github.io/duckdbfs/articles
-
