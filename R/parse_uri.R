@@ -4,7 +4,9 @@ parse_uri <- function(sources, conn, recursive = TRUE) {
   # But use recursion only if local source is a directory
   if(!any(grepl("^[http|s3:]", sources))) {
     is_dir <- dir.exists(sources)
-    sources[is_dir] <- paste0(sources[is_dir], "/**")
+    if(recursive) {
+      sources[is_dir] <- paste0(sources[is_dir], "/**")
+    }
     return(sources)
   }
 
