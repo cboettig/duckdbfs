@@ -1,3 +1,7 @@
+# duckdbfs 0.0.6
+
+* bugfix open_dataset() uses random table name by default, avoid naming collisions.
+
 # duckdbfs 0.0.5
 
 * bugfix `write_dataset()` no longer adds `**` into paths when writing some partitions.

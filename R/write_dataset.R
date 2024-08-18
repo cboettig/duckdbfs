@@ -35,44 +35,31 @@ write_dataset <- function(dataset,
     tblname <- as.character(remote_name(dataset, conn))
   }
 
-  path <- parse_uri(path, conn = conn, recursive = FALSE)
-
   ## local writes use different notation to allow overwrites:
   allow_overwrite <- character(0)
   if(overwrite){
-    allow_overwrite <- paste("OVERWRITE_OR_IGNORE")
+    allow_overwrite <- "OVERWRITE_OR_IGNORE"
   }
 
+  path <- parse_uri(path, conn = conn, recursive = FALSE)
   if(grepl("^s3://", path)) {
     duckdb_s3_config(conn = conn, ...)
-    if(overwrite){
-     # allow_overwrite <- paste("ALLOW_OVERWRITE", overwrite)
-    }
   }
 
-
-  format <- toupper(format)
   partition_by <- character(0)
   if(length(partitioning) > 0) {
     partition_by <- paste0("PARTITION_BY (",
                            paste(partitioning, collapse=", "),
-                           "), ")
+                           ") ")
   }
-  comma <- character(0)
-  if (length(c(partition_by, allow_overwrite) > 0)){
-    comma <- ", "
-  }
-  options <-  paste0(
-                    paste("FORMAT", "'parquet'"), comma,
-                    partition_by,
-                    allow_overwrite
-                   )
 
-  query <- paste("COPY", tblname, "TO",
-                 paste0("'", path, "'"),
-                 paste0("(",  options, ")"), ";")
+  format <- toupper(format)
+  format_by <- glue::glue("FORMAT {format}")
+  options_vec <- c(format_by, partition_by, allow_overwrite)
+  options <- glue::glue_collapse(options_vec, sep = ", ")
 
-
+  copy <- glue::glue("COPY {tblname} TO '{path}' ")
+  query <- glue::glue(copy, "({options})", ";")
   status <- DBI::dbSendQuery(conn, query)
   invisible(path)
 }
