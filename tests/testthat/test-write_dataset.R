@@ -25,8 +25,9 @@ test_that("write_dataset", {
   ## Write from a query string
   path2 <- file.path(tempdir(), "spatial2.parquet")
 
-  tbl |>
-    dplyr::mutate(new = "test") |>
+  dataset <- tbl |>
+    dplyr::mutate(new = "test")
+  dataset |>
     write_dataset(path2)
 
 })
@@ -47,6 +48,12 @@ test_that("write_dataset partitions", {
   expect_s3_class(df, "tbl")
   parts <- list.files(path)
   expect_true(any(grepl("cyl=4", parts)))
+
+  path <- file.path(tempdir(), "mtcars2")
+  mtcars |> write_dataset(path, partitioning = "cyl", overwrite=FALSE)
+  expect_true(file.exists(path))
+  df <- open_dataset(path)
+  expect_s3_class(df, "tbl")
 
 })
 
