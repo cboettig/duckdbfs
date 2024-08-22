@@ -77,3 +77,21 @@ remote_name <- function (x, con)
   out
 }
 
+#' as_dataset
+#'
+#' Push a local (in-memory) dataset into a the duckdb database as a table.
+#' This enables it to share the connection source with other data.
+#' This is equivalent to the behavior of copy=TRUE on many (but not all) of the two-table verbs in dplyr.
+#' @param df a local data frame.  Otherwise will be passed back without side effects
+#' @return a remote `dplyr::tbl` connection to the table.
+#' @inheritParams open_dataset
+#' @export
+as_dataset <- function(df, conn = cached_connection()) {
+  if(is_not_remote(df)) {
+    tblname = tmp_tbl_name()
+    DBI::dbWriteTable(conn, name = tblname, value = df)
+    df = dplyr::tbl(conn, tblname)
+  }
+  return(df)
+}
+

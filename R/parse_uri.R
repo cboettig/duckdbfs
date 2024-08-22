@@ -1,16 +1,15 @@
 parse_uri <- function(sources, conn, recursive = TRUE) {
 
-  # Local file-systems don't need S3 parsing
-  # But use recursion only if local source is a directory
-  if(!any(grepl("^[http|s3:]", sources))) {
-    is_dir <- dir.exists(sources)
-    if(recursive) {
-      sources[is_dir] <- paste0(sources[is_dir], "/**")
-    }
-    return(sources)
+  if(any(grepl("^\\w+://", sources))) {
+    # local file paths that don't require network should not attempt to load it
+    # Maybe unnecessary as httpfs should be bundled with R's binary duckdb
+    load_httpfs(conn)
   }
 
-  load_httpfs(conn)
+  # http URLs pass through as is, can't do recursion
+  if(any(grepl("^http", sources))) {
+    return(sources)
+  }
 
   ## for now only parse sources of length-1
   if(length(sources) > 1) return(sources)
@@ -18,7 +17,6 @@ parse_uri <- function(sources, conn, recursive = TRUE) {
   if (grepl("^s3://", sources)) {
     # first strip any * for compatibility
     sources <- gsub("/\\*+$", "", sources)
-
 
     url <- url_parse(sources)
     scheme <- url$query[["scheme"]]
@@ -38,11 +36,15 @@ parse_uri <- function(sources, conn, recursive = TRUE) {
                      s3_use_ssl = as.integer(use_ssl))
 
     sources <- paste0(url$scheme, "://", url$hostname, url$path)
-    if(recursive) {
+  }
+
+  if(recursive) {
+    # Don't use recursive directory globs if we know it is a local file.
+    # Otherwise, we append the "/**".
+    if ( !fs::is_file(sources) ){
       sources <- gsub("\\/$", "", sources)
       sources <- paste0(sources, "/**")
     }
-
   }
   sources
 }

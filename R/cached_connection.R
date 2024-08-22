@@ -21,6 +21,12 @@ duckdbfs_env <- new.env()
 #' At the close of the global environment, this function's finalizer
 #' should gracefully shutdown the connection before removing the cache.
 #'
+#'
+#' By default, this function creates an in-memory connection. When reading
+#' from on-disk or remote files (parquet or csv), this option can still
+#' effectively support most operations on much-larger-than-RAM data.
+#' However, some operations require additional working space, so by default
+#' we set a temporary storage location in configuration as well.
 #' @inheritParams duckdb::duckdb
 #' @returns a [duckdb::duckdb()] connection object
 #' @examples
@@ -31,7 +37,10 @@ duckdbfs_env <- new.env()
 #' @export
 #'
 cached_connection <- function(dbdir = ":memory:",
-                              read_only = FALSE) {
+                              read_only = FALSE,
+                              bigint = "numeric",
+                              config = list(tempdir = tempfile())
+                              ) {
 
   #conn <- mget("duckdbfs_conn", envir = duckdbfs_env,
   #             ifnotfound = list(NULL))$duckdbfs_conn
@@ -50,9 +59,14 @@ cached_connection <- function(dbdir = ":memory:",
     if(getOption("duckdbfs_debug", FALSE)) {
       message("Making a duckdb connection!")
     }
+
     conn <- DBI::dbConnect(duckdb::duckdb(),
                            dbdir = dbdir,
-                           read_only = read_only)
+                           read_only = read_only,
+                           bigint = bigint,
+                           config = config)
+
+
     options(duckdbfs_conn = conn)
 
     # assign("duckdbfs_conn", conn, envir = duckdbfs_env)
