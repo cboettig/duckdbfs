@@ -7,7 +7,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">duckdbfs</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.0.6</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.0.7</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -34,7 +34,10 @@
 
     <div class="section level2">
 <h2 class="pkg-version" data-toc-text="0.0.6" id="duckdbfs-006">duckdbfs 0.0.6<a class="anchor" aria-label="anchor" href="#duckdbfs-006"></a></h2>
-<ul><li>bugfix open_dataset() uses random table name by default, avoid naming collisions.</li>
+<ul><li>The default <code><a href="../reference/cached_connection.html">cached_connection()</a></code> helper will configure a temporary storage location by default. It also now supports all options supported by <code><a href="https://r.duckdb.org/reference/duckdb.html" class="external-link">duckdb::duckdb()</a></code> for connection creation.</li>
+<li>New <code><a href="../reference/as_dataset.html">as_dataset()</a></code> utility copies a local in-memory data.frame into the connection.</li>
+<li>bugfix: reading from local disk recursively no longer requires manual <code>**</code>. Also, trying to read from an existing <em>local</em> file won’t try and append recursive search even when given the default recursive=TRUE option.</li>
+<li>bugfix: <code><a href="../reference/open_dataset.html">open_dataset()</a></code> uses random table name by default, avoid naming collisions.</li>
 </ul></div>
     <div class="section level2">
 <h2 class="pkg-version" data-toc-text="0.0.5" id="duckdbfs-005">duckdbfs 0.0.5<a class="anchor" aria-label="anchor" href="#duckdbfs-005"></a></h2><p class="text-muted">CRAN release: 2024-08-17</p>
