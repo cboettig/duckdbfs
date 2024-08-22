@@ -43,7 +43,7 @@ test_that("write_dataset partitions", {
     group_by(cyl, gear) |>
     write_dataset(path)
 
-  expect_true(file.exists(path))
+  expect_true(dir.exists(path))
   df <- open_dataset(path)
   expect_s3_class(df, "tbl")
   parts <- list.files(path)
