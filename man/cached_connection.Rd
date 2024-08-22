@@ -8,7 +8,7 @@ cached_connection(
   dbdir = ":memory:",
   read_only = FALSE,
   bigint = "numeric",
-  config = list(tempdir = tempfile())
+  config = list(temp_directory = tempfile())
 )
 }
 \arguments{

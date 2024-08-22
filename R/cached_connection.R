@@ -39,7 +39,7 @@ duckdbfs_env <- new.env()
 cached_connection <- function(dbdir = ":memory:",
                               read_only = FALSE,
                               bigint = "numeric",
-                              config = list(tempdir = tempfile())
+                              config = list(temp_directory = tempfile())
                               ) {
 
   #conn <- mget("duckdbfs_conn", envir = duckdbfs_env,
