@@ -1,6 +1,6 @@
 parse_uri <- function(sources, conn, recursive = TRUE) {
 
-  if(any(grepl("^\\w+://"), sources)) {
+  if(any(grepl("^\\w+://", sources))) {
     # local file paths that don't require network should not attempt to load it
     # Maybe unnecessary as httpfs should be bundled with R's binary duckdb
     load_httpfs(conn)
