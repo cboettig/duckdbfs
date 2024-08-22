@@ -4,7 +4,12 @@
 \alias{cached_connection}
 \title{create a cachable duckdb connection}
 \usage{
-cached_connection(dbdir = ":memory:", read_only = FALSE)
+cached_connection(
+  dbdir = ":memory:",
+  read_only = FALSE,
+  bigint = "numeric",
+  config = list(tempdir = tempfile())
+)
 }
 \arguments{
 \item{dbdir}{Location for database files. Should be a path to an existing
@@ -15,6 +20,15 @@ data is kept in RAM.}
 For file-based databases, this is only applied when the database file is opened for the first time.
 Subsequent connections (via the same \code{drv} object or a \code{drv} object pointing to the same path)
 will silently ignore this flag.}
+
+\item{bigint}{How 64-bit integers should be returned. There are two options: \code{"numeric"} and \code{"integer64"}.
+If \code{"numeric"} is selected, bigint integers will be treated as double/numeric.
+If \code{"integer64"} is selected, bigint integers will be set to bit64 encoding.}
+
+\item{config}{Named list with DuckDB configuration flags, see
+\url{https://duckdb.org/docs/configuration/overview#configuration-reference} for the possible options.
+These flags are only applied when the database object is instantiated.
+Subsequent connections will silently ignore these flags.}
 }
 \value{
 a \code{\link[duckdb:duckdb]{duckdb::duckdb()}} connection object
@@ -37,6 +51,12 @@ connection object, because functions needing access to the
 connection can use this to create or access the existing connection.
 At the close of the global environment, this function's finalizer
 should gracefully shutdown the connection before removing the cache.
+
+By default, this function creates an in-memory connection. When reading
+from on-disk or remote files (parquet or csv), this option can still
+effectively support most operations on much-larger-than-RAM data.
+However, some operations require additional working space, so by default
+we set a temporary storage location in configuration as well.
 }
 \examples{
 

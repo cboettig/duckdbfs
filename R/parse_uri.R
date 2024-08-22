@@ -38,11 +38,14 @@ parse_uri <- function(sources, conn, recursive = TRUE) {
                      s3_use_ssl = as.integer(use_ssl))
 
     sources <- paste0(url$scheme, "://", url$hostname, url$path)
-    if(recursive) {
+  }
+  if(recursive) {
+    # Don't use recursive directory globs if we know it is a local file.
+    # Otherwise, we append the "/**".
+    if ( !file.exists(sources) ){
       sources <- gsub("\\/$", "", sources)
       sources <- paste0(sources, "/**")
     }
-
   }
   sources
 }

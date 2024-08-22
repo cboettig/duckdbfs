@@ -1,6 +1,13 @@
+
 # duckdbfs 0.0.6
 
-* bugfix open_dataset() uses random table name by default, avoid naming collisions.
+* The default `cached_connection()` helper will configure a temporary storage location by default.
+  It also now supports all options supported by `duckdb::duckdb()` for connection creation. 
+* New `as_dataset()` utility copies a local in-memory data.frame into the connection.
+* bugfix: reading from local disk recursively no longer requires manual `**`.
+  Also, trying to read from an existing _local_ file won't try and append recursive search
+  even when given the default recursive=TRUE option.
+* bugfix: `open_dataset()` uses random table name by default, avoid naming collisions.
 
 # duckdbfs 0.0.5
 
