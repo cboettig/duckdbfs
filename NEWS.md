@@ -1,9 +1,11 @@
-
-# duckdbfs 0.0.6
+# duckdbfs 0.0.7
 
 * The default `cached_connection()` helper will configure a temporary storage location by default.
   It also now supports all options supported by `duckdb::duckdb()` for connection creation. 
 * New `as_dataset()` utility copies a local in-memory data.frame into the connection.
+  
+# duckdbfs 0.0.6
+
 * bugfix: reading from local disk recursively no longer requires manual `**`.
   Also, trying to read from an existing _local_ file won't try and append recursive search
   even when given the default recursive=TRUE option.
