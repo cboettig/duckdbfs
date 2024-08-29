@@ -109,10 +109,9 @@ load_httpfs <- function(conn = cached_connection()) {
   exts <- duckdb_extensions()
   httpfs <- exts[exts$extension_name == "httpfs",]
   if(!httpfs$installed)
-    status <- DBI::dbExecute(conn, "INSTALL 'httpfs';")
+    DBI::dbExecute(conn, "INSTALL 'httpfs';")
   if(!httpfs$loaded)
-    status <- DBI::dbExecute(conn, "LOAD 'httpfs';")
-  invisible(status)
+    DBI::dbExecute(conn, "LOAD 'httpfs';")
 }
 
 enable_parallel <- function(conn = cached_connection(),
