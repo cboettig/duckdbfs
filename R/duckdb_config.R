@@ -106,9 +106,12 @@ duckdb_s3_config <- function(conn = cached_connection(),
 }
 
 load_httpfs <- function(conn = cached_connection()) {
-
-  status <- DBI::dbExecute(conn, "INSTALL 'httpfs';")
-  status <- DBI::dbExecute(conn, "LOAD 'httpfs';")
+  exts <- duckdb_extensions()
+  httpfs <- exts[exts$extension_name == "httpfs",]
+  if(!httpfs$installed)
+    status <- DBI::dbExecute(conn, "INSTALL 'httpfs';")
+  if(!httpfs$loaded)
+    status <- DBI::dbExecute(conn, "LOAD 'httpfs';")
   invisible(status)
 }
 
