@@ -105,11 +105,16 @@ duckdb_s3_config <- function(conn = cached_connection(),
   duckdb_set(s3_use_ssl, conn = conn)
 }
 
-load_httpfs <- function(conn = cached_connection()) {
+load_httpfs <- function(conn = cached_connection()
+                        nightly=getOption("duckdbfs_use_nightly", FALSE)) {
   exts <- duckdb_extensions()
+  source <- ""
+  if (nightly) {
+    source <- " FROM 'http://nightly-extensions.duckdb.org'"
+  }
   httpfs <- exts[exts$extension_name == "httpfs",]
   if(!httpfs$installed)
-    DBI::dbExecute(conn, "INSTALL 'httpfs';")
+    DBI::dbExecute(conn, paste0("INSTALL 'httpfs'", source, ";"))
   if(!httpfs$loaded)
     DBI::dbExecute(conn, "LOAD 'httpfs';")
 }
