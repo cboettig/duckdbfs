@@ -105,7 +105,7 @@ duckdb_s3_config <- function(conn = cached_connection(),
   duckdb_set(s3_use_ssl, conn = conn)
 }
 
-load_httpfs <- function(conn = cached_connection()
+load_httpfs <- function(conn = cached_connection(),
                         nightly=getOption("duckdbfs_use_nightly", FALSE)) {
   exts <- duckdb_extensions()
   source <- ""
