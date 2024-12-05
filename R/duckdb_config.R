@@ -139,7 +139,7 @@ load_spatial <- function(conn = cached_connection(),
 
   if (nightly) {
     status <- DBI::dbExecute(conn,
-                             paste0("FORCE INSTALL 'spatial'",
+                             paste0("INSTALL 'spatial'",
                              " FROM 'http://nightly-extensions.duckdb.org'",
                              ";"))
   } else {
