@@ -6,7 +6,7 @@
 \usage{
 load_spatial(
   conn = cached_connection(),
-  nightly = getOption("duckdbfs_use_nightly", FALSE)
+  nightly = getOption("duckdbfs_use_nightly", TRUE)
 )
 }
 \arguments{
