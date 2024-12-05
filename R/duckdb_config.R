@@ -106,7 +106,7 @@ duckdb_s3_config <- function(conn = cached_connection(),
 }
 
 load_httpfs <- function(conn = cached_connection(),
-                        nightly=getOption("duckdbfs_use_nightly", FALSE)) {
+                        nightly=getOption("duckdbfs_use_nightly", TRUE)) {
   exts <- duckdb_extensions()
   source <- ""
   if (nightly) {
@@ -135,7 +135,7 @@ enable_parallel <- function(conn = cached_connection(),
 #' @references <https://duckdb.org/docs/extensions/spatial.html>
 #' @export
 load_spatial <- function(conn = cached_connection(),
-                         nightly=getOption("duckdbfs_use_nightly", FALSE)) {
+                         nightly=getOption("duckdbfs_use_nightly", TRUE)) {
 
   if (nightly) {
     status <- DBI::dbExecute(conn,
