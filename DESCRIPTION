@@ -20,7 +20,7 @@ Imports:
     DBI,
     dbplyr,
     dplyr,
-    duckdb (>= 0.9.2),
+    duckdb (>= 1.1),
     fs,
     glue
 Suggests: 
