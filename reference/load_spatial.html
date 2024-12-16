@@ -7,7 +7,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">duckdbfs</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.0.8</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.0.9</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -41,7 +41,8 @@
     <h2 id="ref-usage">Usage<a class="anchor" aria-label="anchor" href="#ref-usage"></a></h2>
     <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">load_spatial</span><span class="op">(</span></span>
 <span>  conn <span class="op">=</span> <span class="fu"><a href="cached_connection.html">cached_connection</a></span><span class="op">(</span><span class="op">)</span>,</span>
-<span>  nightly <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/options.html" class="external-link">getOption</a></span><span class="op">(</span><span class="st">"duckdbfs_use_nightly"</span>, <span class="cn">TRUE</span><span class="op">)</span></span>
+<span>  nightly <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/options.html" class="external-link">getOption</a></span><span class="op">(</span><span class="st">"duckdbfs_use_nightly"</span>, <span class="cn">FALSE</span><span class="op">)</span>,</span>
+<span>  force <span class="op">=</span> <span class="cn">FALSE</span></span>
 <span><span class="op">)</span></span></code></pre></div>
     </div>
 
@@ -57,6 +58,10 @@
 <dt id="arg-nightly">nightly<a class="anchor" aria-label="anchor" href="#arg-nightly"></a></dt>
 <dd><p>should we use the nightly version or not?
 default FALSE, configurable as <code>duckdbfs_use_nightly</code> option.</p></dd>
+
+
+<dt id="arg-force">force<a class="anchor" aria-label="anchor" href="#arg-force"></a></dt>
+<dd><p>force re-install?</p></dd>
 
 </dl></div>
     <div class="section level2">
