@@ -108,7 +108,7 @@ efi <- open_dataset("s3://anonymous@neon4cast-scores/parquet/aquatics?endpoint_o
 `duckdb` can also understand a wide array of spatial data queries for
 spatial vector data, similar to operations found in the popular `sf`
 package. See [the list of supported
-functions](https://github.com/duckdb/duckdb_spatial#supported-functions)
+functions](https://github.com/duckdb/duckdb-spatial#supported-functions)
 for details. Most spatial query operations require an geometry column
 that expresses the simple feature geometry in `duckdb`’s internal
 geometry format (nearly but not exactly WKB).
@@ -167,7 +167,7 @@ collected through `sf::st_read`, returning an (in-memory) `sf` object.
 For more details including a complete list of the dozens of spatial
 operations currently supported and notes on performance and current
 limitations, see the [duckdb spatial
-docs](https://github.com/duckdb/duckdb_spatial)
+docs](https://github.com/duckdb/duckdb-spatial)
 
 ### Reading spatial vector files
 
