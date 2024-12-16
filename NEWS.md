@@ -1,3 +1,7 @@
+# duckdbfs 0.0.9
+
+* Restore default to non-nightly. 
+
 # duckdbfs 0.0.8
 
 * work-around for error `The file was built for DuckDB version 'v1.1.3', but we can only load extensions built for DuckDB version '19864453f7'.`

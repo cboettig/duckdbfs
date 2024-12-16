@@ -105,19 +105,54 @@ duckdb_s3_config <- function(conn = cached_connection(),
   duckdb_set(s3_use_ssl, conn = conn)
 }
 
-load_httpfs <- function(conn = cached_connection(),
-                        nightly=getOption("duckdbfs_use_nightly", TRUE)) {
+
+
+
+load_extension <-
+  function(extension = "httpfs",
+           conn = cached_connection(),
+           nightly = getOption("duckdbfs_use_nightly", FALSE),
+           force = FALSE) {
   exts <- duckdb_extensions()
   source <- ""
   if (nightly) {
     source <- " FROM 'http://nightly-extensions.duckdb.org'"
   }
-  httpfs <- exts[exts$extension_name == "httpfs",]
-  if(!httpfs$installed)
-    DBI::dbExecute(conn, paste0("INSTALL 'httpfs'", source, ";"))
-  if(!httpfs$loaded)
-    DBI::dbExecute(conn, "LOAD 'httpfs';")
+  status <- exts[exts$extension_name == extension,]
+  status_code <- 0
+  if (force) {
+    FORCE <- "FORCE "
+  } else {
+    FORCE <- ""
+  }
+
+  if(!status$installed) {
+
+    if (!nightly) {
+    DBI::dbExecute(conn, paste0(FORCE,
+      glue::glue("INSTALL '{extension}'"), source, ";"))
+    } else {
+      source <- " FROM 'http://nightly-extensions.duckdb.org'"
+      status_code <- DBI::dbExecute(conn, paste0(FORCE,
+        glue::glue("INSTALL '{extension}'"), source, ";"))
+    }
+
+  }
+  if(!status$loaded) {
+    status_code <- DBI::dbExecute(conn, glue::glue("LOAD '{extension}';"))
+  }
+
+  invisible(status_code)
 }
+
+
+load_httpfs <- function(conn = cached_connection(),
+                        nightly = getOption("duckdbfs_use_nightly", FALSE),
+                        force = FALSE){
+  load_extension("httpfs", conn = conn, nightly=nightly, force = force)
+}
+
+
 
 enable_parallel <- function(conn = cached_connection(),
                             duckdb_cores = parallel::detectCores()){
@@ -131,23 +166,15 @@ enable_parallel <- function(conn = cached_connection(),
 #' @inheritParams duckdb_s3_config
 #' @param nightly should we use the nightly version or not?
 #'   default FALSE, configurable as `duckdbfs_use_nightly` option.
+#' @param force force re-install?
 #' @return loads the extension and returns status invisibly.
 #' @references <https://duckdb.org/docs/extensions/spatial.html>
 #' @export
 load_spatial <- function(conn = cached_connection(),
-                         nightly=getOption("duckdbfs_use_nightly", TRUE)) {
+                         nightly=getOption("duckdbfs_use_nightly", FALSE),
+                         force = FALSE) {
 
-  if (nightly) {
-    status <- DBI::dbExecute(conn,
-                             paste0("INSTALL 'spatial'",
-                             " FROM 'http://nightly-extensions.duckdb.org'",
-                             ";"))
-  } else {
-    status <- DBI::dbExecute(conn,
-                             paste0("INSTALL 'spatial';"))
-  }
-  status <- DBI::dbExecute(conn, "LOAD 'spatial';")
-  invisible(status)
+  load_extension("spatial", conn = conn, nightly = nightly, force = force)
 }
 
 duckdb_extensions <- function(conn = cached_connection()) {

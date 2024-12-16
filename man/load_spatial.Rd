@@ -6,7 +6,8 @@
 \usage{
 load_spatial(
   conn = cached_connection(),
-  nightly = getOption("duckdbfs_use_nightly", TRUE)
+  nightly = getOption("duckdbfs_use_nightly", FALSE),
+  force = FALSE
 )
 }
 \arguments{
@@ -15,6 +16,8 @@ load_spatial(
 
 \item{nightly}{should we use the nightly version or not?
 default FALSE, configurable as \code{duckdbfs_use_nightly} option.}
+
+\item{force}{force re-install?}
 }
 \value{
 loads the extension and returns status invisibly.
