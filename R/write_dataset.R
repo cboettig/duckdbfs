@@ -95,3 +95,7 @@ as_dataset <- function(df, conn = cached_connection()) {
   return(df)
 }
 
+
+#' @export
+to_parquet <- write_dataset
+
