@@ -13,7 +13,7 @@ connection object."></head><body>
 
     <a class="navbar-brand me-2" href="../index.html">duckdbfs</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.0.9</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.0.9.1</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -52,7 +52,8 @@ connection object.</p>
 <span>  dbdir <span class="op">=</span> <span class="st">":memory:"</span>,</span>
 <span>  read_only <span class="op">=</span> <span class="cn">FALSE</span>,</span>
 <span>  bigint <span class="op">=</span> <span class="st">"numeric"</span>,</span>
-<span>  config <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>temp_directory <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/tempfile.html" class="external-link">tempfile</a></span><span class="op">(</span><span class="op">)</span><span class="op">)</span></span>
+<span>  config <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>temp_directory <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/tempfile.html" class="external-link">tempfile</a></span><span class="op">(</span><span class="op">)</span><span class="op">)</span>,</span>
+<span>  autoload_exts <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/options.html" class="external-link">getOption</a></span><span class="op">(</span><span class="st">"duckdbfs_autoload_extensions"</span>, <span class="cn">TRUE</span><span class="op">)</span></span>
 <span><span class="op">)</span></span></code></pre></div>
     </div>
 
@@ -84,6 +85,11 @@ If <code>"integer64"</code> is selected, bigint integers will be set to bit64 en
 <a href="https://duckdb.org/docs/configuration/overview#configuration-reference" class="external-link">https://duckdb.org/docs/configuration/overview#configuration-reference</a> for the possible options.
 These flags are only applied when the database object is instantiated.
 Subsequent connections will silently ignore these flags.</p></dd>
+
+
+<dt id="arg-autoload-exts">autoload_exts<a class="anchor" aria-label="anchor" href="#arg-autoload-exts"></a></dt>
+<dd><p>should we auto-load extensions?  TRUE by default,
+can be configured with <code>options(duckdbfs_autoload_extensions = FALSE)</code></p></dd>
 
 </dl></div>
     <div class="section level2">
