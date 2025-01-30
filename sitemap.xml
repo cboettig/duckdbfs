@@ -10,11 +10,15 @@
 <url><loc>https://cboettig.github.io/duckdbfs/reference/cached_connection.html</loc></url>
 <url><loc>https://cboettig.github.io/duckdbfs/reference/close_connection.html</loc></url>
 <url><loc>https://cboettig.github.io/duckdbfs/reference/duckdb_s3_config.html</loc></url>
+<url><loc>https://cboettig.github.io/duckdbfs/reference/duckdb_secrets.html</loc></url>
 <url><loc>https://cboettig.github.io/duckdbfs/reference/index.html</loc></url>
+<url><loc>https://cboettig.github.io/duckdbfs/reference/load_h3.html</loc></url>
 <url><loc>https://cboettig.github.io/duckdbfs/reference/load_spatial.html</loc></url>
 <url><loc>https://cboettig.github.io/duckdbfs/reference/open_dataset.html</loc></url>
 <url><loc>https://cboettig.github.io/duckdbfs/reference/spatial_join.html</loc></url>
 <url><loc>https://cboettig.github.io/duckdbfs/reference/st_read_meta.html</loc></url>
+<url><loc>https://cboettig.github.io/duckdbfs/reference/to_h3j.html</loc></url>
+<url><loc>https://cboettig.github.io/duckdbfs/reference/to_json.html</loc></url>
 <url><loc>https://cboettig.github.io/duckdbfs/reference/to_sf.html</loc></url>
 <url><loc>https://cboettig.github.io/duckdbfs/reference/write_dataset.html</loc></url>
 </urlset>
