@@ -94,4 +94,3 @@ as_dataset <- function(df, conn = cached_connection()) {
   }
   return(df)
 }
-
