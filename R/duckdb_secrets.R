@@ -11,6 +11,7 @@
 #' @param url_style path or vhost, for S3
 #' @param type Key type, e.g. S3.  See duckdb docs for details.
 #' references <https://duckdb.org/docs/configuration/secrets_manager.html>
+#' @export
 duckdb_secrets <- function(key = Sys.getenv("AWS_ACCESS_KEY_ID", ""),
                            secret = Sys.getenv("AWS_SECRET_ACCESS_KEY", ""),
                            endpoint = Sys.getenv("AWS_S3_ENDPOINT",
