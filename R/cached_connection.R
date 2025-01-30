@@ -28,6 +28,8 @@ duckdbfs_env <- new.env()
 #' However, some operations require additional working space, so by default
 #' we set a temporary storage location in configuration as well.
 #' @inheritParams duckdb::duckdb
+#' @param autoload_exts should we auto-load extensions?  TRUE by default,
+#' can be configured with `options(duckdbfs_autoload_extensions = FALSE)`
 #' @returns a [duckdb::duckdb()] connection object
 #' @examples
 #'
@@ -39,7 +41,10 @@ duckdbfs_env <- new.env()
 cached_connection <- function(dbdir = ":memory:",
                               read_only = FALSE,
                               bigint = "numeric",
-                              config = list(temp_directory = tempfile())
+                              config = list(temp_directory = tempfile()),
+                              autoload_exts =
+                                getOption("duckdbfs_autoload_extensions",
+                                          TRUE)
                               ) {
 
   #conn <- mget("duckdbfs_conn", envir = duckdbfs_env,
@@ -68,9 +73,14 @@ cached_connection <- function(dbdir = ":memory:",
 
 
     options(duckdbfs_conn = conn)
-
     # assign("duckdbfs_conn", conn, envir = duckdbfs_env)
+
+    if (autoload_exts) {
+      DBI::dbExecute(conn, "SET autoinstall_known_extensions=1;")
+      DBI::dbExecute(conn, "SET autoload_known_extensions=1;")
+    }
   }
+
   ## create finalizer to avoid duckdb complaining that connection
   ## was not shut down before gc
   e <- globalenv()

@@ -8,7 +8,8 @@ cached_connection(
   dbdir = ":memory:",
   read_only = FALSE,
   bigint = "numeric",
-  config = list(temp_directory = tempfile())
+  config = list(temp_directory = tempfile()),
+  autoload_exts = getOption("duckdbfs_autoload_extensions", TRUE)
 )
 }
 \arguments{
@@ -29,6 +30,9 @@ If \code{"integer64"} is selected, bigint integers will be set to bit64 encoding
 \url{https://duckdb.org/docs/configuration/overview#configuration-reference} for the possible options.
 These flags are only applied when the database object is instantiated.
 Subsequent connections will silently ignore these flags.}
+
+\item{autoload_exts}{should we auto-load extensions?  TRUE by default,
+can be configured with \code{options(duckdbfs_autoload_extensions = FALSE)}}
 }
 \value{
 a \code{\link[duckdb:duckdb]{duckdb::duckdb()}} connection object
