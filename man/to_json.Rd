@@ -5,9 +5,24 @@
 \title{to_json
 write data out as a JSON object}
 \usage{
-to_json(x, dest, con = cached_connection(), array = TRUE, options)
+to_json(
+  dataset,
+  path,
+  conn = cached_connection(),
+  array = TRUE,
+  options = NULL
+)
 }
 \arguments{
+\item{dataset}{a remote tbl object from \code{open_dataset},
+or an in-memory data.frame.}
+
+\item{path}{a local file path or S3 path with write credentials}
+
+\item{conn}{duckdbfs database connection}
+
+\item{array}{generate a JSON array?}
+
 \item{options}{additional options as a char string, see}
 }
 \description{

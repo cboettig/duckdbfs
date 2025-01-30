@@ -4,10 +4,11 @@
 \alias{load_h3}
 \title{load the duckdb geospatial data plugin}
 \usage{
-load_h3(conn = cached_connection(), force = FALSE)
+load_h3(conn = cached_connection())
 }
 \arguments{
-\item{force}{force re-install?}
+\item{conn}{A database connection object created using the
+\code{cache_connection} function (default: \code{cache_connection()}).}
 }
 \value{
 loads the extension and returns status invisibly.

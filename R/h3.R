@@ -2,8 +2,7 @@
 
 
 #' load the duckdb geospatial data plugin
-#'
-#' @param force force re-install?
+#' @inheritParams load_spatial
 #' @return loads the extension and returns status invisibly.
 #' @references <https://github.com/isaacbrodsky/h3-duckdb>
 #'
@@ -26,8 +25,7 @@
 #'  query |> to_h3j(path)
 #'
 #' @export
-load_h3 <- function(conn = cached_connection(),
-                         force = FALSE) {
+load_h3 <- function(conn = cached_connection()) {
 
   DBI::dbExecute(conn, "INSTALL h3 from community")
   status <- DBI::dbExecute(conn, "LOAD h3")
@@ -44,16 +42,16 @@ load_h3 <- function(conn = cached_connection(),
 #' # example code
 #'
 #' @export
-to_h3j <- function(x, dest, con = cached_connection()) {
-  cols <- paste(colnames(x), collapse = ", ")
-  sql <- dbplyr::sql_render(x)
+to_h3j <- function(dataset, path, conn = cached_connection()) {
+  cols <- paste(colnames(dataset), collapse = ", ")
+  sql <- dbplyr::sql_render(dataset)
   q <- glue::glue("
     COPY (
       WITH t1 AS ({sql})
       SELECT json_group_array(struct_pack({cols}))
       AS cells
       FROM t1
-    ) TO '{dest}' (FORMAT JSON)
+    ) TO '{path}' (FORMAT JSON)
   ")
-  DBI::dbExecute(con, q)
+  DBI::dbExecute(conn, q)
 }
