@@ -1,4 +1,12 @@
-parse_uri <- function(sources, conn, recursive = TRUE) {
+parse_uri <- function(sources, conn = cached_connection(), recursive = TRUE) {
+  sources
+  }
+
+
+# Attempts URI compatibility with arrow
+# Maybe not a good idea....
+deprecated <- list(
+parse_uri <- function(sources, conn = cached_connection(), recursive = TRUE) {
 
   if(any(grepl("^\\w+://", sources))) {
     # local file paths that don't require network should not attempt to load it
@@ -48,7 +56,7 @@ parse_uri <- function(sources, conn, recursive = TRUE) {
   }
   sources
 }
-
+)
 
 
 
