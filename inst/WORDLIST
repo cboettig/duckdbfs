@@ -1,10 +1,12 @@
 CMD
 CRS
+DuckDB
 EPSG
 GBIF
 GC
 GDAL
 Geospatial
+JSON
 MINIO
 Quickstart
 README
@@ -13,6 +15,8 @@ URI
 URIs
 WKB
 behaviour
+bigint
+bugfix
 cachable
 containsproperly
 crs
@@ -29,12 +33,13 @@ gc
 geospatial
 globbing
 http
-httpfs
 https
+json
 md
 minio
 pipline
 postgis
+repo
 schemas
 tbl
 tibble

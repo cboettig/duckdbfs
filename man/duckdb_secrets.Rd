@@ -8,8 +8,12 @@ duckdb_secrets(
   key = Sys.getenv("AWS_ACCESS_KEY_ID", ""),
   secret = Sys.getenv("AWS_SECRET_ACCESS_KEY", ""),
   endpoint = Sys.getenv("AWS_S3_ENDPOINT", "s3.amazonaws.com"),
+  region = "us-east-1",
   bucket = NULL,
   url_style = NULL,
+  use_ssl = Sys.getenv("AWS_S3_SSL", "TRUE"),
+  url_compatibility_mode = TRUE,
+  session_token = NULL,
   type = "S3",
   conn = cached_connection()
 )
@@ -21,10 +25,18 @@ duckdb_secrets(
 
 \item{endpoint}{endpoint address}
 
+\item{region}{AWS region (ignored by some other S3 providers)}
+
 \item{bucket}{restricts the "SCOPE" of this key to only objects in this
 bucket-name.  note that the bucket name is currently insensitive to endpoint}
 
 \item{url_style}{path or vhost, for S3}
+
+\item{use_ssl}{Use SSL address (https instead of http), default TRUE}
+
+\item{url_compatibility_mode}{optional mode for increased compatibility with some endpoints}
+
+\item{session_token}{AWS session token, used in some AWS authentication with short-lived tokens}
 
 \item{type}{Key type, e.g. S3.  See duckdb docs for details.
 references \url{https://duckdb.org/docs/configuration/secrets_manager.html}}
