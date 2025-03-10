@@ -30,21 +30,23 @@ duckdb_secrets <- function(key = Sys.getenv("AWS_ACCESS_KEY_ID", ""),
                            conn = cached_connection()) {
 
   g <- glue::glue
-  if (grepl('amazonaws.com', endpoint)) {
-    url_style <- "URL_STYLE 'vhost'"
-  } else if (type == "S3") {
-    url_style <- "URL_STYLE 'path'"
-  }
-  
+
   if (!is.null(url_style)){
     url_style <- g("URL_STYLE '{url_style}'")
+  } else { 
+    if (grepl('amazonaws.com', endpoint)) {
+      url_style <- "URL_STYLE 'vhost'"
+    } else if (type == "S3") {
+      url_style <- "URL_STYLE 'path'"
+    }
   }
+
 
   if (!is.null(bucket)) {
     bucket <- g("SCOPE 's3://{bucket}'")
   }
 
-  if(!is.null(session_token) || session_token == "") {
+  if(!is.null(session_token) || session_token != "") {
     session_token <- g("SESSION_TOKEN '{session_token}'")
   }
 
