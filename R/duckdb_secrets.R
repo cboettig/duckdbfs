@@ -25,7 +25,7 @@ duckdb_secrets <- function(key = Sys.getenv("AWS_ACCESS_KEY_ID", ""),
                            url_style = NULL,
                            use_ssl = Sys.getenv("AWS_HTTPS", "TRUE"),
                            url_compatibility_mode = TRUE,
-                           session_token = Sys.getenv("AWS_SESSION_TOKEN", NULL),
+                           session_token = Sys.getenv("AWS_SESSION_TOKEN", ""),
                            type = "S3",
                            conn = cached_connection()) {
 
