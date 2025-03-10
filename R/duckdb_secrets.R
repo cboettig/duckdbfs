@@ -20,12 +20,12 @@ duckdb_secrets <- function(key = Sys.getenv("AWS_ACCESS_KEY_ID", ""),
                            secret = Sys.getenv("AWS_SECRET_ACCESS_KEY", ""),
                            endpoint = Sys.getenv("AWS_S3_ENDPOINT",
                                                  "s3.amazonaws.com"),
-                           region = "us-east-1",
+                           region = Sys.getenv("AWS_REGION",  "us-east-1"),
                            bucket = NULL,
                            url_style = NULL,
-                           use_ssl = Sys.getenv("AWS_S3_SSL", "TRUE"),
+                           use_ssl = Sys.getenv("AWS_HTTPS", "TRUE"),
                            url_compatibility_mode = TRUE,
-                           session_token = NULL,
+                           session_token = Sys.getenv("AWS_SESSION_TOKEN", NULL),
                            type = "S3",
                            conn = cached_connection()) {
 
@@ -34,7 +34,9 @@ duckdb_secrets <- function(key = Sys.getenv("AWS_ACCESS_KEY_ID", ""),
     url_style <- "URL_STYLE 'vhost'"
   } else if (type == "S3") {
     url_style <- "URL_STYLE 'path'"
-  } else if (!is.null(url_style)){
+  }
+  
+  if (!is.null(url_style)){
     url_style <- g("URL_STYLE '{url_style}'")
   }
 
@@ -42,7 +44,7 @@ duckdb_secrets <- function(key = Sys.getenv("AWS_ACCESS_KEY_ID", ""),
     bucket <- g("SCOPE 's3://{bucket}'")
   }
 
-  if(!is.null(session_token)) {
+  if(!is.null(session_token) || session_token == "") {
     session_token <- g("SESSION_TOKEN '{session_token}'")
   }
 

@@ -8,12 +8,12 @@ duckdb_secrets(
   key = Sys.getenv("AWS_ACCESS_KEY_ID", ""),
   secret = Sys.getenv("AWS_SECRET_ACCESS_KEY", ""),
   endpoint = Sys.getenv("AWS_S3_ENDPOINT", "s3.amazonaws.com"),
-  region = "us-east-1",
+  region = Sys.getenv("AWS_REGION", "us-east-1"),
   bucket = NULL,
   url_style = NULL,
-  use_ssl = Sys.getenv("AWS_S3_SSL", "TRUE"),
+  use_ssl = Sys.getenv("AWS_HTTPS", "TRUE"),
   url_compatibility_mode = TRUE,
-  session_token = NULL,
+  session_token = Sys.getenv("AWS_SESSION_TOKEN", NULL),
   type = "S3",
   conn = cached_connection()
 )
