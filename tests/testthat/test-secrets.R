@@ -5,4 +5,5 @@ status <- duckdb_secrets()
 
 expect_true(status == 1)
 
-}
+})
+
