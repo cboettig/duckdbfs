@@ -89,19 +89,16 @@ test_that("write_dataset to s3:", {
   config <- jsonlite::fromJSON(p$stdout)
 
   minioclient::mc_mb("play/duckdbfs")
+
+  s3_secrets(config$accessKey, config$secretKey, config$URL)
+
   mtcars |> dplyr::group_by(cyl, gear) |>
-  write_dataset(
-                "s3://duckdbfs/mtcars.parquet",
-                s3_access_key_id = config$accessKey,
-                s3_secret_access_key = config$secretKey,
-                s3_endpoint = config$URL,
-                s3_use_ssl=TRUE,
-                s3_url_style="path"
-                )
+  write_dataset("s3://duckdbfs/mtcars.parquet")
 
   expect_true(TRUE)
   minioclient::mc("rb --force play/duckdbfs")
-
+  
+  close_connection()
 })
 
 mc_config_get <- function(alias="play"){
