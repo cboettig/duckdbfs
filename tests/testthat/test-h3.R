@@ -4,6 +4,7 @@ test_that("h3", {
   skip_if_offline() # needs to be able to load the spatial module
   skip_if_not_installed("sf")
   skip_on_cran()
+  skip_on_os("windows") # h3 extension not built for windows(?)
 
   library(dplyr)
   load_h3()
