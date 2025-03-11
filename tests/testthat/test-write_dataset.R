@@ -50,7 +50,7 @@ test_that("write_dataset partitions", {
   expect_true(any(grepl("cyl=4", parts)))
 
   path <- file.path(tempdir(), "mtcars2")
-  mtcars |> write_dataset(path, partitioning = "cyl", overwrite=FALSE)
+  mtcars |> write_dataset(path, partitioning = "cyl", overwrite=TRUE)
   expect_true(file.exists(path))
   df <- open_dataset(path)
   expect_s3_class(df, "tbl")
@@ -90,7 +90,7 @@ test_that("write_dataset to s3:", {
 
   minioclient::mc_mb("play/duckdbfs")
 
-  s3_secrets(config$accessKey, config$secretKey, config$URL)
+  duckdb_secrets(config$accessKey, config$secretKey, gsub("https://", "", config$URL))
 
   mtcars |> dplyr::group_by(cyl, gear) |>
   write_dataset("s3://duckdbfs/mtcars.parquet")
