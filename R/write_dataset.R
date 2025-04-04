@@ -100,12 +100,14 @@ as_dataset <- function(df, conn = cached_connection()) {
 
 
 
-#' Write H3 hexagon data out as an h3j-compliant JSON file
-#' NOTE: the column containing H3 hashes must be named `hexid`
+#' Write a geojson file
 #'
 #' @inheritParams write_dataset
 #' @examplesIf interactive()
-#' # example code
+#' local_file <-  system.file("extdata/spatial-test.csv", package="duckdbfs")
+#' load_spatial()
+#' tbl <- open_dataset(local_file, format='csv')
+#' write_geo(tbl, "spatial.geojson")
 #'
 #' @export
 write_geo <- function(dataset, path, conn = cached_connection()) {
