@@ -1,7 +1,8 @@
-# duckdbfs 0.0.9
+# duckdbfs 0.1.0
 
-* Add `to_h3j` method for streaming data to H3J format 
-
+* Adds `to_h3j()` method for streaming data to H3J format 
+* Adds `duckdb_secrets()` as more modern [credential manager](https://duckdb.org/docs/stable/configuration/secrets_manager.html)
+* Adds `write_geo()` method, currently writes geojson [#37](https://github.com/cboettig/duckdbfs/issues/37)
 
 # duckdbfs 0.0.9
 
