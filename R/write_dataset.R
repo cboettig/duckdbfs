@@ -94,3 +94,27 @@ as_dataset <- function(df, conn = cached_connection()) {
   }
   return(df)
 }
+
+
+
+
+
+
+#' Write H3 hexagon data out as an h3j-compliant JSON file
+#' NOTE: the column containing H3 hashes must be named `hexid`
+#'
+#' @inheritParams write_dataset
+#' @examplesIf interactive()
+#' # example code
+#'
+#' @export
+write_geo <- function(dataset, path, conn = cached_connection()) {
+  cols <- paste(colnames(dataset), collapse = ", ")
+  sql <- dbplyr::sql_render(dataset)
+  q <- glue::glue("
+    COPY ({sql}) TO '{path}'
+    WITH (FORMAT gdal, DRIVER 'GeoJSON',
+          LAYER_CREATION_OPTIONS 'WRITE_BBOX=YES');
+  ")
+  DBI::dbExecute(conn, q)
+}

@@ -97,7 +97,7 @@ test_that("write_dataset to s3:", {
 
   expect_true(TRUE)
   minioclient::mc("rb --force play/duckdbfs")
-  
+
   close_connection()
 })
 
@@ -115,5 +115,29 @@ mc_config_get <- function(alias="play"){
   config$URL <- config$url
   config
 }
+
+
+
+
+
+
+test_that("write_geo", {
+
+  skip_on_cran()
+  skip_if_not_installed("sf")
+
+  ## write from an on-disk dataset
+  local_file <-  system.file("extdata/spatial-test.csv", package="duckdbfs")
+  load_spatial()
+  tbl <- open_dataset(local_file, format='csv')
+  path <- file.path(tempdir(), "spatial.geojson")
+  write_geo(tbl, path)
+
+  expect_true(file.exists(path))
+  df <- sf::st_read(path)
+  expect_s3_class(df, "sf")
+
+})
+
 
 
