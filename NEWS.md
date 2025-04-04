@@ -1,5 +1,10 @@
 # duckdbfs 0.0.9
 
+* Add `to_h3j` method for streaming data to H3J format 
+
+
+# duckdbfs 0.0.9
+
 * Restore default to non-nightly. 
 
 # duckdbfs 0.0.8
