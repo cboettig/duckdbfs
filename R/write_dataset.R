@@ -100,9 +100,15 @@ as_dataset <- function(df, conn = cached_connection()) {
 
 
 
-#' Write a geojson file
+#' Write a spatial file with gdal
 #'
 #' @inheritParams write_dataset
+#' @param driver driver, see <https://duckdb.org/docs/stable/extensions/spatial/gdal>
+#' @param layer_creation_options to GDAL, see <https://duckdb.org/docs/stable/extensions/spatial/gdal>
+#'
+#' @details NOTE: at this time, duckdb's pre-packaged GDAL does not support s3 writes,
+#' and will produce a "Error: Not implemented Error: GDAL Error (6): Seek not supported on writable /vsis3/ files".
+#' Use to_geojson() instead.
 #' @examplesIf interactive()
 #' local_file <-  system.file("extdata/spatial-test.csv", package="duckdbfs")
 #' load_spatial()
@@ -110,13 +116,58 @@ as_dataset <- function(df, conn = cached_connection()) {
 #' write_geo(tbl, "spatial.geojson")
 #'
 #' @export
-write_geo <- function(dataset, path, conn = cached_connection()) {
+write_geo <- function(dataset,
+                      path,
+                      conn = cached_connection(),
+                      driver = 'GeoJSON',
+                      layer_creation_options = 'WRITE_BBOX=YES') {
   cols <- paste(colnames(dataset), collapse = ", ")
   sql <- dbplyr::sql_render(dataset)
   q <- glue::glue("
     COPY ({sql}) TO '{path}'
-    WITH (FORMAT gdal, DRIVER 'GeoJSON',
-          LAYER_CREATION_OPTIONS 'WRITE_BBOX=YES');
+    WITH (FORMAT gdal, DRIVER '{driver}',
+          LAYER_CREATION_OPTIONS '{layer_creation_options}');
   ")
   DBI::dbExecute(conn, q)
 }
+
+
+
+#' Write geojson using duckdb's native JSON writer
+#'
+#' @inheritParams write_dataset
+#' @examplesIf interactive()
+#' # example code
+#'
+#' @export
+to_geojson <- function(dataset, path, conn = cached_connection(), col = "iso_a3") {
+
+  # fixme need to manually unpack cols, vect cols this doesn't work:
+  #cols <- paste(colnames(dataset), collapse = ", ")
+  #cols <- cols[cols != "geom" & cols != "geometry"]
+
+  # remove geometry column
+  collection <- glue::glue_sql("'FeatureCollection'", .con = conn)
+  sql <- dbplyr::sql_render(dataset)
+
+
+
+  q <- glue::glue("
+   COPY (SELECT json_group_array(
+                {'type': 'Feature',
+                 'properties': struct_pack(<col>),
+                 'geometry': ST_AsGeoJSON(geom)
+                }) as features,
+                <collection> as type
+         FROM (<sql>)) TO '<path>';
+  ", .open="<", .close=">")
+
+  DBI::dbExecute(conn, q)
+}
+
+
+local_file <-  system.file("extdata/world.fgb", package="duckdbfs")
+dataset <- open_dataset(local_file, format='sf') |> head(3)
+dataset |> to_geojson("testme.json")
+terra::vect("testme.json")
+
