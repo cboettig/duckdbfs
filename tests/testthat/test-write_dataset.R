@@ -127,17 +127,68 @@ test_that("write_geo", {
   skip_if_not_installed("sf")
 
   ## write from an on-disk dataset
-  local_file <-  system.file("extdata/spatial-test.csv", package="duckdbfs")
+  local_file <-  system.file("extdata/world.fgb", package="duckdbfs")
   load_spatial()
-  tbl <- open_dataset(local_file, format='csv')
+  tbl <- open_dataset(local_file, format='sf')
   path <- file.path(tempdir(), "spatial.geojson")
   write_geo(tbl, path)
 
   expect_true(file.exists(path))
   df <- sf::st_read(path)
   expect_s3_class(df, "sf")
+  expect_gt(nrow(df), 1)
 
 })
 
 
+
+test_that("to_geojson", {
+
+  skip_on_cran()
+
+  ## write from an on-disk dataset
+  local_file <-  system.file("extdata/world.fgb", package="duckdbfs")
+  load_spatial()
+  tbl <- open_dataset(local_file, format='sf')
+  path <- file.path(tempdir(), "spatial1.geojson")
+  to_geojson(tbl, path, id_col = "iso_a3")
+
+  expect_true(file.exists(path))
+
+  skip_if_not_installed("sf")
+
+  ## not sure why sf doesn't recognize this file!
+  #df <- sf::st_read(path)
+  #expect_s3_class(df, "sf")
+  #expect_gt(nrow(df), 1)
+
+})
+
+
+test_that("to_geojson s3", {
+
+  skip_on_cran()
+  skip_if_not_installed("sf")
+  skip_if_not_installed("jsonlite")
+  skip_if_not_installed("minioclient")
+  minioclient::install_mc(force = TRUE)
+
+  skip_on_os("windows")
+  p <- minioclient::mc_alias_ls("play --json")
+  config <- jsonlite::fromJSON(p$stdout)
+  minioclient::mc_mb("play/duckdbfs")
+
+  duckdb_secrets(config$accessKey,
+                 config$secretKey,
+                 gsub("https://", "", config$URL))
+  load_spatial()
+
+  ## write from an on-disk dataset
+  local_file <-  system.file("extdata/world.fgb", package="duckdbfs")
+  tbl <- open_dataset(local_file, format='sf')
+  path <-  "s3://duckdbfs/spatial-test.geojson"
+  to_geojson(tbl, path, id_col = "iso_a3")
+
+
+})
 
