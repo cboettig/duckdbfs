@@ -151,7 +151,7 @@ test_that("to_geojson", {
   load_spatial()
   tbl <- open_dataset(local_file, format='sf')
   path <- file.path(tempdir(), "spatial1.geojson")
-  to_geojson(tbl, path)
+  to_geojson(tbl, path, id_col = "iso_a3")
 
   expect_true(file.exists(path))
 
@@ -187,7 +187,7 @@ test_that("to_geojson s3", {
   local_file <-  system.file("extdata/world.fgb", package="duckdbfs")
   tbl <- open_dataset(local_file, format='sf')
   path <-  "s3://duckdbfs/spatial-test.geojson"
-  to_geojson(tbl, path)
+  to_geojson(tbl, path, id_col = "iso_a3")
 
 
 })

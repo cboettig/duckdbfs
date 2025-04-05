@@ -142,24 +142,29 @@ write_geo <- function(dataset,
 to_geojson <- function(dataset, path, conn = cached_connection(),
                        id_col = "iso_a3") {
 
-  # fixme need to manually unpack cols, vect cols this doesn't work:
-  #cols <- paste(colnames(dataset), collapse = ", ")
-  #cols <- cols[cols != "geom" & cols != "geometry"]
+  if ("geom" %in% colnames(dataset)) {
+    dataset <- dplyr::rename(dataset,geometry = geom)
+  }
+
+
+
 
   # remove geometry column
   collection <- glue::glue_sql("'FeatureCollection'", .con = conn)
   sql <- dbplyr::sql_render(dataset)
 
 
-
   q <- glue::glue("
-   COPY (SELECT json_group_array(
+   COPY (
+     WITH t1 AS (<sql>)
+     SELECT json_group_array(
                 {'type': 'Feature',
-                 'properties': struct_pack(<id_col>),
-                 'geometry': ST_AsGeoJSON(geom)
+                 'properties': {'<id_col>': t1.<id_col>},
+                 'geometry': ST_AsGeoJSON(t1.geometry)
                 }) as features,
                 <collection> as type
-         FROM (<sql>)) TO '<path>';
+         FROM t1
+  ) TO '<path>' (FORMAT json);
   ", .open="<", .close=">")
 
   DBI::dbExecute(conn, q)
@@ -170,4 +175,7 @@ to_geojson <- function(dataset, path, conn = cached_connection(),
 #dataset <- open_dataset(local_file, format='sf') |> head(3)
 #dataset |> to_geojson("testme.json")
 #terra::vect("testme.json")
+
+
+utils::globalVariables(c("geom", "geometry"), package="duckdbfs")
 
