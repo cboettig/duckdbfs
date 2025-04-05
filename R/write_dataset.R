@@ -136,11 +136,11 @@ write_geo <- function(dataset,
 #' Write geojson using duckdb's native JSON writer
 #'
 #' @inheritParams write_dataset
-#' @examplesIf interactive()
-#' # example code
+#' @param id_col pick a column as the id column
 #'
 #' @export
-to_geojson <- function(dataset, path, conn = cached_connection(), col = "iso_a3") {
+to_geojson <- function(dataset, path, conn = cached_connection(),
+                       id_col = "iso_a3") {
 
   # fixme need to manually unpack cols, vect cols this doesn't work:
   #cols <- paste(colnames(dataset), collapse = ", ")
@@ -155,7 +155,7 @@ to_geojson <- function(dataset, path, conn = cached_connection(), col = "iso_a3"
   q <- glue::glue("
    COPY (SELECT json_group_array(
                 {'type': 'Feature',
-                 'properties': struct_pack(<col>),
+                 'properties': struct_pack(<id_col>),
                  'geometry': ST_AsGeoJSON(geom)
                 }) as features,
                 <collection> as type
@@ -166,8 +166,8 @@ to_geojson <- function(dataset, path, conn = cached_connection(), col = "iso_a3"
 }
 
 
-local_file <-  system.file("extdata/world.fgb", package="duckdbfs")
-dataset <- open_dataset(local_file, format='sf') |> head(3)
-dataset |> to_geojson("testme.json")
-terra::vect("testme.json")
+#local_file <-  system.file("extdata/world.fgb", package="duckdbfs")
+#dataset <- open_dataset(local_file, format='sf') |> head(3)
+#dataset |> to_geojson("testme.json")
+#terra::vect("testme.json")
 
