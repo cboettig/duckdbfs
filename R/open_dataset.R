@@ -119,7 +119,7 @@ select_format <- function(sources, format) {
   }
 
   if( fs::is_dir(sources) ) {
-    sources <- fs::dir_ls(sources, recurse = TRUE, type="file")
+    sources <- fs::dir_ls(sources, recurse = TRUE, type = "file")
     sources <- sources[[1]]
   }
 
@@ -189,7 +189,9 @@ query_string <- function(tblname,
   )
 
   # append any custom options
-  all_options <- c(options, parser_options)
+  pairs <- paste(names(parser_options), "=", parser_options,
+                 sep = "", collapse = ", ")
+  all_options <- paste0(c(options, pairs), collapse=", ")
 
   paste0(
     paste("CREATE", mode, tblname, "AS SELECT * FROM "),
