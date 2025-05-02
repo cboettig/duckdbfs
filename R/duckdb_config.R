@@ -177,6 +177,9 @@ load_spatial <- function(conn = cached_connection(),
   load_extension("spatial", conn = conn, nightly = nightly, force = force)
 }
 
+
+
+
 duckdb_extensions <- function(conn = cached_connection()) {
   query <- "SELECT * FROM duckdb_extensions();"
   DBI::dbGetQuery(conn, query)

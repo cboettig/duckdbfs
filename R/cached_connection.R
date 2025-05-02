@@ -36,7 +36,7 @@ duckdbfs_env <- new.env()
 #'  `connect(with_spatial = FALSE)`.
 #' @param with_h3 install (if missing) and load  the h3 spatial index extension.
 #' @returns a [duckdb::duckdb()] connection object
-#' @aliases connect
+#' @aliases cached_connection connect
 #' @examples
 #'
 #' con <- cached_connection()
@@ -79,28 +79,26 @@ cached_connection <- function(dbdir = ":memory:",
                            bigint = bigint,
                            config = config)
 
+    if (with_spatial) {
+      # can't use load_spatial here, creates infinite recursion
+      DBI::dbExecute(conn, "INSTALL spatial;")
+      DBI::dbExecute(conn, "LOAD spatial;")
+    }
 
-    options(duckdbfs_conn = conn)
-    # assign("duckdbfs_conn", conn, envir = duckdbfs_env)
+    if (with_h3) {
+      DBI::dbExecute(conn, "INSTALL h3 from community;")
+      DBI::dbExecute(conn, "LOAD h3;")
+    }
 
     if (autoload_exts) {
       DBI::dbExecute(conn, "SET autoinstall_known_extensions=1;")
       DBI::dbExecute(conn, "SET autoload_known_extensions=1;")
     }
 
-    if (with_spatial) {
-      load_spatial(conn)
-    }
-
-    if(with_h3) {
-      load_h3(conn)
-    }
+    options(duckdbfs_conn = conn)
+    # assign("duckdbfs_conn", conn, envir = duckdbfs_env)
 
   }
-
-#' @export
-connect <- cached_connection()
-
 
   ## create finalizer to avoid duckdb complaining that connection
   ## was not shut down before gc
@@ -109,6 +107,10 @@ connect <- cached_connection()
 
   conn
 }
+
+#' connect
+#' @aliases cached_connection
+connect <- cached_connection
 
 #' close connection
 #'
