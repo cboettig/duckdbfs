@@ -14,7 +14,7 @@
 #'  column name across all files (NOTE: this can add considerably to
 #'  the initial execution time)
 #' @param format The format of the dataset files. One of `"parquet"`, `"csv"`,
-#' `"tsv"`, or `"sf"` (spatial vector files supported by the sf package / GDAL).
+#'  or `"sf"` (spatial vector files supported by the sf package / GDAL).
 #'  if no argument is provided, the function will try to guess the type based
 #'  on minimal heuristics.
 #' @param conn A connection to a database.
@@ -31,6 +31,8 @@
 #' the table name.
 #' @param recursive should we assume recursive path? default TRUE. Set to FALSE
 #' if trying to open a single, un-partitioned file.
+#' @param parser_options additional options passed to the parser, e.g. to
+#' read_csv(), see <https://duckdb.org/docs/stable/data/csv/overview.html#parameters>
 #' @param ... optional additional arguments passed to [duckdb_s3_config()].
 #'   Note these apply after those set by the URI notation and thus may be used
 #'   to override or provide settings not supported in that format.
@@ -61,12 +63,13 @@ open_dataset <- function(sources,
                          schema = NULL,
                          hive_style = TRUE,
                          unify_schemas = FALSE,
-                         format = c("parquet", "csv", "tsv", "sf"),
+                         format = c("parquet", "csv", "sf"),
                          conn = cached_connection(),
                          tblname = tmp_tbl_name(),
                          mode = "VIEW",
                          filename = FALSE,
                          recursive = TRUE,
+                         parser_options = list(),
                          ...) {
 
   format <- select_format(sources, format)
@@ -90,7 +93,8 @@ open_dataset <- function(sources,
                              mode = mode,
                              hive_partitioning = hive_style,
                              union_by_name = unify_schemas,
-                             filename = filename
+                             filename = filename,
+                             parser_options = parser_options
                              )
 
   DBI::dbSendQuery(conn, view_query)
@@ -155,7 +159,8 @@ query_string <- function(tblname,
                          mode = c("VIEW", "TABLE"),
                          hive_partitioning = TRUE,
                          union_by_name = FALSE,
-                         filename = FALSE) {
+                         filename = FALSE, 
+                         parser_options = list()) {
  # format <- match.arg(format)
   scanner <- switch(format,
                     "parquet" = "parquet_scan(",
@@ -172,9 +177,9 @@ query_string <- function(tblname,
          "TABLE" = "TABLE")
 
   tabular_options <- paste0(
-    ", HIVE_PARTITIONING=",hive_partitioning,
-    ", UNION_BY_NAME=",union_by_name,
-    ", FILENAME=",filename)
+    ", HIVE_PARTITIONING=", hive_partitioning,
+    ", UNION_BY_NAME=", union_by_name,
+    ", FILENAME=", filename)
 
   options <- switch(format,
                     "parquet" = tabular_options,
@@ -182,9 +187,13 @@ query_string <- function(tblname,
                     "sf" = "",
                     tabular_options
   )
+
+  # append any custom options
+  all_options <- c(options, parser_options)
+
   paste0(
     paste("CREATE", mode, tblname, "AS SELECT * FROM "),
-    paste0(scanner, source_uris, options,
+    paste0(scanner, source_uris, all_options,
            ");")
   )
 }

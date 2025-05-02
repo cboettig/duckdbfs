@@ -30,7 +30,13 @@ duckdbfs_env <- new.env()
 #' @inheritParams duckdb::duckdb
 #' @param autoload_exts should we auto-load extensions?  TRUE by default,
 #' can be configured with `options(duckdbfs_autoload_extensions = FALSE)`
+#' @param with_spatial install (if missing) and load spatial extension, default TRUE.
+#'  Opt out by closing any active cached connection first (with
+#'  `close_connection()`) and re-instantiating the with 
+#'  `connect(with_spatial = FALSE)`.
+#' @param with_h3 install (if missing) and load  the h3 spatial index extension.
 #' @returns a [duckdb::duckdb()] connection object
+#' @aliases connect
 #' @examples
 #'
 #' con <- cached_connection()
@@ -44,7 +50,9 @@ cached_connection <- function(dbdir = ":memory:",
                               config = list(temp_directory = tempfile()),
                               autoload_exts =
                                 getOption("duckdbfs_autoload_extensions",
-                                          TRUE)
+                                          TRUE),
+                              with_spatial = TRUE,
+                              with_h3 = TRUE
                               ) {
 
   #conn <- mget("duckdbfs_conn", envir = duckdbfs_env,
@@ -79,7 +87,20 @@ cached_connection <- function(dbdir = ":memory:",
       DBI::dbExecute(conn, "SET autoinstall_known_extensions=1;")
       DBI::dbExecute(conn, "SET autoload_known_extensions=1;")
     }
+
+    if (with_spatial) {
+      load_spatial(conn)
+    }
+
+    if(with_h3) {
+      load_h3(conn)
+    }
+
   }
+
+#' @export
+connect <- cached_connection()
+
 
   ## create finalizer to avoid duckdb complaining that connection
   ## was not shut down before gc
