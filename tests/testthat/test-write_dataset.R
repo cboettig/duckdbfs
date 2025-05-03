@@ -78,22 +78,21 @@ test_that("write_dataset, remote input", {
 
 test_that("write_dataset to s3:", {
 
+  skip_on_os("windows")
   skip_if_offline()
   skip_on_cran()
   skip_if_not_installed("jsonlite")
   skip_if_not_installed("minioclient")
+  
   minioclient::install_mc(force = TRUE)
 
-  skip_on_os("windows")
   p <- minioclient::mc_alias_ls("play --json")
   config <- jsonlite::fromJSON(p$stdout)
 
   minioclient::mc_mb("play/duckdbfs")
-
   duckdb_secrets(config$accessKey, config$secretKey, gsub("https://", "", config$URL))
 
-  mtcars |> dplyr::group_by(cyl, gear) |>
-  write_dataset("s3://duckdbfs/mtcars.parquet")
+  mtcars |> write_dataset("s3://duckdbfs/mtcars.parquet")
 
   expect_true(TRUE)
   minioclient::mc("rb --force play/duckdbfs")

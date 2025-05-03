@@ -15,6 +15,7 @@ open_dataset(
   mode = "VIEW",
   filename = FALSE,
   recursive = TRUE,
+  parser_options = list(),
   ...
 )
 }
@@ -33,7 +34,7 @@ column name across all files (NOTE: this can add considerably to
 the initial execution time)}
 
 \item{format}{The format of the dataset files. One of \code{"parquet"}, \code{"csv"},
-\code{"tsv"}, or \code{"sf"} (spatial vector files supported by the sf package / GDAL).
+or \code{"sf"} (spatial vector files supported by the sf package / GDAL).
 if no argument is provided, the function will try to guess the type based
 on minimal heuristics.}
 
@@ -55,6 +56,9 @@ the table name.}
 
 \item{recursive}{should we assume recursive path? default TRUE. Set to FALSE
 if trying to open a single, un-partitioned file.}
+
+\item{parser_options}{additional options passed to the parser, e.g. to
+read_csv(), see \url{https://duckdb.org/docs/stable/data/csv/overview.html#parameters}}
 
 \item{...}{optional additional arguments passed to \code{\link[=duckdb_s3_config]{duckdb_s3_config()}}.
 Note these apply after those set by the URI notation and thus may be used
@@ -88,5 +92,13 @@ open_dataset(c(f1,f2,f3), unify_schemas = TRUE)
 efi <- open_dataset("s3://neon4cast-scores/parquet/aquatics",
                     s3_access_key_id="",
                     s3_endpoint="data.ecoforecast.org")
+
+# Use parser-options for non-standard csv:
+ cars <- tempfile() # dummy data
+ write.table(mtcars, cars, row.names = FALSE)
+
+# Note nested quotes on parser option for delimiter:
+ df <- open_dataset(cars, format = "csv",
+                    parser_options = c(delim = "' '", header = TRUE))
 \dontshow{\}) # examplesIf}
 }

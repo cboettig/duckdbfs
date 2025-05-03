@@ -1,3 +1,9 @@
+# duckdbfs 0.1.1
+
+* `cached_connection()` is aliased as `connect()`, reflecting its use as more than an under-the-hood utility. 
+* `load_h3()` and `load_spatial()` are called by default.  Opt out by closing any active cached connection first (with `close_connection()`) and re-instantiating the with `connect(with_h3 = FALSE)` etc.  
+
+
 # duckdbfs 0.1.0
 
 * Adds `to_h3j()` method for streaming data to H3J format 

@@ -79,3 +79,21 @@ test_that("s3", {
   expect_s3_class(gbif, "tbl")
 
 })
+
+
+
+test_that("custom csv parsing", {
+  cars <- tempfile()
+  write.table(mtcars, cars, row.names = FALSE)
+  df <- open_dataset(cars, format = "csv", parser_options = c(delim = "' '", header = TRUE))
+  expect_true(inherits(df, "tbl_duckdb_connection"))
+  df <- dplyr::collect(df)
+  expect_true(nrow(df) > 1)
+  expect_true(ncol(df) > 1)
+  expect_true("mpg" %in% names(df))
+  unlink(cars)
+
+  close_connection()
+
+
+})
