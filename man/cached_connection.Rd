@@ -12,7 +12,7 @@ cached_connection(
   config = list(temp_directory = tempfile()),
   autoload_exts = getOption("duckdbfs_autoload_extensions", TRUE),
   with_spatial = TRUE,
-  with_h3 = TRUE
+  with_h3 = not_windows()
 )
 }
 \arguments{
