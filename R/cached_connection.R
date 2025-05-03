@@ -108,9 +108,7 @@ cached_connection <- function(dbdir = ":memory:",
   conn
 }
 
-#' connect
-#' @aliases cached_connection
-connect <- cached_connection
+
 
 #' close connection
 #'
@@ -139,4 +137,12 @@ close_connection <- function(conn = cached_connection()) {
 
   rm(conn)
 }
+
+
+
+#' @export
+connect <- cached_connection
+
+
+
 
