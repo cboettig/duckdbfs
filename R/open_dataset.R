@@ -57,6 +57,14 @@
 #' efi <- open_dataset("s3://neon4cast-scores/parquet/aquatics",
 #'                     s3_access_key_id="",
 #'                     s3_endpoint="data.ecoforecast.org")
+#' 
+#' # Use parser-options for non-standard csv:
+#'  cars <- tempfile() # dummy data
+#'  write.table(mtcars, cars, row.names = FALSE)
+#' 
+#' # Note nested quotes on parser option for delimiter:
+#'  df <- open_dataset(cars, format = "csv",
+#'                     parser_options = c(delim = "' '", header = TRUE))
 #'
 #' @export
 open_dataset <- function(sources,
