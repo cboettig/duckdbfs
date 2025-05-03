@@ -189,13 +189,14 @@ query_string <- function(tblname,
   )
 
   # append any custom options
-  pairs <- paste(names(parser_options), "=", parser_options,
+  if(length(parser_options) > 0) {
+    pairs <- paste(names(parser_options), "=", parser_options,
                  sep = "", collapse = ", ")
-  all_options <- paste0(c(options, pairs), collapse=", ")
-
+    options <- paste0(c(options, pairs), collapse=", ")
+  }
   paste0(
     paste("CREATE", mode, tblname, "AS SELECT * FROM "),
-    paste0(scanner, source_uris, all_options,
+    paste0(scanner, source_uris, options,
            ");")
   )
 }
