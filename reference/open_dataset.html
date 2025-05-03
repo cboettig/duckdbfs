@@ -56,6 +56,7 @@ notation.</p>
 <span>  mode <span class="op">=</span> <span class="st">"VIEW"</span>,</span>
 <span>  filename <span class="op">=</span> <span class="cn">FALSE</span>,</span>
 <span>  recursive <span class="op">=</span> <span class="cn">TRUE</span>,</span>
+<span>  parser_options <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span><span class="op">)</span>,</span>
 <span>  <span class="va">...</span></span>
 <span><span class="op">)</span></span></code></pre></div>
     </div>
@@ -87,7 +88,7 @@ the initial execution time)</p></dd>
 
 <dt id="arg-format">format<a class="anchor" aria-label="anchor" href="#arg-format"></a></dt>
 <dd><p>The format of the dataset files. One of <code>"parquet"</code>, <code>"csv"</code>,
-<code>"tsv"</code>, or <code>"sf"</code> (spatial vector files supported by the sf package / GDAL).
+or <code>"sf"</code> (spatial vector files supported by the sf package / GDAL).
 if no argument is provided, the function will try to guess the type based
 on minimal heuristics.</p></dd>
 
@@ -119,6 +120,11 @@ the table name.</p></dd>
 <dt id="arg-recursive">recursive<a class="anchor" aria-label="anchor" href="#arg-recursive"></a></dt>
 <dd><p>should we assume recursive path? default TRUE. Set to FALSE
 if trying to open a single, un-partitioned file.</p></dd>
+
+
+<dt id="arg-parser-options">parser_options<a class="anchor" aria-label="anchor" href="#arg-parser-options"></a></dt>
+<dd><p>additional options passed to the parser, e.g. to
+read_csv(), see <a href="https://duckdb.org/docs/stable/data/csv/overview.html#parameters" class="external-link">https://duckdb.org/docs/stable/data/csv/overview.html#parameters</a></p></dd>
 
 
 <dt id="arg--">...<a class="anchor" aria-label="anchor" href="#arg--"></a></dt>
@@ -153,6 +159,14 @@ resulting data into memory.</p>
 <span class="r-in"><span><span class="va">efi</span> <span class="op">&lt;-</span> <span class="fu">open_dataset</span><span class="op">(</span><span class="st">"s3://neon4cast-scores/parquet/aquatics"</span>,</span></span>
 <span class="r-in"><span>                    s3_access_key_id<span class="op">=</span><span class="st">""</span>,</span></span>
 <span class="r-in"><span>                    s3_endpoint<span class="op">=</span><span class="st">"data.ecoforecast.org"</span><span class="op">)</span></span></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="co"># Use parser-options for non-standard csv:</span></span></span>
+<span class="r-in"><span> <span class="va">cars</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/tempfile.html" class="external-link">tempfile</a></span><span class="op">(</span><span class="op">)</span> <span class="co"># dummy data</span></span></span>
+<span class="r-in"><span> <span class="fu"><a href="https://rdrr.io/r/utils/write.table.html" class="external-link">write.table</a></span><span class="op">(</span><span class="va">mtcars</span>, <span class="va">cars</span>, row.names <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="co"># Note nested quotes on parser option for delimiter:</span></span></span>
+<span class="r-in"><span> <span class="va">df</span> <span class="op">&lt;-</span> <span class="fu">open_dataset</span><span class="op">(</span><span class="va">cars</span>, format <span class="op">=</span> <span class="st">"csv"</span>,</span></span>
+<span class="r-in"><span>                    parser_options <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span>delim <span class="op">=</span> <span class="st">"' '"</span>, header <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="op">}</span></span></span>
 </code></pre></div>
     </div>

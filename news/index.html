@@ -33,6 +33,13 @@
     </div>
 
     <div class="section level2">
+<h2 class="pkg-version" data-toc-text="0.1.1" id="duckdbfs-011">duckdbfs 0.1.1<a class="anchor" aria-label="anchor" href="#duckdbfs-011"></a></h2>
+<ul><li>
+<code><a href="../reference/cached_connection.html">cached_connection()</a></code> is aliased as <code><a href="../reference/cached_connection.html">connect()</a></code>, reflecting its use as more than an under-the-hood utility.</li>
+<li>
+<code><a href="../reference/load_h3.html">load_h3()</a></code> and <code><a href="../reference/load_spatial.html">load_spatial()</a></code> are called by default. Opt out by closing any active cached connection first (with <code><a href="../reference/close_connection.html">close_connection()</a></code>) and re-instantiating the with <code>connect(with_h3 = FALSE)</code> etc.</li>
+</ul></div>
+    <div class="section level2">
 <h2 class="pkg-version" data-toc-text="0.1.0" id="duckdbfs-010">duckdbfs 0.1.0<a class="anchor" aria-label="anchor" href="#duckdbfs-010"></a></h2><p class="text-muted">CRAN release: 2025-04-04</p>
 <ul><li>Adds <code><a href="../reference/to_h3j.html">to_h3j()</a></code> method for streaming data to H3J format</li>
 <li>Adds <code><a href="../reference/duckdb_secrets.html">duckdb_secrets()</a></code> as more modern <a href="https://duckdb.org/docs/stable/configuration/secrets_manager.html" class="external-link">credential manager</a>
