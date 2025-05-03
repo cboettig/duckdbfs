@@ -52,7 +52,7 @@ cached_connection <- function(dbdir = ":memory:",
                                 getOption("duckdbfs_autoload_extensions",
                                           TRUE),
                               with_spatial = TRUE,
-                              with_h3 = TRUE
+                              with_h3 = not_windows()
                               ) {
 
   #conn <- mget("duckdbfs_conn", envir = duckdbfs_env,
@@ -145,4 +145,6 @@ connect <- cached_connection
 
 
 
-
+not_windows <- function() {
+  tolower(Sys.info()[["sysname"]]) != "windows"
+}
