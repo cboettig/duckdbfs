@@ -61,7 +61,7 @@ ds <- open_dataset(urls, unify_schemas = TRUE)
 ds
 ```
 
-Use `filter()`, `select()`, etc from dplyr to subset and process data -- [any method supported by dbpylr](https://dbplyr.tidyverse.org/reference/index.html). Then use `dplyr::collect()` to trigger evaluation and ingest results of the query into R.
+Use `filter()`, `select()`, etc from dplyr to subset and process data -- [any method supported by dbplyr](https://dbplyr.tidyverse.org/reference/index.html). Then use `dplyr::collect()` to trigger evaluation and ingest results of the query into R.
 
 ## S3-based access
 
