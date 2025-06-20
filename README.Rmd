@@ -186,7 +186,7 @@ plot(sf_obj["name"])
 One very common operation are spatial joins, which can be a very powerful way to subset large data. Lets consider a set of point geometries representing the coordinates of major cities around the world:
 
 ```{r}
-url_cities <- "https://github.com/cboettig/duckdbfs/raw/spatial-read/inst/extdata/metro.fgb"
+url_cities <- "https://github.com/cboettig/duckdbfs/raw/main/inst/extdata/metro.fgb"
 cities <- open_dataset(url_cities, format="sf")
 ```
 
