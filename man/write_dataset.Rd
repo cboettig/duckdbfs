@@ -11,6 +11,7 @@ write_dataset(
   format = c("parquet", "csv"),
   partitioning = dplyr::group_vars(dataset),
   overwrite = TRUE,
+  options = list(),
   ...
 )
 }
@@ -28,6 +29,10 @@ or an in-memory data.frame.}
 
 \item{overwrite}{allow overwriting of existing files?}
 
+\item{options}{Additional arguments to COPY, see \url{https://duckdb.org/docs/stable/sql/statements/copy.html#copy--to-options}
+Note, uses duckdb native syntax, e.g. c("PER_THREAD_OUTPUT false"), for named arguments, see examples.
+(Recall SQL is case-insensitive).}
+
 \item{...}{additional arguments to \code{\link[=duckdb_s3_config]{duckdb_s3_config()}}}
 }
 \value{
@@ -42,5 +47,6 @@ write_dataset
 \dontshow{\}) # examplesIf}
 \dontshow{if (interactive()) (if (getRversion() >= "3.4") withAutoprint else force)(\{ # examplesIf}
 write_dataset(mtcars, tempdir())
+write_dataset(mtcars, tempdir(), options = c("PER_THREAD_OUTPUT FALSE", "RETURN_STATS TRUE"))
 \dontshow{\}) # examplesIf}
 }
