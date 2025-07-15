@@ -7,6 +7,11 @@ test_that("write_dataset", {
   ## write an in-memory dataset
   path <- file.path(tempdir(), "mtcars.parquet")
   write_dataset(mtcars, path)
+  expect_true(file.exists(path))
+  df <- open_dataset(path)
+  expect_s3_class(df, "tbl")
+
+  write_dataset(mtcars, path, options = c("PER_THREAD_OUTPUT FALSE", "FILENAME_PATTERN 'cars_{i}'"))
 
   expect_true(file.exists(path))
   df <- open_dataset(path)
@@ -41,7 +46,7 @@ test_that("write_dataset partitions", {
 
   mtcars |>
     group_by(cyl, gear) |>
-    write_dataset(path)
+    write_dataset(path, options = "FILENAME_PATTERN 'cars_{uuid}'")
 
   expect_true(dir.exists(path))
   df <- open_dataset(path)
@@ -54,6 +59,8 @@ test_that("write_dataset partitions", {
   expect_true(file.exists(path))
   df <- open_dataset(path)
   expect_s3_class(df, "tbl")
+
+  unlink(path, recursive=TRUE)
 
 })
 
@@ -190,4 +197,5 @@ test_that("to_geojson s3", {
 
 
 })
+
 

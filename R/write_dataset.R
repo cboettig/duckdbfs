@@ -8,6 +8,9 @@
 #' @param format export format
 #' @param partitioning names of columns to use as partition variables
 #' @param overwrite allow overwriting of existing files?
+#' @param options Additional arguments to COPY, see <https://duckdb.org/docs/stable/sql/statements/copy.html#copy--to-options>
+#' Note, uses duckdb native syntax, e.g. c("PER_THREAD_OUTPUT false"), for named arguments, see examples. 
+#' (Recall SQL is case-insensitive).
 #' @param ... additional arguments to [duckdb_s3_config()]
 #' @examplesIf interactive()
 #'   write_dataset(mtcars, tempfile())
@@ -15,6 +18,7 @@
 #' @export
 #' @examplesIf interactive()
 #' write_dataset(mtcars, tempdir())
+#' write_dataset(mtcars, tempdir(), options = c("PER_THREAD_OUTPUT FALSE", "RETURN_STATS TRUE"))
 #'
 write_dataset <- function(dataset,
                           path,
@@ -22,6 +26,7 @@ write_dataset <- function(dataset,
                           format = c("parquet", "csv"),
                           partitioning = dplyr::group_vars(dataset),
                           overwrite = TRUE,
+                          options = list(),
                           ...) {
 
   format <- match.arg(format)
@@ -55,11 +60,11 @@ write_dataset <- function(dataset,
 
   format <- toupper(format)
   format_by <- glue::glue("FORMAT {format}")
-  options_vec <- c(format_by, partition_by, allow_overwrite)
-  options <- glue::glue_collapse(options_vec, sep = ", ")
+  options_vec <- c(format_by, partition_by, allow_overwrite, options)
+  copy_options <- glue::glue_collapse(options_vec, sep = ", ")
 
   copy <- glue::glue("COPY {tblname} TO '{path}' ")
-  query <- glue::glue(copy, "({options})", ";")
+  query <- glue::glue(copy, "({copy_options})", ";")
   status <- DBI::dbSendQuery(conn, query)
   invisible(path)
 }
