@@ -1,14 +1,20 @@
 # duckdbfs 0.1.1
 
+* new function `duckdb_config()` streamlines common configurations, like `duckdb_config(threads = 1, memory_limit = '10GB')`
+* related helpers `duckdb_get_config()` shows any or all configuration settings, `duckdb_reset()` restores defaults.
+* new function `duckdb_extensions()` lists all available, installed, or loaded extensions and descriptions. 
 * `cached_connection()` is aliased as `connect()`, reflecting its use as more than an under-the-hood utility. 
 * `load_h3()` and `load_spatial()` are called by default.  Opt out by closing any active cached connection first (with `close_connection()`) and re-instantiating the with `connect(with_h3 = FALSE)` etc.  
-
+* `open_dataset()` gains the argument `parser_options` to pass arbitrary options to parsers such as duckdb's read_csv(), see <https://duckdb.org/docs/stable/data/csv/overview.html#parameters>.  
+* `write_dataset()` gains the argument `options` to support custom options controlling the COPY behavior writing to file, such as thread parallelism, file naming conventions, and more.  see <https://duckdb.org/docs/stable/sql/statements/copy.html#copy--to-options>
+* S3-based access will no longer automatically try recursion if path ends in a recognized extension, `.parquet`, `.csv`, or `.csv.gz`
 
 # duckdbfs 0.1.0
 
 * Adds `to_h3j()` method for streaming data to H3J format 
 * Adds `duckdb_secrets()` as more modern [credential manager](https://duckdb.org/docs/stable/configuration/secrets_manager.html)
 * Adds `write_geo()` method, currently writes geojson [#37](https://github.com/cboettig/duckdbfs/issues/37)
+* `cached_connection()` / `connect()` now supports `config` argument and sets a temporary directory to the R tempdir by default, allowing disk-backed storage when duckdb detects memory limits.  
 
 # duckdbfs 0.0.9
 
