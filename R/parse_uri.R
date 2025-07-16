@@ -24,32 +24,43 @@ parse_uri <- function(sources, conn = cached_connection(), recursive = TRUE) {
 
   if (grepl("^s3://", sources)) {
     # first strip any * for compatibility
-    sources <- gsub("/\\*+$", "", sources)
+    # sources <- gsub("/\\*+$", "", sources)
 
-    url <- url_parse(sources)
-    scheme <- url$query[["scheme"]]
-    use_ssl <- !identical(scheme, "http")
+    if(grepl("\\?", sources)) {
+      warning("using a query parameter to configure S3 is deprecated")
 
-    if(identical(url$username, "anonymous")) {
-      url$username <- ""
-      url$password <- ""
+      url <- url_parse(sources)
+      scheme <- url$query[["scheme"]]
+      use_ssl <- !identical(scheme, "http")
+
+      if(identical(url$username, "anonymous")) {
+        url$username <- ""
+        url$password <- ""
+      }
+
+      duckdb_s3_config(conn = conn,
+                      s3_access_key_id = url$username,
+                      s3_secret_access_key = url$password,
+                      s3_session_token = url$token,
+                      s3_endpoint = url$query[["endpoint_override"]],
+                      s3_region = url$query[["region"]],
+                      s3_use_ssl = as.integer(use_ssl))
+
+      sources <- paste0(url$scheme, "://", url$hostname, url$path)
     }
-
-    duckdb_s3_config(conn = conn,
-                     s3_access_key_id = url$username,
-                     s3_secret_access_key = url$password,
-                     s3_session_token = url$token,
-                     s3_endpoint = url$query[["endpoint_override"]],
-                     s3_region = url$query[["region"]],
-                     s3_use_ssl = as.integer(use_ssl))
-
-    sources <- paste0(url$scheme, "://", url$hostname, url$path)
   }
 
   if(recursive) {
-    # Don't use recursive directory globs if we know it is a local file.
+    # Don't use recursive directory globs if we know it is a local file,
+    # or if it has a standard extension,
+    # or already ends with a glob
     # Otherwise, we append the "/**".
-    if ( !fs::is_file(sources) ){
+    if ( !fs::is_file(sources) && 
+         !grepl("\\*$", sources) && 
+         (!grepl("\\.parquet$", sources) || 
+          !grepl("\\.csv$", sources) || 
+          !grepl("\\.csv.gz$", sources)  )
+       ){
       sources <- gsub("\\/$", "", sources)
       sources <- paste0(sources, "/**")
     }

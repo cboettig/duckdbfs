@@ -1,8 +1,77 @@
-# FIXME: should we expose a generic interface for setting any pragma listed in
-# https://duckdb.org/docs/sql/configuration.html
+
+#' duckdb configuration
+#' 
+#' @inheritParams open_dataset
+#' @param ... named argument of the parameters to set, see examples
+#' see all possible configuration options at <https://duckdb.org/docs/sql/configuration.html>
+#' @return the active duckdb connection, invisibly
+#' @details Note: in I/O bound tasks such as streaming data, it can be helpful to set 
+#' thread parallelism signifantly higher than avialable CPU cores.
+#' @seealso duckdb_reset, duckdb_get_config
+#' @export
+#' @examples
+#' duckdb_config(threads = 1, memory_limit = '10GB')
+#' duckdb_get_config("threads")
+#' duckdb_reset("threads")
+duckdb_config <- function(..., conn = cached_connection()) {
+    parameters <- list(...)
+    for(p in names(parameters)) {
+      cmd <- paste0("SET ", p, "='", parameters[p], "';")
+      DBI::dbExecute(conn, cmd)
+    }
+    invisible(conn)
+}
+
+
+#' duckdb reset configuration to default
+#' 
+#' @inheritParams open_dataset
+#' @param x parameter name
+#' @seealso duckdb_config, duckdb_get_config
+#' @export
+#' @examples
+#' duckdb_config(threads = 10)
+#' duckdb_get_config("threads")
+#' duckdb_reset("threads")
+duckdb_reset <- function(x, conn = cached_connection()) {
+    cmd <- paste0("RESET ", x, ";")
+    DBI::dbExecute(conn, cmd)
+    invisible(conn)
+}
+
+
+#' duckdb reset configuration to default
+#' 
+#' @inheritParams open_dataset
+#' @param x parameter name. Omit to see a table of all settings.
+#' @seealso duckdb_config, duckdb_get_config
+#' @export
+#' @examples
+#' # Full config table
+#' duckdb_get_config()
+#' 
+#' # look up single config value 
+#' duckdb_get_config("threads")
+#'
+#' # set a different value, test, reset.
+#' duckdb_config(threads = 10)
+#' duckdb_get_config("threads")
+#' duckdb_reset("threads")
+#' 
+duckdb_get_config <- function(x = NULL, conn = cached_connection()) {
+  cmd <- paste0("SELECT * FROM duckdb_settings()")
+  settings <- DBI::dbGetQuery(conn, cmd)
+  settings <- dplyr::as_tibble(settings)
+
+  if(is.null(x)) return(settings)
+
+  settings$value[settings$name == tolower(x)]
+}
 
 
 
+
+# internal
 duckdb_set <- function(x, conn = cached_connection()) {
   if(!is.null(x)) {
     name <- deparse(substitute(x))
@@ -178,11 +247,16 @@ load_spatial <- function(conn = cached_connection(),
 }
 
 
-
-
+#' show duckdb extensions
+#' 
+#' @inheritParams open_dataset
+#' @return a data frame listing all available extensions, with boolean columns
+#' indicating which extensions are installed or loaded, and a description of each
+#' extension. 
+#' @export
+#' @examples
+#' duckdb_extensions()
 duckdb_extensions <- function(conn = cached_connection()) {
   query <- "SELECT * FROM duckdb_extensions();"
   DBI::dbGetQuery(conn, query)
 }
-
-
