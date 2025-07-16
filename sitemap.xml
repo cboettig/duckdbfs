@@ -9,6 +9,10 @@
 <url><loc>https://cboettig.github.io/duckdbfs/reference/as_view.html</loc></url>
 <url><loc>https://cboettig.github.io/duckdbfs/reference/cached_connection.html</loc></url>
 <url><loc>https://cboettig.github.io/duckdbfs/reference/close_connection.html</loc></url>
+<url><loc>https://cboettig.github.io/duckdbfs/reference/duckdb_config.html</loc></url>
+<url><loc>https://cboettig.github.io/duckdbfs/reference/duckdb_extensions.html</loc></url>
+<url><loc>https://cboettig.github.io/duckdbfs/reference/duckdb_get_config.html</loc></url>
+<url><loc>https://cboettig.github.io/duckdbfs/reference/duckdb_reset.html</loc></url>
 <url><loc>https://cboettig.github.io/duckdbfs/reference/duckdb_s3_config.html</loc></url>
 <url><loc>https://cboettig.github.io/duckdbfs/reference/duckdb_secrets.html</loc></url>
 <url><loc>https://cboettig.github.io/duckdbfs/reference/index.html</loc></url>

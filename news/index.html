@@ -34,10 +34,21 @@
 
     <div class="section level2">
 <h2 class="pkg-version" data-toc-text="0.1.1" id="duckdbfs-011">duckdbfs 0.1.1<a class="anchor" aria-label="anchor" href="#duckdbfs-011"></a></h2>
-<ul><li>
+<ul><li>new function <code><a href="../reference/duckdb_config.html">duckdb_config()</a></code> streamlines common configurations, like <code>duckdb_config(threads = 1, memory_limit = '10GB')</code>
+</li>
+<li>related helpers <code><a href="../reference/duckdb_get_config.html">duckdb_get_config()</a></code> shows any or all configuration settings, <code><a href="../reference/duckdb_reset.html">duckdb_reset()</a></code> restores defaults.</li>
+<li>new function <code><a href="../reference/duckdb_extensions.html">duckdb_extensions()</a></code> lists all available, installed, or loaded extensions and descriptions.</li>
+<li>
 <code><a href="../reference/cached_connection.html">cached_connection()</a></code> is aliased as <code><a href="../reference/cached_connection.html">connect()</a></code>, reflecting its use as more than an under-the-hood utility.</li>
 <li>
-<code><a href="../reference/load_h3.html">load_h3()</a></code> and <code><a href="../reference/load_spatial.html">load_spatial()</a></code> are called by default. Opt out by closing any active cached connection first (with <code><a href="../reference/close_connection.html">close_connection()</a></code>) and re-instantiating the with <code>connect(with_h3 = FALSE)</code> etc.</li>
+<code><a href="../reference/load_h3.html">load_h3()</a></code> and <code><a href="../reference/load_spatial.html">load_spatial()</a></code> are called by default. Opt out by closing any active cached connection first (with <code><a href="../reference/close_connection.html">close_connection()</a></code>) and re-instantiating the with <code>connect(with_h3 = FALSE)</code> etc.<br></li>
+<li>
+<code><a href="../reference/open_dataset.html">open_dataset()</a></code> gains the argument <code>parser_options</code> to pass arbitrary options to parsers such as duckdb’s read_csv(), see <a href="https://duckdb.org/docs/stable/data/csv/overview.html#parameters" class="external-link uri">https://duckdb.org/docs/stable/data/csv/overview.html#parameters</a>.<br></li>
+<li>
+<code><a href="../reference/write_dataset.html">write_dataset()</a></code> gains the argument <code>options</code> to support custom options controlling the COPY behavior writing to file, such as thread parallelism, file naming conventions, and more. see <a href="https://duckdb.org/docs/stable/sql/statements/copy.html#copy--to-options" class="external-link uri">https://duckdb.org/docs/stable/sql/statements/copy.html#copy--to-options</a>
+</li>
+<li>S3-based access will no longer automatically try recursion if path ends in a recognized extension, <code>.parquet</code>, <code>.csv</code>, or <code>.csv.gz</code>
+</li>
 </ul></div>
     <div class="section level2">
 <h2 class="pkg-version" data-toc-text="0.1.0" id="duckdbfs-010">duckdbfs 0.1.0<a class="anchor" aria-label="anchor" href="#duckdbfs-010"></a></h2><p class="text-muted">CRAN release: 2025-04-04</p>
@@ -46,6 +57,8 @@
 </li>
 <li>Adds <code><a href="../reference/write_geo.html">write_geo()</a></code> method, currently writes geojson <a href="https://github.com/cboettig/duckdbfs/issues/37" class="external-link">#37</a>
 </li>
+<li>
+<code><a href="../reference/cached_connection.html">cached_connection()</a></code> / <code><a href="../reference/cached_connection.html">connect()</a></code> now supports <code>config</code> argument and sets a temporary directory to the R tempdir by default, allowing disk-backed storage when duckdb detects memory limits.</li>
 </ul></div>
     <div class="section level2">
 <h2 class="pkg-version" data-toc-text="0.0.9" id="duckdbfs-009">duckdbfs 0.0.9<a class="anchor" aria-label="anchor" href="#duckdbfs-009"></a></h2><p class="text-muted">CRAN release: 2024-12-16</p>
