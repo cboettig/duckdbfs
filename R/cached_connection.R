@@ -36,7 +36,7 @@ duckdbfs_env <- new.env()
 #'  `connect(with_spatial = FALSE)`.
 #' @param with_h3 install (if missing) and load  the h3 spatial index extension.
 #' @returns a [duckdb::duckdb()] connection object
-#' @aliases cached_connection connect
+#' @aliases cached_connection duckdb_connect
 #' @examplesIf interactive()
 #'
 #' con <- cached_connection()
@@ -143,7 +143,7 @@ close_connection <- function(conn = cached_connection()) {
 
 
 #' @export
-connect <- cached_connection
+duckdb_connect <- cached_connection
 
 
 

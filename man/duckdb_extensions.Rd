@@ -18,5 +18,7 @@ extension.
 show duckdb extensions
 }
 \examples{
+\dontshow{if (interactive()) (if (getRversion() >= "3.4") withAutoprint else force)(\{ # examplesIf}
 duckdb_extensions()
+\dontshow{\}) # examplesIf}
 }

@@ -15,17 +15,18 @@ duckdb_get_config(x = NULL, conn = cached_connection())
 duckdb reset configuration to default
 }
 \examples{
+\dontshow{if (interactive()) (if (getRversion() >= "3.4") withAutoprint else force)(\{ # examplesIf}
 # Full config table
 duckdb_get_config()
 
-# look up single config value 
+# look up single config value
 duckdb_get_config("threads")
 
 # set a different value, test, reset.
 duckdb_config(threads = 10)
 duckdb_get_config("threads")
 duckdb_reset("threads")
-
+\dontshow{\}) # examplesIf}
 }
 \seealso{
 duckdb_config, duckdb_get_config

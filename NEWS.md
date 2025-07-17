@@ -3,7 +3,7 @@
 * new function `duckdb_config()` streamlines common configurations, like `duckdb_config(threads = 1, memory_limit = '10GB')`
 * related helpers `duckdb_get_config()` shows any or all configuration settings, `duckdb_reset()` restores defaults.
 * new function `duckdb_extensions()` lists all available, installed, or loaded extensions and descriptions. 
-* `cached_connection()` is aliased as `connect()`, reflecting its use as more than an under-the-hood utility. 
+* `cached_connection()` is aliased as `duckdb_connect()`, reflecting its use as more than an under-the-hood utility. 
 * `load_h3()` and `load_spatial()` are called by default.  Opt out by closing any active cached connection first (with `close_connection()`) and re-instantiating the with `connect(with_h3 = FALSE)` etc.  
 * `open_dataset()` gains the argument `parser_options` to pass arbitrary options to parsers such as duckdb's read_csv(), see <https://duckdb.org/docs/stable/data/csv/overview.html#parameters>.  
 * `write_dataset()` gains the argument `options` to support custom options controlling the COPY behavior writing to file, such as thread parallelism, file naming conventions, and more.  see <https://duckdb.org/docs/stable/sql/statements/copy.html#copy--to-options>
