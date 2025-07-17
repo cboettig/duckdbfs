@@ -121,7 +121,7 @@ cached_connection <- function(dbdir = ":memory:",
 #' Then clear cached reference to avoid using a stale connection
 #' This avoids complaint about connection being garbage collected.
 #' @returns returns nothing.
-#' @examples
+#' @examplesIf interactive()
 #'
 #' close_connection()
 #'
