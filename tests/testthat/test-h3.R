@@ -1,4 +1,3 @@
-to_h3j
 
 test_that("h3", {
   skip_if_offline() # needs to be able to load the spatial module

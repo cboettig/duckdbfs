@@ -1,6 +1,10 @@
 
 test_that("extensions installation", {
 
+  # cran tests cannot fail if no network is available
+  skip_on_cran()
+  skip_if_offline()
+
   load_httpfs(nightly=FALSE, force = FALSE)
 
   exts <- duckdb_extensions()

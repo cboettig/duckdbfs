@@ -1,5 +1,9 @@
 
+# consider deprecating
+
 test_that("s3 uri parsing", {
+
+  skip_on_cran()
 
   url <- "s3://neon4cast-scores/parquet/aquatics"
   parts <- url_parse(url)

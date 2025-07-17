@@ -32,12 +32,12 @@ duckdbfs_env <- new.env()
 #' can be configured with `options(duckdbfs_autoload_extensions = FALSE)`
 #' @param with_spatial install (if missing) and load spatial extension, default TRUE.
 #'  Opt out by closing any active cached connection first (with
-#'  `close_connection()`) and re-instantiating the with 
+#'  `close_connection()`) and re-instantiating the with
 #'  `connect(with_spatial = FALSE)`.
 #' @param with_h3 install (if missing) and load  the h3 spatial index extension.
 #' @returns a [duckdb::duckdb()] connection object
 #' @aliases cached_connection connect
-#' @examples
+#' @examplesIf interactive()
 #'
 #' con <- cached_connection()
 #' close_connection(con)
@@ -51,8 +51,10 @@ cached_connection <- function(dbdir = ":memory:",
                               autoload_exts =
                                 getOption("duckdbfs_autoload_extensions",
                                           TRUE),
-                              with_spatial = TRUE,
-                              with_h3 = not_windows()
+                              with_spatial = getOption("duckdbfs_autoload_extensions",
+                                                       TRUE),
+                              with_h3 = not_windows() && getOption("duckdbfs_autoload_extensions",
+                                                                   TRUE)
                               ) {
 
   #conn <- mget("duckdbfs_conn", envir = duckdbfs_env,

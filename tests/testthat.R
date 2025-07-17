@@ -10,6 +10,7 @@ library(testthat)
 library(duckdbfs)
 
 
-
+# tests that don't need extensions loaded shouldn't access internet
+options("duckdbfs_autoload_extensions"=FALSE)
 
 test_check("duckdbfs")

@@ -1,15 +1,15 @@
 
 #' duckdb configuration
-#' 
+#'
 #' @inheritParams open_dataset
 #' @param ... named argument of the parameters to set, see examples
 #' see all possible configuration options at <https://duckdb.org/docs/sql/configuration.html>
 #' @return the active duckdb connection, invisibly
-#' @details Note: in I/O bound tasks such as streaming data, it can be helpful to set 
+#' @details Note: in I/O bound tasks such as streaming data, it can be helpful to set
 #' thread parallelism signifantly higher than avialable CPU cores.
 #' @seealso duckdb_reset, duckdb_get_config
 #' @export
-#' @examples
+#' @examplesIf interactive()
 #' duckdb_config(threads = 1, memory_limit = '10GB')
 #' duckdb_get_config("threads")
 #' duckdb_reset("threads")
@@ -24,12 +24,12 @@ duckdb_config <- function(..., conn = cached_connection()) {
 
 
 #' duckdb reset configuration to default
-#' 
+#'
 #' @inheritParams open_dataset
 #' @param x parameter name
 #' @seealso duckdb_config, duckdb_get_config
 #' @export
-#' @examples
+#' @examplesIf interactive()
 #' duckdb_config(threads = 10)
 #' duckdb_get_config("threads")
 #' duckdb_reset("threads")
@@ -41,23 +41,23 @@ duckdb_reset <- function(x, conn = cached_connection()) {
 
 
 #' duckdb reset configuration to default
-#' 
+#'
 #' @inheritParams open_dataset
 #' @param x parameter name. Omit to see a table of all settings.
 #' @seealso duckdb_config, duckdb_get_config
 #' @export
-#' @examples
+#' @examplesIf interactive()
 #' # Full config table
 #' duckdb_get_config()
-#' 
-#' # look up single config value 
+#'
+#' # look up single config value
 #' duckdb_get_config("threads")
 #'
 #' # set a different value, test, reset.
 #' duckdb_config(threads = 10)
 #' duckdb_get_config("threads")
 #' duckdb_reset("threads")
-#' 
+#'
 duckdb_get_config <- function(x = NULL, conn = cached_connection()) {
   cmd <- paste0("SELECT * FROM duckdb_settings()")
   settings <- DBI::dbGetQuery(conn, cmd)
@@ -248,13 +248,13 @@ load_spatial <- function(conn = cached_connection(),
 
 
 #' show duckdb extensions
-#' 
+#'
 #' @inheritParams open_dataset
 #' @return a data frame listing all available extensions, with boolean columns
 #' indicating which extensions are installed or loaded, and a description of each
-#' extension. 
+#' extension.
 #' @export
-#' @examples
+#' @examplesIf interactive()
 #' duckdb_extensions()
 duckdb_extensions <- function(conn = cached_connection()) {
   query <- "SELECT * FROM duckdb_extensions();"
