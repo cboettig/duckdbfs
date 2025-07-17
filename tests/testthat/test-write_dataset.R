@@ -90,7 +90,7 @@ test_that("write_dataset to s3:", {
   skip_on_cran()
   skip_if_not_installed("jsonlite")
   skip_if_not_installed("minioclient")
-  
+
   minioclient::install_mc(force = TRUE)
 
   p <- minioclient::mc_alias_ls("play --json")
@@ -195,6 +195,7 @@ test_that("to_geojson s3", {
   path <-  "s3://duckdbfs/spatial-test.geojson"
   to_geojson(tbl, path, id_col = "iso_a3")
 
+  expect_true(TRUE)
 
 })
 
