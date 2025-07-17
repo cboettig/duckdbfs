@@ -8,6 +8,10 @@ test_that("h3", {
   library(dplyr)
   load_h3()
 
+  # requires json extension, autoload:
+  options("duckdbfs_autoload_extensions"=TRUE)
+
+
   path <- tempfile(fileext = ".h3j")
   ex <- system.file("extdata/spatial-test.csv", package="duckdbfs")
 
@@ -21,5 +25,9 @@ test_that("h3", {
 
   query |> to_h3j(path)
   expect_true(file.exists(path))
+
+  # unset autoload
+  options("duckdbfs_autoload_extensions"=TRUE)
+
 
 })
