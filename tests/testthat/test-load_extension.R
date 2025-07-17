@@ -18,5 +18,7 @@ test_that("extensions installation", {
   expect_true(status$installed)
   expect_equal(status$installed_from, "core")
 
+  load_extension("json")
+
 
 })

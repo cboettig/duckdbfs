@@ -151,6 +151,8 @@ test_that("write_geo", {
 test_that("to_geojson", {
 
   skip_on_cran()
+  skip_if_offline() # extensions need internet
+  load_extension("json")
 
   ## write from an on-disk dataset
   local_file <-  system.file("extdata/world.fgb", package="duckdbfs")
@@ -174,6 +176,7 @@ test_that("to_geojson", {
 test_that("to_geojson s3", {
 
   skip_on_cran()
+  skip_if_offline() # extensions need internet
   skip_if_not_installed("sf")
   skip_if_not_installed("jsonlite")
   skip_if_not_installed("minioclient")
