@@ -20,7 +20,7 @@ duckdb configuration
 }
 \details{
 Note: in I/O bound tasks such as streaming data, it can be helpful to set
-thread parallelism signifantly higher than avialable CPU cores.
+thread parallelism significantly higher than available CPU cores.
 }
 \examples{
 \dontshow{if (interactive()) (if (getRversion() >= "3.4") withAutoprint else force)(\{ # examplesIf}

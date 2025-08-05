@@ -1,4 +1,3 @@
-
 #' duckdb configuration
 #'
 #' @inheritParams open_dataset
@@ -6,7 +5,7 @@
 #' see all possible configuration options at <https://duckdb.org/docs/sql/configuration.html>
 #' @return the active duckdb connection, invisibly
 #' @details Note: in I/O bound tasks such as streaming data, it can be helpful to set
-#' thread parallelism signifantly higher than avialable CPU cores.
+#' thread parallelism significantly higher than available CPU cores.
 #' @seealso duckdb_reset, duckdb_get_config
 #' @export
 #' @examplesIf interactive()
@@ -14,12 +13,12 @@
 #' duckdb_get_config("threads")
 #' duckdb_reset("threads")
 duckdb_config <- function(..., conn = cached_connection()) {
-    parameters <- list(...)
-    for(p in names(parameters)) {
-      cmd <- paste0("SET ", p, "='", parameters[p], "';")
-      DBI::dbExecute(conn, cmd)
-    }
-    invisible(conn)
+  parameters <- list(...)
+  for (p in names(parameters)) {
+    cmd <- paste0("SET ", p, "='", parameters[p], "';")
+    DBI::dbExecute(conn, cmd)
+  }
+  invisible(conn)
 }
 
 
@@ -34,9 +33,9 @@ duckdb_config <- function(..., conn = cached_connection()) {
 #' duckdb_get_config("threads")
 #' duckdb_reset("threads")
 duckdb_reset <- function(x, conn = cached_connection()) {
-    cmd <- paste0("RESET ", x, ";")
-    DBI::dbExecute(conn, cmd)
-    invisible(conn)
+  cmd <- paste0("RESET ", x, ";")
+  DBI::dbExecute(conn, cmd)
+  invisible(conn)
 }
 
 
@@ -63,23 +62,22 @@ duckdb_get_config <- function(x = NULL, conn = cached_connection()) {
   settings <- DBI::dbGetQuery(conn, cmd)
   settings <- dplyr::as_tibble(settings)
 
-  if(is.null(x)) return(settings)
+  if (is.null(x)) {
+    return(settings)
+  }
 
   settings$value[settings$name == tolower(x)]
 }
 
 
-
-
 # internal
 duckdb_set <- function(x, conn = cached_connection()) {
-  if(!is.null(x)) {
+  if (!is.null(x)) {
     name <- deparse(substitute(x))
     cmd <- paste0("SET ", name, "='", x, "';")
     DBI::dbExecute(conn, cmd)
   }
 }
-
 
 
 #' Configure S3 settings for database connection
@@ -130,31 +128,36 @@ duckdb_set <- function(x, conn = cached_connection()) {
 #'            anonymous = TRUE)
 #'
 #' @export
-duckdb_s3_config <- function(conn = cached_connection(),
-                             s3_access_key_id = NULL,
-                             s3_secret_access_key = NULL,
-                             s3_endpoint = NULL,
-                             s3_region = NULL,
-                             s3_session_token = NULL,
-                             s3_uploader_max_filesize = NULL,
-                             s3_uploader_max_parts_per_file = NULL,
-                             s3_uploader_thread_limit = NULL,
-                             s3_url_compatibility_mode = NULL,
-                             s3_url_style = NULL,
-                             s3_use_ssl = NULL,
-                             anonymous = NULL) {
-
+duckdb_s3_config <- function(
+  conn = cached_connection(),
+  s3_access_key_id = NULL,
+  s3_secret_access_key = NULL,
+  s3_endpoint = NULL,
+  s3_region = NULL,
+  s3_session_token = NULL,
+  s3_uploader_max_filesize = NULL,
+  s3_uploader_max_parts_per_file = NULL,
+  s3_uploader_thread_limit = NULL,
+  s3_url_compatibility_mode = NULL,
+  s3_url_style = NULL,
+  s3_use_ssl = NULL,
+  anonymous = NULL
+) {
   if (!is.null(s3_endpoint) && is.null(s3_url_style)) {
     s3_url_style <- "path"
   }
 
-  if(!is.null(s3_endpoint))
+  if (!is.null(s3_endpoint)) {
     s3_endpoint <- gsub("^http[s]://", "", s3_endpoint)
+  }
 
-  if(!is.null(anonymous)){
-    if(!is.null(s3_access_key_id) || !is.null(s3_secret_access_key))
-      warning(paste("access keys provided when anonymous access requested.\n",
-                    "keys will be ignored"))
+  if (!is.null(anonymous)) {
+    if (!is.null(s3_access_key_id) || !is.null(s3_secret_access_key)) {
+      warning(paste(
+        "access keys provided when anonymous access requested.\n",
+        "keys will be ignored"
+      ))
+    }
     s3_access_key_id <- ""
     s3_secret_access_key <- ""
   }
@@ -175,56 +178,61 @@ duckdb_s3_config <- function(conn = cached_connection(),
 }
 
 
-
-
 load_extension <-
-  function(extension = "httpfs",
-           conn = cached_connection(),
-           nightly = getOption("duckdbfs_use_nightly", FALSE),
-           force = FALSE) {
-  exts <- duckdb_extensions()
-  source <- ""
-  if (nightly) {
-    source <- " FROM 'http://nightly-extensions.duckdb.org'"
-  }
-  status <- exts[exts$extension_name == extension,]
-  status_code <- 0
-  if (force) {
-    FORCE <- "FORCE "
-  } else {
-    FORCE <- ""
-  }
-
-  if(!status$installed) {
-
-    if (!nightly) {
-    DBI::dbExecute(conn, paste0(FORCE,
-      glue::glue("INSTALL '{extension}'"), source, ";"))
-    } else {
+  function(
+    extension = "httpfs",
+    conn = cached_connection(),
+    nightly = getOption("duckdbfs_use_nightly", FALSE),
+    force = FALSE
+  ) {
+    exts <- duckdb_extensions()
+    source <- ""
+    if (nightly) {
       source <- " FROM 'http://nightly-extensions.duckdb.org'"
-      status_code <- DBI::dbExecute(conn, paste0(FORCE,
-        glue::glue("INSTALL '{extension}'"), source, ";"))
+    }
+    status <- exts[exts$extension_name == extension, ]
+    status_code <- 0
+    if (force) {
+      FORCE <- "FORCE "
+    } else {
+      FORCE <- ""
     }
 
-  }
-  if(!status$loaded) {
-    status_code <- DBI::dbExecute(conn, glue::glue("LOAD '{extension}';"))
+    if (!status$installed) {
+      if (!nightly) {
+        DBI::dbExecute(
+          conn,
+          paste0(FORCE, glue::glue("INSTALL '{extension}'"), source, ";")
+        )
+      } else {
+        source <- " FROM 'http://nightly-extensions.duckdb.org'"
+        status_code <- DBI::dbExecute(
+          conn,
+          paste0(FORCE, glue::glue("INSTALL '{extension}'"), source, ";")
+        )
+      }
+    }
+    if (!status$loaded) {
+      status_code <- DBI::dbExecute(conn, glue::glue("LOAD '{extension}';"))
+    }
+
+    invisible(status_code)
   }
 
-  invisible(status_code)
+
+load_httpfs <- function(
+  conn = cached_connection(),
+  nightly = getOption("duckdbfs_use_nightly", FALSE),
+  force = FALSE
+) {
+  load_extension("httpfs", conn = conn, nightly = nightly, force = force)
 }
 
 
-load_httpfs <- function(conn = cached_connection(),
-                        nightly = getOption("duckdbfs_use_nightly", FALSE),
-                        force = FALSE){
-  load_extension("httpfs", conn = conn, nightly=nightly, force = force)
-}
-
-
-
-enable_parallel <- function(conn = cached_connection(),
-                            duckdb_cores = parallel::detectCores()){
+enable_parallel <- function(
+  conn = cached_connection(),
+  duckdb_cores = parallel::detectCores()
+) {
   status <- DBI::dbExecute(conn, paste0("PRAGMA threads=", duckdb_cores))
   invisible(status)
 }
@@ -239,10 +247,11 @@ enable_parallel <- function(conn = cached_connection(),
 #' @return loads the extension and returns status invisibly.
 #' @references <https://duckdb.org/docs/extensions/spatial.html>
 #' @export
-load_spatial <- function(conn = cached_connection(),
-                         nightly=getOption("duckdbfs_use_nightly", FALSE),
-                         force = FALSE) {
-
+load_spatial <- function(
+  conn = cached_connection(),
+  nightly = getOption("duckdbfs_use_nightly", FALSE),
+  force = FALSE
+) {
   load_extension("spatial", conn = conn, nightly = nightly, force = force)
 }
 

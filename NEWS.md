@@ -1,3 +1,7 @@
+# duckdbfs 0.1.1.99
+
+* `write_geo()` now takes argument, `srs` for projection information
+
 # duckdbfs 0.1.1
 
 * new function `duckdb_config()` streamlines common configurations, like `duckdb_config(threads = 1, memory_limit = '10GB')`
