@@ -1,6 +1,7 @@
 # duckdbfs 0.1.1.99
 
 * `write_geo()` now takes argument, `srs` for projection information
+* `to_geojson()` now writes all atomic columns, not just an id column.
 
 # duckdbfs 0.1.1
 
