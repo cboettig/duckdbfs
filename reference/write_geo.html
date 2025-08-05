@@ -7,7 +7,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">duckdbfs</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.1.1</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.1.1.99</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -44,7 +44,8 @@
 <span>  <span class="va">path</span>,</span>
 <span>  conn <span class="op">=</span> <span class="fu"><a href="cached_connection.html">cached_connection</a></span><span class="op">(</span><span class="op">)</span>,</span>
 <span>  driver <span class="op">=</span> <span class="st">"GeoJSON"</span>,</span>
-<span>  layer_creation_options <span class="op">=</span> <span class="st">"WRITE_BBOX=YES"</span></span>
+<span>  layer_creation_options <span class="op">=</span> <span class="st">"WRITE_BBOX=YES"</span>,</span>
+<span>  srs <span class="op">=</span> <span class="st">"ESPG:4326"</span></span>
 <span><span class="op">)</span></span></code></pre></div>
     </div>
 
@@ -72,12 +73,20 @@ or an in-memory data.frame.</p></dd>
 <dt id="arg-layer-creation-options">layer_creation_options<a class="anchor" aria-label="anchor" href="#arg-layer-creation-options"></a></dt>
 <dd><p>to GDAL, see <a href="https://duckdb.org/docs/stable/extensions/spatial/gdal" class="external-link">https://duckdb.org/docs/stable/extensions/spatial/gdal</a></p></dd>
 
+
+<dt id="arg-srs">srs<a class="anchor" aria-label="anchor" href="#arg-srs"></a></dt>
+<dd><p>Set a spatial reference system as metadata to use for the export.
+This can be a WKT string, an EPSG code or a proj-string, basically anything
+you would normally be able to pass to GDAL. Note that this will not perform
+any reprojection of the input geometry, it just sets the metadata if the
+target driver supports it.</p></dd>
+
 </dl></div>
     <div class="section level2">
     <h2 id="details">Details<a class="anchor" aria-label="anchor" href="#details"></a></h2>
     <p>NOTE: at this time, duckdb's pre-packaged GDAL does not support s3 writes,
 and will produce a "Error: Not implemented Error: GDAL Error (6): Seek not supported on writable /vsis3/ files".
-Use to_geojson() instead.</p>
+Use to_geojson() to export using duckdb's native JSON serializer instead.</p>
     </div>
 
     <div class="section level2">
