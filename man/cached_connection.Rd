@@ -11,8 +11,8 @@ cached_connection(
   bigint = "numeric",
   config = list(temp_directory = tempfile()),
   autoload_exts = getOption("duckdbfs_autoload_extensions", TRUE),
-  with_spatial = getOption("duckdbfs_autoload_extensions", TRUE),
-  with_h3 = not_windows() && getOption("duckdbfs_autoload_extensions", TRUE)
+  with_spatial = getOption("duckdbfs_autoload_extensions", FALSE),
+  with_h3 = not_windows() && getOption("duckdbfs_autoload_extensions", FALSE)
 )
 }
 \arguments{
@@ -37,12 +37,12 @@ Subsequent connections will silently ignore these flags.}
 \item{autoload_exts}{should we auto-load extensions?  TRUE by default,
 can be configured with \code{options(duckdbfs_autoload_extensions = FALSE)}}
 
-\item{with_spatial}{install (if missing) and load spatial extension, default TRUE.
+\item{with_spatial}{install (if missing) and load spatial extension, default FALSE
 Opt out by closing any active cached connection first (with
 \code{close_connection()}) and re-instantiating the with
 \code{connect(with_spatial = FALSE)}.}
 
-\item{with_h3}{install (if missing) and load  the h3 spatial index extension.}
+\item{with_h3}{install (if missing) and load  the h3 spatial index extension.  Default FALSE}
 }
 \value{
 a \code{\link[duckdb:duckdb]{duckdb::duckdb()}} connection object
