@@ -1,7 +1,10 @@
-# duckdbfs 0.1.1.99
+# duckdbfs 0.1.2
+
 
 * `write_geo()` now takes argument, `srs` for projection information
 * `to_geojson()` now writes all atomic columns, not just an id column.
+* The default connection (`duckdb_connect()` / `cached_connection()`) will no longer load (and thus no longer install) extensions
+  (h3 and spatial) by default.  This should avoid code breaking upon new releases of the duckdb engine before extensions are updated.
 
 # duckdbfs 0.1.1
 
