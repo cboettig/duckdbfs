@@ -7,7 +7,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">duckdbfs</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.1.1.99</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.1.2</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -33,11 +33,12 @@
     </div>
 
     <div class="section level2">
-<h2 class="pkg-version" data-toc-text="0.1.1.99" id="duckdbfs-01199">duckdbfs 0.1.1.99<a class="anchor" aria-label="anchor" href="#duckdbfs-01199"></a></h2>
+<h2 class="pkg-version" data-toc-text="0.1.2" id="duckdbfs-012">duckdbfs 0.1.2<a class="anchor" aria-label="anchor" href="#duckdbfs-012"></a></h2>
 <ul><li>
 <code><a href="../reference/write_geo.html">write_geo()</a></code> now takes argument, <code>srs</code> for projection information</li>
 <li>
 <code><a href="../reference/to_geojson.html">to_geojson()</a></code> now writes all atomic columns, not just an id column.</li>
+<li>The default connection (<code><a href="../reference/cached_connection.html">duckdb_connect()</a></code> / <code><a href="../reference/cached_connection.html">cached_connection()</a></code>) will no longer load (and thus no longer install) extensions (h3 and spatial) by default. This should avoid code breaking upon new releases of the duckdb engine before extensions are updated.</li>
 </ul></div>
     <div class="section level2">
 <h2 class="pkg-version" data-toc-text="0.1.1" id="duckdbfs-011">duckdbfs 0.1.1<a class="anchor" aria-label="anchor" href="#duckdbfs-011"></a></h2><p class="text-muted">CRAN release: 2025-07-17</p>
