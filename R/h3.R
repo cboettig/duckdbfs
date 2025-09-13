@@ -25,9 +25,9 @@
 #'  query |> to_h3j(path)
 #'
 #' @export
-load_h3 <- function(conn = cached_connection()) {
+load_h3 <- function(conn = cached_connection(), repo= "http://community-extensions.duckdb.org") {
 
-  DBI::dbExecute(conn, "INSTALL h3 from community")
+  DBI::dbExecute(conn, glue::glue("INSTALL h3 from '{repo}'"))
   status <- DBI::dbExecute(conn, "LOAD h3")
 
   invisible(status)
