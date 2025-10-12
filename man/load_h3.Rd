@@ -12,6 +12,8 @@ load_h3(
 \arguments{
 \item{conn}{A database connection object created using the
 \code{cache_connection} function (default: \code{cache_connection()}).}
+
+\item{repo}{repository path for community extensions}
 }
 \value{
 loads the extension and returns status invisibly.
