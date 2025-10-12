@@ -4,7 +4,10 @@
 \alias{load_h3}
 \title{load the duckdb geospatial data plugin}
 \usage{
-load_h3(conn = cached_connection())
+load_h3(
+  conn = cached_connection(),
+  repo = "http://community-extensions.duckdb.org"
+)
 }
 \arguments{
 \item{conn}{A database connection object created using the
@@ -17,7 +20,7 @@ loads the extension and returns status invisibly.
 load the duckdb geospatial data plugin
 }
 \examples{
-\dontshow{if (interactive()) (if (getRversion() >= "3.4") withAutoprint else force)(\{ # examplesIf}
+\dontshow{if (interactive()) withAutoprint(\{ # examplesIf}
 
 library(dplyr)
 load_h3()

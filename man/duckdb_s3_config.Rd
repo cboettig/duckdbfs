@@ -69,7 +69,7 @@ URL compatibility mode, URL style, and SSL usage.
 see \url{https://duckdb.org/docs/sql/configuration.html}
 }
 \examples{
-\dontshow{if (interactive()) (if (getRversion() >= "3.4") withAutoprint else force)(\{ # examplesIf}
+\dontshow{if (interactive()) withAutoprint(\{ # examplesIf}
 # Configure S3 settings
 duckdb_s3_config(
            s3_access_key_id = "YOUR_ACCESS_KEY_ID",

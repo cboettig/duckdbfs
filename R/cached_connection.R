@@ -1,4 +1,3 @@
-
 duckdbfs_env <- new.env()
 
 
@@ -30,11 +29,11 @@ duckdbfs_env <- new.env()
 #' @inheritParams duckdb::duckdb
 #' @param autoload_exts should we auto-load extensions?  TRUE by default,
 #' can be configured with `options(duckdbfs_autoload_extensions = FALSE)`
-#' @param with_spatial install (if missing) and load spatial extension, default FALSE
+#' @param with_spatial install (if missing) and load spatial extension, default TRUE
 #'  Opt out by closing any active cached connection first (with
 #'  `close_connection()`) and re-instantiating the with
 #'  `connect(with_spatial = FALSE)`.
-#' @param with_h3 install (if missing) and load  the h3 spatial index extension.  Default FALSE
+#' @param with_h3 install (if missing) and load  the h3 spatial index extension.  Default TRUE
 #' @returns a [duckdb::duckdb()] connection object
 #' @aliases cached_connection duckdb_connect
 #' @examplesIf interactive()
@@ -44,42 +43,40 @@ duckdbfs_env <- new.env()
 #'
 #' @export
 #'
-cached_connection <- function(dbdir = ":memory:",
-                              read_only = FALSE,
-                              bigint = "numeric",
-                              config = list(temp_directory = tempfile()),
-                              autoload_exts =
-                                getOption("duckdbfs_autoload_extensions",
-                                          TRUE),
-                              with_spatial = getOption("duckdbfs_autoload_extensions",
-                                                       FALSE),
-                              with_h3 = not_windows() && getOption("duckdbfs_autoload_extensions",
-                                                                   FALSE)
-                              ) {
-
+cached_connection <- function(
+  dbdir = ":memory:",
+  read_only = FALSE,
+  bigint = "numeric",
+  config = list(temp_directory = tempfile()),
+  autoload_exts = getOption("duckdbfs_autoload_extensions", TRUE),
+  with_spatial = getOption("duckdbfs_autoload_extensions", TRUE),
+  with_h3 = not_windows() && getOption("duckdbfs_autoload_extensions", TRUE)
+) {
   #conn <- mget("duckdbfs_conn", envir = duckdbfs_env,
   #             ifnotfound = list(NULL))$duckdbfs_conn
 
   conn <- getOption("duckdbfs_conn", NULL)
 
   ## destroy invalid (closed) connections first
-  if(inherits(conn, "duckdb_connection")) {
-    if(!DBI::dbIsValid(conn)) {
+  if (inherits(conn, "duckdb_connection")) {
+    if (!DBI::dbIsValid(conn)) {
       close_connection(conn)
       conn <- NULL
     }
   }
 
-  if(!inherits(conn, "duckdb_connection")) {
-    if(getOption("duckdbfs_debug", FALSE)) {
+  if (!inherits(conn, "duckdb_connection")) {
+    if (getOption("duckdbfs_debug", FALSE)) {
       message("Making a duckdb connection!")
     }
 
-    conn <- DBI::dbConnect(duckdb::duckdb(),
-                           dbdir = dbdir,
-                           read_only = read_only,
-                           bigint = bigint,
-                           config = config)
+    conn <- DBI::dbConnect(
+      duckdb::duckdb(),
+      dbdir = dbdir,
+      read_only = read_only,
+      bigint = bigint,
+      config = config
+    )
 
     if (with_spatial) {
       # can't use load_spatial here, creates infinite recursion
@@ -99,17 +96,15 @@ cached_connection <- function(dbdir = ":memory:",
 
     options(duckdbfs_conn = conn)
     # assign("duckdbfs_conn", conn, envir = duckdbfs_env)
-
   }
 
   ## create finalizer to avoid duckdb complaining that connection
   ## was not shut down before gc
   e <- globalenv()
-  reg.finalizer(e, function(e) close_connection(),TRUE)
+  reg.finalizer(e, function(e) close_connection(), TRUE)
 
   conn
 }
-
 
 
 #' close connection
@@ -127,9 +122,8 @@ cached_connection <- function(dbdir = ":memory:",
 #'
 #' @export
 close_connection <- function(conn = cached_connection()) {
-
-  if(DBI::dbIsValid(conn)) {
-    DBI::dbDisconnect(conn, shutdown=TRUE)
+  if (DBI::dbIsValid(conn)) {
+    DBI::dbDisconnect(conn, shutdown = TRUE)
   }
 
   ## clear cached reference to the now-closed connection
@@ -141,10 +135,8 @@ close_connection <- function(conn = cached_connection()) {
 }
 
 
-
 #' @export
 duckdb_connect <- cached_connection
-
 
 
 not_windows <- function() {

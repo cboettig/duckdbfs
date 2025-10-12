@@ -15,7 +15,7 @@ duckdb_get_config(x = NULL, conn = cached_connection())
 duckdb reset configuration to default
 }
 \examples{
-\dontshow{if (interactive()) (if (getRversion() >= "3.4") withAutoprint else force)(\{ # examplesIf}
+\dontshow{if (interactive()) withAutoprint(\{ # examplesIf}
 # Full config table
 duckdb_get_config()
 

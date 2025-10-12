@@ -23,7 +23,7 @@ Note: in I/O bound tasks such as streaming data, it can be helpful to set
 thread parallelism significantly higher than available CPU cores.
 }
 \examples{
-\dontshow{if (interactive()) (if (getRversion() >= "3.4") withAutoprint else force)(\{ # examplesIf}
+\dontshow{if (interactive()) withAutoprint(\{ # examplesIf}
 duckdb_config(threads = 1, memory_limit = '10GB')
 duckdb_get_config("threads")
 duckdb_reset("threads")

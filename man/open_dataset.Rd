@@ -78,7 +78,7 @@ CSV, etc, using either local file system paths, URLs, or S3 bucket URI
 notation.
 }
 \examples{
-\dontshow{if (interactive()) (if (getRversion() >= "3.4") withAutoprint else force)(\{ # examplesIf}
+\dontshow{if (interactive()) withAutoprint(\{ # examplesIf}
 # A remote, hive-partitioned Parquet dataset
 base <- paste0("https://github.com/duckdb/duckdb/raw/main/",
              "data/parquet-testing/hive-partitioning/union_by_name/")

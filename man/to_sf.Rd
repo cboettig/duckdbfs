@@ -29,7 +29,7 @@ an \code{sf} class object (in memory).
 Convert output to sf object
 }
 \examples{
-\dontshow{if (interactive()) (if (getRversion() >= "3.4") withAutoprint else force)(\{ # examplesIf}
+\dontshow{if (interactive()) withAutoprint(\{ # examplesIf}
 
 library(dplyr)
 csv_file <- system.file("extdata/spatial-test.csv", package="duckdbfs")

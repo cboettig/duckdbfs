@@ -60,7 +60,7 @@ All though SQL is not case sensitive, this function expects only
 lower case names for "by" functions.
 }
 \examples{
-\dontshow{if (interactive()) (if (getRversion() >= "3.4") withAutoprint else force)(\{ # examplesIf}
+\dontshow{if (interactive()) withAutoprint(\{ # examplesIf}
 
 # note we can read in remote data in a variety of vector formats:
 countries <-

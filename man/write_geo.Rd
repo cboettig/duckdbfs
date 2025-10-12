@@ -40,7 +40,7 @@ and will produce a "Error: Not implemented Error: GDAL Error (6): Seek not suppo
 Use to_geojson() to export using duckdb's native JSON serializer instead.
 }
 \examples{
-\dontshow{if (interactive()) (if (getRversion() >= "3.4") withAutoprint else force)(\{ # examplesIf}
+\dontshow{if (interactive()) withAutoprint(\{ # examplesIf}
 local_file <-  system.file("extdata/spatial-test.csv", package="duckdbfs")
 load_spatial()
 tbl <- open_dataset(local_file, format='csv')

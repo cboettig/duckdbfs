@@ -35,7 +35,7 @@ At this time, reads a subset of spatial metadata.
 This is similar to what is reported by \code{ogrinfo -json}
 }
 \examples{
-\dontshow{if (interactive()) (if (getRversion() >= "3.4") withAutoprint else force)(\{ # examplesIf}
+\dontshow{if (interactive()) withAutoprint(\{ # examplesIf}
 st_read_meta("https://github.com/duckdb/duckdb_spatial/raw/main/test/data/amsterdam_roads.fgb")
 \dontshow{\}) # examplesIf}
 }

@@ -18,7 +18,7 @@ Create a View of the current query.  This can be an effective way to allow
 a query chain to remain lazy
 }
 \examples{
-\dontshow{if (interactive()) (if (getRversion() >= "3.4") withAutoprint else force)(\{ # examplesIf}
+\dontshow{if (interactive()) withAutoprint(\{ # examplesIf}
 path <- system.file("extdata/spatial-test.csv", package="duckdbfs")
 df <- open_dataset(path)
 library(dplyr)

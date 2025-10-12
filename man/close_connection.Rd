@@ -22,7 +22,7 @@ Then clear cached reference to avoid using a stale connection
 This avoids complaint about connection being garbage collected.
 }
 \examples{
-\dontshow{if (interactive()) (if (getRversion() >= "3.4") withAutoprint else force)(\{ # examplesIf}
+\dontshow{if (interactive()) withAutoprint(\{ # examplesIf}
 
 close_connection()
 \dontshow{\}) # examplesIf}

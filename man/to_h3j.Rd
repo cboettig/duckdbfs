@@ -20,7 +20,7 @@ Write H3 hexagon data out as an h3j-compliant JSON file
 NOTE: the column containing H3 hashes must be named \code{hexid}
 }
 \examples{
-\dontshow{if (interactive()) (if (getRversion() >= "3.4") withAutoprint else force)(\{ # examplesIf}
+\dontshow{if (interactive()) withAutoprint(\{ # examplesIf}
 # example code
 \dontshow{\}) # examplesIf}
 }
