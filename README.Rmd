@@ -76,7 +76,7 @@ gbif <- open_dataset(parquet, anonymous = TRUE, s3_region="us-east-1")
 ```
 
 
-The additional configuration arguments are passed to the helper function `duckdb_s3_config()` to set access credentials and configure other settings, like alternative endpoints (for use with S3-compliant systems like [minio](https://min.io)).  Of course it also possible to set these ahead of time by calling `duckdb_s3_config()` directly.  Many of these settings can also be passed along more compactly using the URI query notation found in the `arrow` package.  For instance, we can request anonymous access to a bucket on an alternative endpoint as:
+The additional configuration arguments are passed to the helper function `duckdb_s3_config()` to set access credentials and configure other settings, like alternative endpoints (for use with S3-compliant systems like [minio](https://www.min.io/)).  Of course it also possible to set these ahead of time by calling `duckdb_s3_config()` directly.  Many of these settings can also be passed along more compactly using the URI query notation found in the `arrow` package.  For instance, we can request anonymous access to a bucket on an alternative endpoint as:
 
 ```{r}
 efi <- open_dataset("s3://anonymous@neon4cast-scores/parquet/aquatics?endpoint_override=data.ecoforecast.org")
