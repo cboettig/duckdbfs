@@ -49,8 +49,10 @@ cached_connection <- function(
   bigint = "numeric",
   config = list(temp_directory = tempfile()),
   autoload_exts = getOption("duckdbfs_autoload_extensions", TRUE),
-  with_spatial = getOption("duckdbfs_autoload_extensions", TRUE),
-  with_h3 = not_windows() && getOption("duckdbfs_autoload_extensions", TRUE)
+  with_spatial = not_windows() &&
+    getOption("duckdbfs_autoload_extensions", TRUE),
+  with_h3 = not_windows() &&
+    getOption("duckdbfs_autoload_extensions", TRUE)
 ) {
   #conn <- mget("duckdbfs_conn", envir = duckdbfs_env,
   #             ifnotfound = list(NULL))$duckdbfs_conn
