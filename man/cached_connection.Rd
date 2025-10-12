@@ -11,7 +11,7 @@ cached_connection(
   bigint = "numeric",
   config = list(temp_directory = tempfile()),
   autoload_exts = getOption("duckdbfs_autoload_extensions", TRUE),
-  with_spatial = getOption("duckdbfs_autoload_extensions", TRUE),
+  with_spatial = not_windows() && getOption("duckdbfs_autoload_extensions", TRUE),
   with_h3 = not_windows() && getOption("duckdbfs_autoload_extensions", TRUE)
 )
 }
