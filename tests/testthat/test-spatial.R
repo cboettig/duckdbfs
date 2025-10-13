@@ -5,6 +5,8 @@ test_that("spatial", {
 
   load_spatial()
 
+  skip_if_not(has_spatial(), "spatial extension not available")
+
   library(dplyr)
   library(sf)
   ex <- system.file("extdata/spatial-test.csv", package = "duckdbfs") |>
@@ -19,6 +21,9 @@ test_that("spatial vector read", {
   skip_if_not_installed("sf")
   skip_if_offline() # needs to be able to load the spatial module
   skip_on_cran()
+
+  load_spatial()
+  skip_if_not(has_spatial(), "spatial extension not available")
 
   # lazy-read external data ( urls work too!)
   path <- system.file("extdata/world.fgb", package = "duckdbfs")
@@ -39,6 +44,7 @@ test_that("spatial_join", {
   skip_on_cran()
 
   load_spatial()
+  skip_if_not(has_spatial(), "spatial extension not available")
 
   countries <-
     paste0(
