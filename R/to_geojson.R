@@ -88,27 +88,3 @@ utils::globalVariables(
 #dataset <- open_dataset(local_file, format = 'sf') |> head(3)
 #dataset |> to_geojson("testme.json")
 #terra::vect("testme.json")
-
-# Convert S3 addresses to http addresses, suitable for sharing publicly.
-# no change on paths that are local or already http
-s3_as_http <- function(
-    path,
-    endpoint = Sys.getenv("AWS_S3_ENDPOINT", "s3.amazonaws.com"),
-    use_ssl = Sys.getenv("AWS_HTTPS", "TRUE")
-) {
-    if (use_ssl) {
-        http <- "https"
-    } else {
-        http <- "http"
-    }
-
-    # handle GDAL-type paths too
-    if (grepl("^/vsis3/")) {
-        path <- gsub("^/vsis3/", glue::glue("{http}://{endpoint}/"), path)
-    }
-
-    if (grepl("^s3://")) {
-        path <- gsub("^s3://", glue::glue("{http}://{endpoint}/"), path)
-    }
-    path
-}
