@@ -9,13 +9,15 @@
 library(testthat)
 library(duckdbfs)
 
+
 has_spatial <- function() {
     duckdbfs::duckdb_extensions() |>
         dplyr::filter(extension_name == "spatial") |>
-        dplyr::pull(loaded)
+        dplyr::pull(installed)
 }
 
+
 # tests that don't need extensions loaded shouldn't access internet
-options("duckdbfs_autoload_extensions" = FALSE)
+#options("duckdbfs_autoload_extensions" = FALSE)
 
 test_check("duckdbfs")

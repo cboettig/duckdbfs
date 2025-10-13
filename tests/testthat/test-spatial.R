@@ -3,8 +3,6 @@ test_that("spatial", {
   skip_if_not_installed("sf")
   skip_on_cran()
 
-  load_spatial()
-
   skip_if_not(has_spatial(), "spatial extension not available")
 
   library(dplyr)
@@ -22,7 +20,6 @@ test_that("spatial vector read", {
   skip_if_offline() # needs to be able to load the spatial module
   skip_on_cran()
 
-  load_spatial()
   skip_if_not(has_spatial(), "spatial extension not available")
 
   # lazy-read external data ( urls work too!)
@@ -42,8 +39,6 @@ test_that("spatial_join", {
   skip_if_not_installed("sf")
   skip_if_offline() # needs to be able to load the spatial module
   skip_on_cran()
-
-  load_spatial()
   skip_if_not(has_spatial(), "spatial extension not available")
 
   countries <-
@@ -81,6 +76,7 @@ test_that("st_read_meta", {
   skip_if_offline() # needs to be able to load the spatial module
   skip_if_not_installed("sf")
   skip_on_cran()
+  skip_if_not(has_spatial(), "spatial extension not available")
 
   load_spatial()
 

@@ -178,48 +178,6 @@ duckdb_s3_config <- function(
 }
 
 
-load_extension <-
-  function(
-    extension = "httpfs",
-    conn = cached_connection(),
-    nightly = getOption("duckdbfs_use_nightly", FALSE),
-    force = FALSE
-  ) {
-    exts <- duckdb_extensions()
-    source <- ""
-    if (nightly) {
-      source <- " FROM 'http://nightly-extensions.duckdb.org'"
-    }
-    status <- exts[exts$extension_name == extension, ]
-    status_code <- 0
-    if (force) {
-      FORCE <- "FORCE "
-    } else {
-      FORCE <- ""
-    }
-
-    if (!status$installed) {
-      if (!nightly) {
-        DBI::dbExecute(
-          conn,
-          paste0(FORCE, glue::glue("INSTALL '{extension}'"), source, ";")
-        )
-      } else {
-        source <- " FROM 'http://nightly-extensions.duckdb.org'"
-        status_code <- DBI::dbExecute(
-          conn,
-          paste0(FORCE, glue::glue("INSTALL '{extension}'"), source, ";")
-        )
-      }
-    }
-    if (!status$loaded) {
-      status_code <- DBI::dbExecute(conn, glue::glue("LOAD '{extension}';"))
-    }
-
-    invisible(status_code)
-  }
-
-
 load_httpfs <- function(
   conn = cached_connection(),
   nightly = getOption("duckdbfs_use_nightly", FALSE),
@@ -235,24 +193,6 @@ enable_parallel <- function(
 ) {
   status <- DBI::dbExecute(conn, paste0("PRAGMA threads=", duckdb_cores))
   invisible(status)
-}
-
-
-#' load the duckdb geospatial data plugin
-#'
-#' @inheritParams duckdb_s3_config
-#' @param nightly should we use the nightly version or not?
-#'   default FALSE, configurable as `duckdbfs_use_nightly` option.
-#' @param force force re-install?
-#' @return loads the extension and returns status invisibly.
-#' @references <https://duckdb.org/docs/extensions/spatial.html>
-#' @export
-load_spatial <- function(
-  conn = cached_connection(),
-  nightly = getOption("duckdbfs_use_nightly", FALSE),
-  force = FALSE
-) {
-  load_extension("spatial", conn = conn, nightly = nightly, force = force)
 }
 
 
