@@ -31,7 +31,7 @@ NOTE: the column containing H3 hashes must be named hexid"></head><body>
   <main id="main" class="col-md-9"><div class="page-header">
 
       <h1>Write H3 hexagon data out as an h3j-compliant JSON file NOTE: the column containing H3 hashes must be named <code>hexid</code></h1>
-      <small class="dont-index">Source: <a href="https://github.com/cboettig/duckdbfs/blob/main/R/h3.R" class="external-link"><code>R/h3.R</code></a></small>
+      <small class="dont-index">Source: <a href="https://github.com/cboettig/duckdbfs/blob/main/R/to_h3j.R" class="external-link"><code>R/to_h3j.R</code></a></small>
       <div class="d-none name"><code>to_h3j.Rd</code></div>
     </div>
 
@@ -42,7 +42,7 @@ NOTE: the column containing H3 hashes must be named <code>hexid</code></p>
 
     <div class="section level2">
     <h2 id="ref-usage">Usage<a class="anchor" aria-label="anchor" href="#ref-usage"></a></h2>
-    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">to_h3j</span><span class="op">(</span><span class="va">dataset</span>, <span class="va">path</span>, conn <span class="op">=</span> <span class="fu"><a href="cached_connection.html">cached_connection</a></span><span class="op">(</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">to_h3j</span><span class="op">(</span><span class="va">dataset</span>, <span class="va">path</span>, conn <span class="op">=</span> <span class="fu"><a href="cached_connection.html">cached_connection</a></span><span class="op">(</span><span class="op">)</span>, as_http <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span></code></pre></div>
     </div>
 
     <div class="section level2">
@@ -60,6 +60,10 @@ or an in-memory data.frame.</p></dd>
 
 <dt id="arg-conn">conn<a class="anchor" aria-label="anchor" href="#arg-conn"></a></dt>
 <dd><p>duckdbfs database connection</p></dd>
+
+
+<dt id="arg-as-http">as_http<a class="anchor" aria-label="anchor" href="#arg-as-http"></a></dt>
+<dd><p>if path is an S3 location, will return corresponding HTTP address.</p></dd>
 
 </dl></div>
 

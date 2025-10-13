@@ -47,6 +47,7 @@
 <span>  partitioning <span class="op">=</span> <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/group_data.html" class="external-link">group_vars</a></span><span class="op">(</span><span class="va">dataset</span><span class="op">)</span>,</span>
 <span>  overwrite <span class="op">=</span> <span class="cn">TRUE</span>,</span>
 <span>  options <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span><span class="op">)</span>,</span>
+<span>  as_http <span class="op">=</span> <span class="cn">FALSE</span>,</span>
 <span>  <span class="va">...</span></span>
 <span><span class="op">)</span></span></code></pre></div>
     </div>
@@ -86,6 +87,10 @@ Note, uses duckdb native syntax, e.g. c("PER_THREAD_OUTPUT false"), for named ar
 (Recall SQL is case-insensitive).</p></dd>
 
 
+<dt id="arg-as-http">as_http<a class="anchor" aria-label="anchor" href="#arg-as-http"></a></dt>
+<dd><p>if path is an S3 location, will return corresponding HTTP address.</p></dd>
+
+
 <dt id="arg--">...<a class="anchor" aria-label="anchor" href="#arg--"></a></dt>
 <dd><p>additional arguments to <code><a href="duckdb_s3_config.html">duckdb_s3_config()</a></code></p></dd>
 
@@ -93,6 +98,10 @@ Note, uses duckdb native syntax, e.g. c("PER_THREAD_OUTPUT false"), for named ar
     <div class="section level2">
     <h2 id="value">Value<a class="anchor" aria-label="anchor" href="#value"></a></h2>
     <p>Returns the path, invisibly.</p>
+    </div>
+    <div class="section level2">
+    <h2 id="see-also">See also<a class="anchor" aria-label="anchor" href="#see-also"></a></h2>
+    <div class="dont-index"><p>to_sf to_json to_geojson write_geo</p></div>
     </div>
 
     <div class="section level2">
