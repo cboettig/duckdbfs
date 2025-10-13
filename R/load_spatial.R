@@ -1,9 +1,3 @@
-has_spatial <- function() {
-    duckdbfs::duckdb_extensions() |>
-        dplyr::filter(extension_name == "spatial") |>
-        dplyr::pull(installed)
-}
-
 #' load the duckdb geospatial data plugin
 #'
 #' @inheritParams duckdb_s3_config
