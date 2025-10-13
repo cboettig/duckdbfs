@@ -23,6 +23,7 @@ config
 containsproperly
 crs
 csv
+dbExecute
 dbplyr
 dbpylr
 dplyr
@@ -34,6 +35,7 @@ filesize
 finalizer
 gc
 gdal
+geo
 geojson
 geospatial
 globbing

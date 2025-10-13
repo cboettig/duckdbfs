@@ -32,28 +32,3 @@ load_h3 <- function(
 
   invisible(status)
 }
-
-
-#' Write H3 hexagon data out as an h3j-compliant JSON file
-#' NOTE: the column containing H3 hashes must be named `hexid`
-#'
-#' @inheritParams write_dataset
-#' @examplesIf interactive()
-#' # example code
-#'
-#' @export
-to_h3j <- function(dataset, path, conn = cached_connection()) {
-  cols <- paste(colnames(dataset), collapse = ", ")
-  sql <- dbplyr::sql_render(dataset)
-  q <- glue::glue(
-    "
-    COPY (
-      WITH t1 AS ({sql})
-      SELECT json_group_array(struct_pack({cols}))
-      AS cells
-      FROM t1
-    ) TO '{path}' (FORMAT JSON)
-  "
-  )
-  DBI::dbExecute(conn, q)
-}

@@ -6,19 +6,29 @@
 #' @param options additional options
 #' @param options additional options as a char string, see
 # https://duckdb.org/docs/sql/statements/copy.html#json-options
-to_json <- function(dataset,
-                    path,
-                    conn = cached_connection(),
-                    array = TRUE,
-                    options = NULL) {
+#' @return path, invisibly
+
+to_json <- function(
+  dataset,
+  path,
+  conn = cached_connection(),
+  array = TRUE,
+  options = NULL,
+  as_http = FALSE
+) {
   sql <- dbplyr::sql_render(dataset)
-  if (array)
+  if (array) {
     options <- c("ARRAY true", options)
+  }
 
   options <- paste("FORMAT JSON", options, sep = ", ", collapse = ", ")
 
   q <- glue::glue("COPY ({sql}) TO '{path}' ({options});")
   DBI::dbExecute(conn, q)
 
-}
+  if (as_http) {
+    path <- s3_as_http(path)
+  }
 
+  invisible(path)
+}

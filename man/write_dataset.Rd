@@ -12,6 +12,7 @@ write_dataset(
   partitioning = dplyr::group_vars(dataset),
   overwrite = TRUE,
   options = list(),
+  as_http = FALSE,
   ...
 )
 }
@@ -33,6 +34,8 @@ or an in-memory data.frame.}
 Note, uses duckdb native syntax, e.g. c("PER_THREAD_OUTPUT false"), for named arguments, see examples.
 (Recall SQL is case-insensitive).}
 
+\item{as_http}{if path is an S3 location, will return corresponding HTTP address.}
+
 \item{...}{additional arguments to \code{\link[=duckdb_s3_config]{duckdb_s3_config()}}}
 }
 \value{
@@ -49,4 +52,7 @@ write_dataset
 write_dataset(mtcars, tempdir())
 write_dataset(mtcars, tempdir(), options = c("PER_THREAD_OUTPUT FALSE", "RETURN_STATS TRUE"))
 \dontshow{\}) # examplesIf}
+}
+\seealso{
+to_sf to_json to_geojson write_geo
 }

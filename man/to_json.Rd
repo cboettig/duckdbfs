@@ -10,7 +10,8 @@ to_json(
   path,
   conn = cached_connection(),
   array = TRUE,
-  options = NULL
+  options = NULL,
+  as_http = FALSE
 )
 }
 \arguments{
@@ -24,6 +25,11 @@ or an in-memory data.frame.}
 \item{array}{generate a JSON array?}
 
 \item{options}{additional options as a char string, see}
+
+\item{as_http}{if path is an S3 location, will return corresponding HTTP address.}
+}
+\value{
+path, invisibly
 }
 \description{
 to_json

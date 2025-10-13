@@ -10,7 +10,8 @@ write_geo(
   conn = cached_connection(),
   driver = "GeoJSON",
   layer_creation_options = "WRITE_BBOX=YES",
-  srs = "ESPG:4326"
+  srs = "ESPG:4326",
+  as_http = FALSE
 )
 }
 \arguments{
@@ -30,12 +31,18 @@ This can be a WKT string, an EPSG code or a proj-string, basically anything
 you would normally be able to pass to GDAL. Note that this will not perform
 any reprojection of the input geometry, it just sets the metadata if the
 target driver supports it.}
+
+\item{as_http}{if path is an S3 location, will return corresponding HTTP address.}
+}
+\value{
+path, invisibly
 }
 \description{
-Write a spatial file with gdal
+Write out to any spatial data format supported by GDAL.
 }
 \details{
-NOTE: at this time, duckdb's pre-packaged GDAL does not support s3 writes,
+NOTE: This uses the version of GDAL packaged inside of duckdb, and not the
+system GDAL. At this time, duckdb's pre-packaged GDAL does not support s3 writes,
 and will produce a "Error: Not implemented Error: GDAL Error (6): Seek not supported on writable /vsis3/ files".
 Use to_geojson() to export using duckdb's native JSON serializer instead.
 }

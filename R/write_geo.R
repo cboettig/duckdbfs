@@ -1,5 +1,6 @@
 #' Write a spatial file with gdal
 #'
+#' Write out to any spatial data format supported by GDAL.
 #' @inheritParams write_dataset
 #' @param driver driver, see <https://duckdb.org/docs/stable/extensions/spatial/gdal>
 #' @param layer_creation_options to GDAL, see <https://duckdb.org/docs/stable/extensions/spatial/gdal>
@@ -8,7 +9,9 @@
 #'  you would normally be able to pass to GDAL. Note that this will not perform
 #'  any reprojection of the input geometry, it just sets the metadata if the
 #'  target driver supports it.
-#' @details NOTE: at this time, duckdb's pre-packaged GDAL does not support s3 writes,
+#' @return path, invisibly
+#' @details NOTE: This uses the version of GDAL packaged inside of duckdb, and not the
+#' system GDAL. At this time, duckdb's pre-packaged GDAL does not support s3 writes,
 #' and will produce a "Error: Not implemented Error: GDAL Error (6): Seek not supported on writable /vsis3/ files".
 #' Use to_geojson() to export using duckdb's native JSON serializer instead.
 #' @examplesIf interactive()
@@ -24,7 +27,8 @@ write_geo <- function(
     conn = cached_connection(),
     driver = 'GeoJSON',
     layer_creation_options = 'WRITE_BBOX=YES',
-    srs = 'ESPG:4326'
+    srs = 'ESPG:4326',
+    as_http = FALSE
 ) {
     cols <- paste(colnames(dataset), collapse = ", ")
     sql <- dbplyr::sql_render(dataset)
@@ -38,4 +42,9 @@ write_geo <- function(
   "
     )
     DBI::dbExecute(conn, q)
+
+    if (as_http) {
+        path <- s3_as_http(path)
+    }
+    invisible(path)
 }

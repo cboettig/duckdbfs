@@ -1,5 +1,8 @@
-# duckdbfs 0.1.2
+# duckdbfs 0.1.2.99
 
+* All methods that write to a file / path now return that path (invisibly).  Previously the return was just inherited from dbExecute() call, except for write_dataset() which always followed this convention. An additional optional argument has been added which can format the returned path as an HTTP address. 
+
+# duckdbfs 0.1.2
 
 * `write_geo()` now takes argument, `srs` for projection information
 * `to_geojson()` now writes all atomic columns, not just an id column.

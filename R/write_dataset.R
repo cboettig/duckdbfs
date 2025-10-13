@@ -7,10 +7,13 @@
 #' @param format export format
 #' @param partitioning names of columns to use as partition variables
 #' @param overwrite allow overwriting of existing files?
+#' @param as_http if path is an S3 location, will return corresponding HTTP address.
 #' @param options Additional arguments to COPY, see <https://duckdb.org/docs/stable/sql/statements/copy.html#copy--to-options>
 #' Note, uses duckdb native syntax, e.g. c("PER_THREAD_OUTPUT false"), for named arguments, see examples.
 #' (Recall SQL is case-insensitive).
 #' @param ... additional arguments to [duckdb_s3_config()]
+#'
+#' @seealso to_sf to_json to_geojson write_geo
 #' @examplesIf interactive()
 #'   write_dataset(mtcars, tempfile())
 #' @return Returns the path, invisibly.
@@ -27,6 +30,7 @@ write_dataset <- function(
   partitioning = dplyr::group_vars(dataset),
   overwrite = TRUE,
   options = list(),
+  as_http = FALSE,
   ...
 ) {
   format <- match.arg(format)
@@ -67,6 +71,11 @@ write_dataset <- function(
   copy <- glue::glue("COPY {tblname} TO '{path}' ")
   query <- glue::glue(copy, "({copy_options})", ";")
   status <- DBI::dbSendQuery(conn, query)
+
+  if (as_http) {
+    path <- s3_as_http(path)
+  }
+
   invisible(path)
 }
 

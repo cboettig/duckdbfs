@@ -4,7 +4,13 @@
 \alias{to_geojson}
 \title{Write geojson using duckdb's native JSON writer}
 \usage{
-to_geojson(dataset, path, conn = cached_connection(), id_col = NULL)
+to_geojson(
+  dataset,
+  path,
+  conn = cached_connection(),
+  id_col = NULL,
+  as_http = FALSE
+)
 }
 \arguments{
 \item{dataset}{a remote tbl object from \code{open_dataset},
@@ -16,6 +22,11 @@ or an in-memory data.frame.}
 
 \item{id_col}{(deprecated). to_geojson() will preserve all atomic columns
 as properties.}
+
+\item{as_http}{if path is an S3 location, will return corresponding HTTP address.}
+}
+\value{
+path, invisibly
 }
 \description{
 Write geojson using duckdb's native JSON writer
