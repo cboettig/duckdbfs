@@ -1,23 +1,21 @@
-
-
 test_that("spatial", {
   skip_if_offline() # needs to be able to load the spatial module
   skip_if_not_installed("sf")
   skip_on_cran()
 
+  load_spatial()
+
   library(dplyr)
   library(sf)
-  ex <- system.file("extdata/spatial-test.csv", package="duckdbfs") |>
-  open_dataset(format = "csv") |>
-  dplyr::mutate(geometry = ST_Point(longitude, latitude)) |>
-  to_sf()
+  ex <- system.file("extdata/spatial-test.csv", package = "duckdbfs") |>
+    open_dataset(format = "csv") |>
+    dplyr::mutate(geometry = ST_Point(longitude, latitude)) |>
+    to_sf()
 
   expect_true(TRUE)
-
 })
 
 test_that("spatial vector read", {
-
   skip_if_not_installed("sf")
   skip_if_offline() # needs to be able to load the spatial module
   skip_on_cran()
@@ -32,26 +30,29 @@ test_that("spatial vector read", {
   expect_s3_class(x, "tbl_lazy")
   expect_s3_class(x, "tbl")
   expect_s3_class(y, "sf")
-
 })
 
 
 test_that("spatial_join", {
-
-
   skip_if_not_installed("sf")
   skip_if_offline() # needs to be able to load the spatial module
   skip_on_cran()
 
+  load_spatial()
+
   countries <-
-    paste0("https://github.com/cboettig/duckdbfs/",
-           "raw/main/inst/extdata/world.fgb") |>
-  open_dataset()
+    paste0(
+      "https://github.com/cboettig/duckdbfs/",
+      "raw/main/inst/extdata/world.fgb"
+    ) |>
+    open_dataset()
 
   cities <-
-   paste0("https://github.com/cboettig/duckdbfs/raw/",
-          "main/inst/extdata/metro.fgb") |>
-   open_dataset()
+    paste0(
+      "https://github.com/cboettig/duckdbfs/raw/",
+      "main/inst/extdata/metro.fgb"
+    ) |>
+    open_dataset()
 
   out <-
     countries |>
@@ -75,9 +76,10 @@ test_that("st_read_meta", {
   skip_if_not_installed("sf")
   skip_on_cran()
 
+  load_spatial()
+
   df <-
-    "https://github.com/duckdb/duckdb_spatial/raw/main/test/data/amsterdam_roads.fgb"|>
+    "https://github.com/duckdb/duckdb_spatial/raw/main/test/data/amsterdam_roads.fgb" |>
     st_read_meta()
   expect_equal(df$code, "3857")
-
 })
