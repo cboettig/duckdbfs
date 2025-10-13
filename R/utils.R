@@ -51,3 +51,45 @@ s3_as_http <- function(
   }
   path
 }
+
+
+load_extension <-
+  function(
+    extension = "httpfs",
+    conn = cached_connection(),
+    nightly = getOption("duckdbfs_use_nightly", FALSE),
+    force = FALSE
+  ) {
+    exts <- duckdb_extensions()
+    source <- ""
+    if (nightly) {
+      source <- " FROM 'http://nightly-extensions.duckdb.org'"
+    }
+    status <- exts[exts$extension_name == extension, ]
+    status_code <- 0
+    if (force) {
+      FORCE <- "FORCE "
+    } else {
+      FORCE <- ""
+    }
+
+    if (!status$installed) {
+      if (!nightly) {
+        DBI::dbExecute(
+          conn,
+          paste0(FORCE, glue::glue("INSTALL '{extension}'"), source, ";")
+        )
+      } else {
+        source <- " FROM 'http://nightly-extensions.duckdb.org'"
+        status_code <- DBI::dbExecute(
+          conn,
+          paste0(FORCE, glue::glue("INSTALL '{extension}'"), source, ";")
+        )
+      }
+    }
+    if (!status$loaded) {
+      status_code <- DBI::dbExecute(conn, glue::glue("LOAD '{extension}';"))
+    }
+
+    invisible(status_code)
+  }
