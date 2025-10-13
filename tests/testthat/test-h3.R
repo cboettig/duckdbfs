@@ -1,12 +1,12 @@
-
 test_that("h3", {
   skip_if_offline() # needs to be able to load the spatial module
   skip_if_not_installed("sf")
   skip_on_cran()
   skip_on_os("windows") # h3 extension not built for windows(?)
+  skip_if_not(has_spatial(), "spatial extension not available")
 
   # start a fresh connection
-  options("duckdbfs_autoload_extensions"=TRUE)
+  options("duckdbfs_autoload_extensions" = TRUE)
   close_connection()
 
   library(dplyr)
@@ -14,9 +14,8 @@ test_that("h3", {
 
   # requires json extension, autoload:
 
-
   path <- tempfile(fileext = ".h3j")
-  ex <- system.file("extdata/spatial-test.csv", package="duckdbfs")
+  ex <- system.file("extdata/spatial-test.csv", package = "duckdbfs")
 
   zoom <- 9L # Zoom must be explicit integer, L
   query <- ex |>
@@ -30,7 +29,5 @@ test_that("h3", {
   expect_true(file.exists(path))
 
   # unset autoload
-  options("duckdbfs_autoload_extensions"=TRUE)
-
-
+  options("duckdbfs_autoload_extensions" = TRUE)
 })

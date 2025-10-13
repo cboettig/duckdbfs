@@ -1,8 +1,6 @@
-
 #' Note that it is not possible to open from one S3 source and write to another
 #'
 test_that("write_dataset", {
-
   skip_on_cran()
   ## write an in-memory dataset
   path <- file.path(tempdir(), "mtcars.parquet")
@@ -11,15 +9,19 @@ test_that("write_dataset", {
   df <- open_dataset(path)
   expect_s3_class(df, "tbl")
 
-  write_dataset(mtcars, path, options = c("PER_THREAD_OUTPUT FALSE", "FILENAME_PATTERN 'cars_{i}'"))
+  write_dataset(
+    mtcars,
+    path,
+    options = c("PER_THREAD_OUTPUT FALSE", "FILENAME_PATTERN 'cars_{i}'")
+  )
 
   expect_true(file.exists(path))
   df <- open_dataset(path)
   expect_s3_class(df, "tbl")
 
   ## write from an on-disk dataset
-  local_file <-  system.file("extdata/spatial-test.csv", package="duckdbfs")
-  tbl <- open_dataset(local_file, format='csv')
+  local_file <- system.file("extdata/spatial-test.csv", package = "duckdbfs")
+  tbl <- open_dataset(local_file, format = 'csv')
   path <- file.path(tempdir(), "spatial.parquet")
   write_dataset(tbl, path)
 
@@ -34,11 +36,9 @@ test_that("write_dataset", {
     dplyr::mutate(new = "test")
   dataset |>
     write_dataset(path2)
-
 })
 
 test_that("write_dataset partitions", {
-
   skip_on_cran()
   ## write an in-memory dataset
   path <- file.path(tempdir(), "mtcars")
@@ -55,13 +55,12 @@ test_that("write_dataset partitions", {
   expect_true(any(grepl("cyl=4", parts)))
 
   path <- file.path(tempdir(), "mtcars2")
-  mtcars |> write_dataset(path, partitioning = "cyl", overwrite=TRUE)
+  mtcars |> write_dataset(path, partitioning = "cyl", overwrite = TRUE)
   expect_true(file.exists(path))
   df <- open_dataset(path)
   expect_s3_class(df, "tbl")
 
-  unlink(path, recursive=TRUE)
-
+  unlink(path, recursive = TRUE)
 })
 
 
@@ -70,9 +69,12 @@ test_that("write_dataset, remote input", {
   skip_if_offline()
 
   tbl <- open_dataset(
-    paste0("https://raw.githubusercontent.com/cboettig/duckdbfs/",
-           "main/inst/extdata/spatial-test.csv"),
-    format = "csv")
+    paste0(
+      "https://raw.githubusercontent.com/cboettig/duckdbfs/",
+      "main/inst/extdata/spatial-test.csv"
+    ),
+    format = "csv"
+  )
 
   path <- file.path(tempdir(), "spatial.parquet")
   write_dataset(tbl, path)
@@ -80,11 +82,9 @@ test_that("write_dataset, remote input", {
   expect_true(file.exists(path))
   df <- open_dataset(path)
   expect_s3_class(df, "tbl")
-
 })
 
 test_that("write_dataset to s3:", {
-
   skip_on_os("windows")
   skip_if_offline()
   skip_on_cran()
@@ -97,7 +97,11 @@ test_that("write_dataset to s3:", {
   config <- jsonlite::fromJSON(p$stdout)
 
   minioclient::mc_mb("play/duckdbfs")
-  duckdb_secrets(config$accessKey, config$secretKey, gsub("https://", "", config$URL))
+  duckdb_secrets(
+    config$accessKey,
+    config$secretKey,
+    gsub("https://", "", config$URL)
+  )
 
   mtcars |> write_dataset("s3://duckdbfs/mtcars.parquet")
 
@@ -107,8 +111,7 @@ test_that("write_dataset to s3:", {
   close_connection()
 })
 
-mc_config_get <- function(alias="play"){
-
+mc_config_get <- function(alias = "play") {
   # this can fail tp parse on windows, stdout is not pure json
   # p <- minioclient::mc_alias_ls(paste(alias, "--json"))
   # config <- jsonlite::fromJSON(p$stdout)
@@ -123,19 +126,15 @@ mc_config_get <- function(alias="play"){
 }
 
 
-
-
-
-
 test_that("write_geo", {
-
   skip_on_cran()
   skip_if_not_installed("sf")
+  skip_if_not(has_spatial(), "spatial extension not available")
 
   ## write from an on-disk dataset
-  local_file <-  system.file("extdata/world.fgb", package="duckdbfs")
+  local_file <- system.file("extdata/world.fgb", package = "duckdbfs")
   load_spatial()
-  tbl <- open_dataset(local_file, format='sf')
+  tbl <- open_dataset(local_file, format = 'sf')
   path <- file.path(tempdir(), "spatial.geojson")
   write_geo(tbl, path)
 
@@ -143,21 +142,20 @@ test_that("write_geo", {
   df <- sf::st_read(path)
   expect_s3_class(df, "sf")
   expect_gt(nrow(df), 1)
-
 })
 
 
-
 test_that("to_geojson", {
-
   skip_on_cran()
   skip_if_offline() # extensions need internet
+  skip_if_not(has_spatial(), "spatial extension not available")
+
   load_extension("json")
 
   ## write from an on-disk dataset
-  local_file <-  system.file("extdata/world.fgb", package="duckdbfs")
+  local_file <- system.file("extdata/world.fgb", package = "duckdbfs")
   load_spatial()
-  tbl <- open_dataset(local_file, format='sf')
+  tbl <- open_dataset(local_file, format = 'sf')
   path <- file.path(tempdir(), "spatial1.geojson")
   to_geojson(tbl, path, id_col = "iso_a3")
 
@@ -169,17 +167,17 @@ test_that("to_geojson", {
   #df <- sf::st_read(path)
   #expect_s3_class(df, "sf")
   #expect_gt(nrow(df), 1)
-
 })
 
 
 test_that("to_geojson s3", {
-
   skip_on_cran()
   skip_if_offline() # extensions need internet
   skip_if_not_installed("sf")
   skip_if_not_installed("jsonlite")
   skip_if_not_installed("minioclient")
+  skip_if_not(has_spatial(), "spatial extension not available")
+
   minioclient::install_mc(force = TRUE)
 
   skip_on_os("windows")
@@ -187,19 +185,18 @@ test_that("to_geojson s3", {
   config <- jsonlite::fromJSON(p$stdout)
   minioclient::mc_mb("play/duckdbfs")
 
-  duckdb_secrets(config$accessKey,
-                 config$secretKey,
-                 gsub("https://", "", config$URL))
+  duckdb_secrets(
+    config$accessKey,
+    config$secretKey,
+    gsub("https://", "", config$URL)
+  )
   load_spatial()
 
   ## write from an on-disk dataset
-  local_file <-  system.file("extdata/world.fgb", package="duckdbfs")
-  tbl <- open_dataset(local_file, format='sf')
-  path <-  "s3://duckdbfs/spatial-test.geojson"
+  local_file <- system.file("extdata/world.fgb", package = "duckdbfs")
+  tbl <- open_dataset(local_file, format = 'sf')
+  path <- "s3://duckdbfs/spatial-test.geojson"
   to_geojson(tbl, path, id_col = "iso_a3")
 
   expect_true(TRUE)
-
 })
-
-
