@@ -60,7 +60,7 @@ load_extension <-
     nightly = getOption("duckdbfs_use_nightly", FALSE),
     force = FALSE
   ) {
-    exts <- duckdb_extensions()
+    exts <- duckdb_extensions(conn = conn)
     source <- ""
     if (nightly) {
       source <- " FROM 'http://nightly-extensions.duckdb.org'"
