@@ -43,9 +43,9 @@ to_geojson(
 
   aws endpoint if converting s3 path to URL
 
-- should:
+- use_ssl:
 
-  url use https
+  should url use https
 
 ## Value
 
