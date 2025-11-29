@@ -29,7 +29,7 @@ as properties.}
 
 \item{server}{aws endpoint if converting s3 path to URL}
 
-\item{should}{url use https}
+\item{use_ssl}{should url use https}
 }
 \value{
 path, invisibly

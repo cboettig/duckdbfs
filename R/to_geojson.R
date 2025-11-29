@@ -5,7 +5,7 @@
 #' as properties.
 #' @param as_http convert returned S3 path to URL (e.g. for public buckets)
 #' @param server aws endpoint if converting s3 path to URL
-#' @param should url use https
+#' @param use_ssl should url use https
 #' @return path, invisibly
 #' @export
 to_geojson <- function(
