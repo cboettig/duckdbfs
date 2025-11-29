@@ -1,0 +1,115 @@
+# Configure S3 settings for database connection
+
+This function is used to configure S3 settings for a database
+connection. It allows you to set various S3-related parameters such as
+access key, secret access key, endpoint, region, session token, uploader
+settings, URL compatibility mode, URL style, and SSL usage.
+
+## Usage
+
+``` r
+duckdb_s3_config(
+  conn = cached_connection(),
+  s3_access_key_id = NULL,
+  s3_secret_access_key = NULL,
+  s3_endpoint = NULL,
+  s3_region = NULL,
+  s3_session_token = NULL,
+  s3_uploader_max_filesize = NULL,
+  s3_uploader_max_parts_per_file = NULL,
+  s3_uploader_thread_limit = NULL,
+  s3_url_compatibility_mode = NULL,
+  s3_url_style = NULL,
+  s3_use_ssl = NULL,
+  anonymous = NULL
+)
+```
+
+## Arguments
+
+- conn:
+
+  A database connection object created using the `cache_connection`
+  function (default: `cache_connection()`).
+
+- s3_access_key_id:
+
+  The S3 access key ID (default: `NULL`).
+
+- s3_secret_access_key:
+
+  The S3 secret access key (default: `NULL`).
+
+- s3_endpoint:
+
+  The S3 endpoint (default: `NULL`).
+
+- s3_region:
+
+  The S3 region (default: `NULL`).
+
+- s3_session_token:
+
+  The S3 session token (default: `NULL`).
+
+- s3_uploader_max_filesize:
+
+  The maximum filesize for S3 uploader (between 50GB and 5TB, default
+  800GB).
+
+- s3_uploader_max_parts_per_file:
+
+  The maximum number of parts per file for S3 uploader (between 1 and
+  10000, default 10000).
+
+- s3_uploader_thread_limit:
+
+  The thread limit for S3 uploader (default: 50).
+
+- s3_url_compatibility_mode:
+
+  Disable Globs and Query Parameters on S3 URLs (default: 0, allows
+  globs/queries).
+
+- s3_url_style:
+
+  The style of S3 URLs to use. Default is "vhost" unless s3_endpoint is
+  set, which makes default "path" (i.e. MINIO systems).
+
+- s3_use_ssl:
+
+  Enable or disable SSL for S3 connections (default: 1 (TRUE)).
+
+- anonymous:
+
+  request anonymous access (sets `s3_access_key_id` and
+  `s3_secret_access_key` to `""`, allowing anonymous access to public
+  buckets).
+
+## Value
+
+Returns silently (NULL) if successful.
+
+## Details
+
+see <https://duckdb.org/docs/sql/configuration.html>
+
+## Examples
+
+``` r
+if (FALSE) { # interactive()
+# Configure S3 settings
+duckdb_s3_config(
+           s3_access_key_id = "YOUR_ACCESS_KEY_ID",
+           s3_secret_access_key = "YOUR_SECRET_ACCESS_KEY",
+           s3_endpoint = "YOUR_S3_ENDPOINT",
+           s3_region = "YOUR_S3_REGION",
+           s3_uploader_max_filesize = "800GB",
+           s3_uploader_max_parts_per_file = 100,
+           s3_uploader_thread_limit = 8,
+           s3_url_compatibility_mode = FALSE,
+           s3_url_style = "vhost",
+           s3_use_ssl = TRUE,
+           anonymous = TRUE)
+}
+```

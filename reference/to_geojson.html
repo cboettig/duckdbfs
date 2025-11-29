@@ -7,7 +7,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">duckdbfs</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.1.2</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.1.2.99</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -44,7 +44,9 @@
 <span>  <span class="va">path</span>,</span>
 <span>  conn <span class="op">=</span> <span class="fu"><a href="cached_connection.html">cached_connection</a></span><span class="op">(</span><span class="op">)</span>,</span>
 <span>  id_col <span class="op">=</span> <span class="cn">NULL</span>,</span>
-<span>  as_http <span class="op">=</span> <span class="cn">FALSE</span></span>
+<span>  as_http <span class="op">=</span> <span class="cn">FALSE</span>,</span>
+<span>  server <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/Sys.getenv.html" class="external-link">Sys.getenv</a></span><span class="op">(</span><span class="st">"AWS_S3_ENDPOINT"</span>, <span class="st">"s3.amanzonaws.com"</span><span class="op">)</span>,</span>
+<span>  use_ssl <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/Sys.getenv.html" class="external-link">Sys.getenv</a></span><span class="op">(</span><span class="st">"AWS_HTTPS"</span>, <span class="st">"TRUE"</span><span class="op">)</span></span>
 <span><span class="op">)</span></span></code></pre></div>
     </div>
 
@@ -71,7 +73,15 @@ as properties.</p></dd>
 
 
 <dt id="arg-as-http">as_http<a class="anchor" aria-label="anchor" href="#arg-as-http"></a></dt>
-<dd><p>if path is an S3 location, will return corresponding HTTP address.</p></dd>
+<dd><p>convert returned S3 path to URL (e.g. for public buckets)</p></dd>
+
+
+<dt id="arg-server">server<a class="anchor" aria-label="anchor" href="#arg-server"></a></dt>
+<dd><p>aws endpoint if converting s3 path to URL</p></dd>
+
+
+<dt id="arg-should">should<a class="anchor" aria-label="anchor" href="#arg-should"></a></dt>
+<dd><p>url use https</p></dd>
 
 </dl></div>
     <div class="section level2">
@@ -88,7 +98,7 @@ as properties.</p></dd>
 </div>
 
 <div class="pkgdown-footer-right">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.1.3.</p>
+  <p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.2.0.</p>
 </div>
 
     </footer></div>
