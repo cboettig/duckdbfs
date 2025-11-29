@@ -9,7 +9,9 @@ to_geojson(
   path,
   conn = cached_connection(),
   id_col = NULL,
-  as_http = FALSE
+  as_http = FALSE,
+  server = Sys.getenv("AWS_S3_ENDPOINT", "s3.amanzonaws.com"),
+  use_ssl = Sys.getenv("AWS_HTTPS", "TRUE")
 )
 }
 \arguments{
@@ -23,7 +25,11 @@ or an in-memory data.frame.}
 \item{id_col}{(deprecated). to_geojson() will preserve all atomic columns
 as properties.}
 
-\item{as_http}{if path is an S3 location, will return corresponding HTTP address.}
+\item{as_http}{convert returned S3 path to URL (e.g. for public buckets)}
+
+\item{server}{aws endpoint if converting s3 path to URL}
+
+\item{should}{url use https}
 }
 \value{
 path, invisibly

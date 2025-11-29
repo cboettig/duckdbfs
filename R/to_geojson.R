@@ -3,6 +3,9 @@
 #' @inheritParams write_dataset
 #' @param id_col (deprecated). to_geojson() will preserve all atomic columns
 #' as properties.
+#' @param as_http convert returned S3 path to URL (e.g. for public buckets)
+#' @param server aws endpoint if converting s3 path to URL
+#' @param should url use https
 #' @return path, invisibly
 #' @export
 to_geojson <- function(
@@ -10,7 +13,9 @@ to_geojson <- function(
     path,
     conn = cached_connection(),
     id_col = NULL,
-    as_http = FALSE
+    as_http = FALSE,
+    server = Sys.getenv("AWS_S3_ENDPOINT", "s3.amanzonaws.com"),
+    use_ssl = Sys.getenv("AWS_HTTPS", "TRUE")
 ) {
     # In geojson it must be called "geometry"
     dataset <- safe_geometry_name(dataset)
@@ -46,7 +51,7 @@ to_geojson <- function(
     DBI::dbExecute(conn, q)
 
     if (as_http) {
-        path <- s3_as_http(path)
+        path <- s3_as_http(path, server, use_ssl)
     }
 
     invisible(path)
