@@ -1,5 +1,6 @@
 # duckdbfs 0.1.2.99
 
+* New function `raw_sql()` provides an escape hatch for executing arbitrary SQL and getting back a lazy `dplyr::tbl`, useful for DuckDB-specific syntax such as `UNION ALL BY NAME` that `dbplyr` does not emit.
 * All methods that write to a file / path now return that path (invisibly).  Previously the return was just inherited from dbExecute() call, except for write_dataset() which always followed this convention. An additional optional argument has been added which can format the returned path as an HTTP address. 
 
 # duckdbfs 0.1.2
