@@ -439,6 +439,9 @@ few exceptions:
 - [`open_dataset()`](https://cboettig.github.io/duckdbfs/reference/open_dataset.md)
   : Open a dataset from a variety of sources
 
+- [`raw_sql()`](https://cboettig.github.io/duckdbfs/reference/raw_sql.md)
+  : Run a raw SQL query and return a lazy table
+
 - [`spatial_join()`](https://cboettig.github.io/duckdbfs/reference/spatial_join.md)
   : spatial_join
 

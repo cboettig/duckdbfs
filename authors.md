@@ -13,14 +13,14 @@
 Source:
 [`DESCRIPTION`](https://github.com/cboettig/duckdbfs/blob/main/DESCRIPTION)
 
-Boettiger C (2025). *duckdbfs: High Performance Remote File System,
+Boettiger C (2026). *duckdbfs: High Performance Remote File System,
 Database and 'Geospatial' Access Using 'duckdb'*. R package version
 0.1.2.99, <https://github.com/cboettig/duckdbfs>.
 
     @Manual{,
       title = {duckdbfs: High Performance Remote File System, Database and 'Geospatial' Access Using 'duckdb'},
       author = {Carl Boettiger},
-      year = {2025},
+      year = {2026},
       note = {R package version 0.1.2.99},
       url = {https://github.com/cboettig/duckdbfs},
     }

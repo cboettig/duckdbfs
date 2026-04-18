@@ -94,6 +94,13 @@ on using dplyr operations and call to_st() to collect this as an sf object.</p>
     <h2 id="details">Details<a class="anchor" aria-label="anchor" href="#details"></a></h2>
     <p>Possible <a href="https://postgis.net/workshops/postgis-intro/spatial_relationships.html" class="external-link">spatial joins</a> include:</p><table class="table table"><tr><td>Function</td><td>Description</td></tr><tr><td>st_intersects</td><td>Geometry A intersects with geometry B</td></tr><tr><td>st_disjoint</td><td>The complement of intersects</td></tr><tr><td>st_within</td><td>Geometry A is within geometry B (complement of contains)</td></tr><tr><td>st_dwithin</td><td>Geometries are within a specified distance, expressed in the same units as the coordinate reference system.</td></tr><tr><td>st_touches</td><td>Two polygons touch if the that have at least one point in common, even if their interiors do not touch.</td></tr><tr><td>st_contains</td><td>Geometry A entirely contains to geometry B. (complement of within)</td></tr><tr><td>st_containsproperly</td><td>stricter version of <code>st_contains</code> (boundary counts as external)</td></tr><tr><td>st_covers</td><td>geometry B is inside or on boundary of A. (A polygon covers a point on its boundary but does not contain it.)</td></tr><tr><td>st_overlaps</td><td>geometry A intersects but does not completely contain geometry B</td></tr><tr><td>st_equals</td><td>geometry A is equal to geometry B</td></tr><tr><td>st_crosses</td><td>Lines or points in geometry A cross geometry B.</td></tr></table><p>All though SQL is not case sensitive, this function expects only
 lower case names for "by" functions.</p>
+<p>Geometry columns are cast to plain <code>GEOMETRY</code> before the join, dropping
+any CRS type annotation.  Newer versions of the DuckDB spatial extension
+refuse to call ST_* functions when the two inputs have differing CRS
+tags, even for semantically equivalent labels such as <code>EPSG:4326</code> and
+<code>OGC:CRS84</code>.  The cast compares coordinates directly, so ensuring that
+both datasets are in a compatible spatial reference system remains the
+caller's responsibility.</p>
     </div>
 
     <div class="section level2">

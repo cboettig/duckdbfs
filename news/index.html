@@ -34,7 +34,10 @@
 
     <div class="section level2">
 <h2 class="pkg-version" data-toc-text="0.1.2.99" id="duckdbfs-01299">duckdbfs 0.1.2.99<a class="anchor" aria-label="anchor" href="#duckdbfs-01299"></a></h2>
-<ul><li>All methods that write to a file / path now return that path (invisibly). Previously the return was just inherited from dbExecute() call, except for write_dataset() which always followed this convention. An additional optional argument has been added which can format the returned path as an HTTP address.</li>
+<ul><li>New function <code><a href="../reference/raw_sql.html">raw_sql()</a></code> provides an escape hatch for executing arbitrary SQL and getting back a lazy <code><a href="https://dplyr.tidyverse.org/reference/tbl.html" class="external-link">dplyr::tbl</a></code>, useful for DuckDB-specific syntax such as <code>UNION ALL BY NAME</code> that <code>dbplyr</code> does not emit.</li>
+<li>
+<code><a href="../reference/spatial_join.html">spatial_join()</a></code> now casts its geometry columns to plain <code>GEOMETRY</code>, avoiding a binder error from newer DuckDB spatial extensions when the two inputs have different CRS type tags (e.g. <code>EPSG:4326</code> vs <code>OGC:CRS84</code>).</li>
+<li>All methods that write to a file / path now return that path (invisibly). Previously the return was just inherited from dbExecute() call, except for write_dataset() which always followed this convention. An additional optional argument has been added which can format the returned path as an HTTP address.</li>
 </ul></div>
     <div class="section level2">
 <h2 class="pkg-version" data-toc-text="0.1.2" id="duckdbfs-012">duckdbfs 0.1.2<a class="anchor" aria-label="anchor" href="#duckdbfs-012"></a></h2><p class="text-muted">CRAN release: 2025-10-12</p>
