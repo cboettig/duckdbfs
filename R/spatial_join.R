@@ -31,6 +31,14 @@
 #' All though SQL is not case sensitive, this function expects only
 #' lower case names for "by" functions.
 #'
+#' Geometry columns are cast to plain `GEOMETRY` before the join, dropping
+#' any CRS type annotation.  Newer versions of the DuckDB spatial extension
+#' refuse to call ST_* functions when the two inputs have differing CRS
+#' tags, even for semantically equivalent labels such as `EPSG:4326` and
+#' `OGC:CRS84`.  The cast compares coordinates directly, so ensuring that
+#' both datasets are in a compatible spatial reference system remains the
+#' caller's responsibility.
+#'
 #' @examplesIf interactive()
 #'
 #' # note we can read in remote data in a variety of vector formats:
@@ -71,8 +79,13 @@ spatial_join <- function(x,
   # buil spatial join query
   x.name <- remote_name(x, conn)
   y.name <- remote_name(y, conn)
-  x.geom <- paste0(x.name, ".geom")
-  y.geom <- paste0(y.name, ".geom")
+  # Cast to plain GEOMETRY to drop any CRS type annotation.  Newer versions of
+  # the DuckDB spatial extension reject ST_* calls when the two geometries have
+  # differing CRS tags, even for semantically equivalent labels like
+  # 'EPSG:4326' vs 'OGC:CRS84'.  Callers are responsible for ensuring that
+  # coordinates are in a compatible space before joining.
+  x.geom <- paste0(x.name, ".geom::GEOMETRY")
+  y.geom <- paste0(y.name, ".geom::GEOMETRY")
 
   if(args != ""){
     args <- paste(",", args)
