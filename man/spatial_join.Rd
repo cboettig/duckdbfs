@@ -58,6 +58,14 @@ Possible \href{https://postgis.net/workshops/postgis-intro/spatial_relationships
 
 All though SQL is not case sensitive, this function expects only
 lower case names for "by" functions.
+
+Geometry columns are cast to plain \code{GEOMETRY} before the join, dropping
+any CRS type annotation.  Newer versions of the DuckDB spatial extension
+refuse to call ST_* functions when the two inputs have differing CRS
+tags, even for semantically equivalent labels such as \code{EPSG:4326} and
+\code{OGC:CRS84}.  The cast compares coordinates directly, so ensuring that
+both datasets are in a compatible spatial reference system remains the
+caller's responsibility.
 }
 \examples{
 \dontshow{if (interactive()) withAutoprint(\{ # examplesIf}
