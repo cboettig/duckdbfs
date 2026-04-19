@@ -82,6 +82,21 @@ test_that("s3", {
 
 
 
+test_that("digit-prefixed tblnames are quoted (issue #21)", {
+  tmp <- tempfile(fileext = ".parquet")
+  conn <- cached_connection()
+  DBI::dbWriteTable(conn, "mtcars_src", mtcars, overwrite = TRUE)
+  DBI::dbExecute(conn, paste0("COPY mtcars_src TO '", tmp, "' (FORMAT PARQUET);"))
+
+  df <- open_dataset(tmp, format = "parquet", tblname = "000001", conn = conn)
+  expect_true(inherits(df, "tbl_duckdb_connection"))
+  out <- dplyr::collect(df)
+  expect_equal(nrow(out), nrow(mtcars))
+
+  unlink(tmp)
+  close_connection()
+})
+
 test_that("custom csv parsing", {
   cars <- tempfile()
   write.table(mtcars, cars, row.names = FALSE)

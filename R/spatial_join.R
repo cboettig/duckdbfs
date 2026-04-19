@@ -136,7 +136,8 @@ as_view <- function(x, tblname =  tmp_tbl_name(), conn = cached_connection()) {
 query_to_view <- function(query,
                           tblname =  tmp_tbl_name(),
                           conn = cached_connection()) {
-  q <- paste("CREATE OR REPLACE TEMPORARY VIEW", tblname, "AS", query)
+  q <- paste("CREATE OR REPLACE TEMPORARY VIEW",
+             DBI::dbQuoteIdentifier(conn, tblname), "AS", query)
   DBI::dbSendQuery(conn, q)
   dplyr::tbl(conn, tblname)
 }

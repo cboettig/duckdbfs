@@ -68,7 +68,7 @@ write_dataset <- function(
   options_vec <- c(format_by, partition_by, allow_overwrite, options)
   copy_options <- glue::glue_collapse(options_vec, sep = ", ")
 
-  copy <- glue::glue("COPY {tblname} TO '{path}' ")
+  copy <- glue::glue("COPY {DBI::dbQuoteIdentifier(conn, tblname)} TO '{path}' ")
   query <- glue::glue(copy, "({copy_options})", ";")
   status <- DBI::dbSendQuery(conn, query)
 
