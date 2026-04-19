@@ -1,6 +1,7 @@
 # duckdbfs 0.1.2.99
 
 * `open_dataset()`, `spatial_join()`, and `write_dataset()` now quote the SQL identifier for the view/table name, so table names that start with a digit (e.g. file stems like `000016.parquet`) no longer produce a parser error ([#21](https://github.com/cboettig/duckdbfs/issues/21)).
+* `duckdb_config()` docs gain examples for common resource settings (`threads`, `memory_limit`, `temp_directory`, `max_temp_directory_size`) ([#44](https://github.com/cboettig/duckdbfs/issues/44)) and for HTTP retry/back-off (`http_retries`, `http_retry_wait_ms`) when a server returns HTTP 429 ([#54](https://github.com/cboettig/duckdbfs/issues/54)).
 * New function `raw_sql()` provides an escape hatch for executing arbitrary SQL and getting back a lazy `dplyr::tbl`, useful for DuckDB-specific syntax such as `UNION ALL BY NAME` that `dbplyr` does not emit.
 * `spatial_join()` now casts its geometry columns to plain `GEOMETRY`, avoiding a binder error from newer DuckDB spatial extensions when the two inputs have different CRS type tags (e.g. `EPSG:4326` vs `OGC:CRS84`).
 * All methods that write to a file / path now return that path (invisibly).  Previously the return was just inherited from dbExecute() call, except for write_dataset() which always followed this convention. An additional optional argument has been added which can format the returned path as an HTTP address. 
