@@ -1,0 +1,120 @@
+---
+title: "File-based vs database-based workflows"
+---
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>",
+  eval = FALSE
+)
+```
+
+## TL;DR
+
+`duckdbfs` is designed around a **file-first** workflow: treat parquet / CSV
+/ spatial files (local or remote) as the source of truth, build a lightweight
+DuckDB **VIEW** over them, and query that with `dplyr`. You almost never need
+to import data into a DuckDB *table* first. This is a deliberate inversion of
+the classic database mental model, and it's worth explaining why — and when
+to break the rule.
+
+## Files + VIEWs (the default)
+
+```{r}
+library(duckdbfs)
+library(dplyr)
+
+tbl <- open_dataset("s3://some-bucket/data.parquet")
+tbl |>
+  filter(year == 2024) |>
+  summarise(mean_temp = mean(temp))
+```
+
+What happens here:
+
+- `open_dataset()` creates a DuckDB VIEW pointing at the remote parquet file.
+  Nothing is downloaded; no table is materialised.
+- The VIEW takes ~zero disk space and no RAM.
+- `dplyr` verbs translate to SQL via `dbplyr`; the query is pushed to DuckDB,
+  which streams only the bytes it needs (parquet column chunks, S3 range
+  requests, HTTP byte ranges).
+
+This pattern scales to datasets much larger than RAM and larger than local
+disk, because the data never leaves its source.
+
+## Databases + TABLES (the escape hatch)
+
+Importing remote data into a local DuckDB table looks natural to users coming
+from PostgreSQL or SQLite, but for most cloud-native data workloads it is a
+pessimisation:
+
+- It downloads the *entire* dataset (not just the columns or row groups you
+  need).
+- It decompresses and re-encodes into DuckDB's native format, often blowing
+  up disk footprint.
+- On very large datasets it can exhaust RAM or `/tmp` during the import,
+  crashing the machine.
+
+There are, however, real cases where a local table *is* the right call:
+
+1. **You're going to query the same data many times on a slow network.** One
+   one-time download amortises across many queries.
+2. **You need an index DuckDB can only build on stored tables.** The spatial
+   extension's R-tree index (`CREATE INDEX ... USING RTREE`) is the canonical
+   example.
+3. **You need a persistent on-disk database that other tools will share.**
+
+For (1) and (2), use `mode = "TABLE"` in `open_dataset()` and point
+`cached_connection()` at a disk location so DuckDB doesn't try to hold the
+table in RAM:
+
+```{r}
+con <- cached_connection("/path/to/storage")
+open_dataset("s3://bucket/big-data", conn = con, mode = "TABLE")
+```
+
+For (3), manage the connection yourself:
+
+```{r}
+con <- DBI::dbConnect(duckdb::duckdb(), dbdir = "shared.duckdb")
+open_dataset("local/data.parquet", conn = con)
+DBI::dbExecute(con, "CREATE TABLE cached AS SELECT * FROM ...")
+```
+
+## The sticky-cache gotcha
+
+`cached_connection()` is cached *by design* — it caches the first connection
+it makes and returns that same object on every subsequent call, so internal
+duckdbfs functions share one connection. The trap: if the first call happened
+implicitly (e.g. inside some earlier `open_dataset()` call that created the
+default in-memory connection), a *later* call like
+`cached_connection(dbdir = "my.duckdb")` will silently ignore the `dbdir`
+argument and return the cached in-memory connection.
+
+If you want a disk-backed connection, either:
+
+- Call `cached_connection(dbdir = ...)` **before any other duckdbfs
+  operation**, or
+- Call `close_connection()` to drop the cached one, then re-create with
+  your desired `dbdir`.
+
+This was the source of confusion in
+[#49](https://github.com/cboettig/duckdbfs/issues/49).
+
+## The "R user" framing
+
+Most R users come to data work through the
+`read_csv() |> dplyr::... |> write_csv()` pipeline — data lives in *files*,
+is loaded in memory for a session, then written back out. `duckdbfs` tries
+to preserve that mental model but extend it to datasets that don't fit in
+RAM, and to remote sources that can't be read by base-R connections. The
+`fs` in `duckdbfs` stands for *filesystem*.
+
+Tools like [ibis](https://ibis-project.org) (Python) use an identical design
+on top of DuckDB: open a file, get a lazy relation, push computation down via
+SQL, collect only what you need. If you already think in that idiom, the
+duckdbfs defaults should feel familiar. If you're coming from a
+database-administration background, think of `open_dataset()` as producing
+a VIEW rather than a TABLE — and reach for TABLE mode only when you need
+what a TABLE gives you (indexing, persistence, multi-process access).

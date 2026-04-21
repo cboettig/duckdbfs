@@ -9,7 +9,10 @@ to_sf(x, crs = NA, conn = cached_connection())
 \arguments{
 \item{x}{a remote duckdb \code{tbl} (from \code{open_dataset}) or dplyr-pipeline thereof.}
 
-\item{crs}{The coordinate reference system, any format understood by \code{sf::st_crs}.}
+\item{crs}{The coordinate reference system, any format understood by \code{sf::st_crs}.
+If \code{NA} (the default), \code{to_sf()} will pick up the CRS from the column's
+\code{GEOMETRY('...')} type annotation when one is present (e.g. when reading
+a georeferenced file via \code{open_dataset(format = "sf")}).}
 
 \item{conn}{the connection object from the tbl.
 Takes a duckdb table (from \code{open_dataset}) or a dataset or dplyr
