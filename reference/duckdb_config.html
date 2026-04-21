@@ -61,7 +61,12 @@ see all possible configuration options at <a href="https://duckdb.org/docs/sql/c
     </div>
     <div class="section level2">
     <h2 id="details">Details<a class="anchor" aria-label="anchor" href="#details"></a></h2>
-    <p>Note: in I/O bound tasks such as streaming data, it can be helpful to set
+    <p>Accepts any duckdb setting as a named argument. Commonly useful:</p><ul><li><p><code>threads</code>, <code>memory_limit</code>, <code>temp_directory</code>, <code>max_temp_directory_size</code> —
+resource tuning for large local jobs (see second example).</p></li>
+<li><p><code>http_retries</code>, <code>http_retry_wait_ms</code> — back off and retry when a remote
+server returns HTTP 429 (rate-limited) or other transient errors while
+streaming parquet / CSV over HTTP(S).</p></li>
+</ul><p>Note: in I/O bound tasks such as streaming data, it can be helpful to set
 thread parallelism significantly higher than available CPU cores.</p>
     </div>
     <div class="section level2">
@@ -75,6 +80,17 @@ thread parallelism significantly higher than available CPU cores.</p>
 <span class="r-in"><span><span class="fu">duckdb_config</span><span class="op">(</span>threads <span class="op">=</span> <span class="fl">1</span>, memory_limit <span class="op">=</span> <span class="st">'10GB'</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="fu"><a href="duckdb_get_config.html">duckdb_get_config</a></span><span class="op">(</span><span class="st">"threads"</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="fu"><a href="duckdb_reset.html">duckdb_reset</a></span><span class="op">(</span><span class="st">"threads"</span><span class="op">)</span></span></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="co"># Common settings for larger local jobs</span></span></span>
+<span class="r-in"><span><span class="fu">duckdb_config</span><span class="op">(</span></span></span>
+<span class="r-in"><span>  threads <span class="op">=</span> <span class="fl">64</span>,</span></span>
+<span class="r-in"><span>  memory_limit <span class="op">=</span> <span class="st">"30GB"</span>,</span></span>
+<span class="r-in"><span>  temp_directory <span class="op">=</span> <span class="st">"/tmp/duckdb_swap"</span>,</span></span>
+<span class="r-in"><span>  max_temp_directory_size <span class="op">=</span> <span class="st">"100GB"</span></span></span>
+<span class="r-in"><span><span class="op">)</span></span></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="co"># Retry HTTP requests (e.g. a server returning HTTP 429 on parquet reads)</span></span></span>
+<span class="r-in"><span><span class="fu">duckdb_config</span><span class="op">(</span>http_retries <span class="op">=</span> <span class="fl">5</span>, http_retry_wait_ms <span class="op">=</span> <span class="fl">2000</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="op">}</span></span></span>
 </code></pre></div>
     </div>

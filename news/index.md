@@ -2,6 +2,27 @@
 
 ## duckdbfs 0.1.2.99
 
+- [`open_dataset()`](https://cboettig.github.io/duckdbfs/reference/open_dataset.md),
+  [`spatial_join()`](https://cboettig.github.io/duckdbfs/reference/spatial_join.md),
+  and
+  [`write_dataset()`](https://cboettig.github.io/duckdbfs/reference/write_dataset.md)
+  now quote the SQL identifier for the view/table name, so table names
+  that start with a digit (e.g. file stems like `000016.parquet`) no
+  longer produce a parser error
+  ([\#21](https://github.com/cboettig/duckdbfs/issues/21)).
+- [`to_sf()`](https://cboettig.github.io/duckdbfs/reference/to_sf.md)
+  now reads native `GEOMETRY` columns directly instead of forcing a
+  `ST_AsWKB` round-trip, and auto-populates `crs` from the column’s CRS
+  annotation (e.g. `GEOMETRY('EPSG:4326')`) when the caller hasn’t
+  supplied one ([\#30](https://github.com/cboettig/duckdbfs/issues/30),
+  [\#18](https://github.com/cboettig/duckdbfs/issues/18)).
+- [`duckdb_config()`](https://cboettig.github.io/duckdbfs/reference/duckdb_config.md)
+  docs gain examples for common resource settings (`threads`,
+  `memory_limit`, `temp_directory`, `max_temp_directory_size`)
+  ([\#44](https://github.com/cboettig/duckdbfs/issues/44)) and for HTTP
+  retry/back-off (`http_retries`, `http_retry_wait_ms`) when a server
+  returns HTTP 429
+  ([\#54](https://github.com/cboettig/duckdbfs/issues/54)).
 - New function
   [`raw_sql()`](https://cboettig.github.io/duckdbfs/reference/raw_sql.md)
   provides an escape hatch for executing arbitrary SQL and getting back
