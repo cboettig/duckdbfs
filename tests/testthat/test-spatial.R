@@ -35,6 +35,26 @@ test_that("spatial vector read", {
 })
 
 
+test_that("to_sf() reads native GEOMETRY without WKB cast and picks up CRS", {
+  skip_if_not_installed("sf")
+  skip_if_offline()
+  skip_on_cran()
+  skip_if_not(has_spatial(), "spatial extension not available")
+
+  path <- system.file("extdata/world.fgb", package = "duckdbfs")
+  x <- open_dataset(path, format = "sf")
+
+  # the source declares EPSG:4326; to_sf() should pick that up automatically
+  y <- to_sf(x)
+  expect_s3_class(y, "sf")
+  expect_equal(sf::st_crs(y), sf::st_crs("EPSG:4326"))
+
+  # explicit user-supplied crs should still win
+  z <- to_sf(x, crs = "EPSG:3857")
+  expect_equal(sf::st_crs(z), sf::st_crs("EPSG:3857"))
+})
+
+
 test_that("spatial_join", {
   skip_if_not_installed("sf")
   skip_if_offline() # needs to be able to load the spatial module
