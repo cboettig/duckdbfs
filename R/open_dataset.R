@@ -95,7 +95,7 @@ open_dataset <- function(sources,
     # for now VSI prefixes are not supported, but httpfs can handle spatial
     sources <- strip_vsi(sources)
   }
-  view_query <- query_string(tblname,
+  view_query <- query_string(DBI::dbQuoteIdentifier(conn, tblname),
                              sources,
                              format = format,
                              mode = mode,

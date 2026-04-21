@@ -39,8 +39,17 @@ write_dataset <- function(
   if (is_not_remote(dataset)) {
     tblname = tmp_tbl_name()
     DBI::dbWriteTable(conn, name = tblname, value = dataset)
+    src <- DBI::dbQuoteIdentifier(conn, tblname)
   } else {
-    tblname <- as.character(remote_name(dataset, conn))
+    # remote_name() returns either a bare identifier (dbplyr::remote_name)
+    # or a parenthesized sub-SELECT (when the lazy query has been mutated).
+    # Quote the former as an identifier; pass the sub-SELECT through verbatim.
+    bare <- dbplyr::remote_name(dataset)
+    if (is.null(bare)) {
+      src <- as.character(remote_name(dataset, conn))
+    } else {
+      src <- DBI::dbQuoteIdentifier(conn, as.character(bare))
+    }
   }
 
   ## local writes use different notation to allow overwrites:
@@ -68,7 +77,7 @@ write_dataset <- function(
   options_vec <- c(format_by, partition_by, allow_overwrite, options)
   copy_options <- glue::glue_collapse(options_vec, sep = ", ")
 
-  copy <- glue::glue("COPY {tblname} TO '{path}' ")
+  copy <- glue::glue("COPY {src} TO '{path}' ")
   query <- glue::glue(copy, "({copy_options})", ";")
   status <- DBI::dbSendQuery(conn, query)
 
