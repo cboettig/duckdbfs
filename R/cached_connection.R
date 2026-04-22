@@ -26,6 +26,34 @@ duckdbfs_env <- new.env()
 #' effectively support most operations on much-larger-than-RAM data.
 #' However, some operations require additional working space, so by default
 #' we set a temporary storage location in configuration as well.
+#'
+#' @section On-disk storage and the connection cache:
+#' Pass `dbdir = "/path/to/db.duckdb"` to back the connection with a local
+#' on-disk database file from the start (useful for operations that benefit
+#' from indexing, e.g. R-tree spatial indexes, or for heavy repeated local
+#' queries).
+#'
+#' **Gotcha:** the connection cache is sticky. On the first call, this
+#' function caches whatever connection it creates; every subsequent call
+#' returns that same connection and **ignores new arguments** (including
+#' `dbdir`). If you want to change the backing store, call
+#' [close_connection()] first, then call `cached_connection()` again with
+#' the new `dbdir`. Trying to pass the path of an *existing* DuckDB database
+#' file via `cached_connection(dbdir = ...)` after the cache is populated
+#' is the common trap (see issue #49).
+#'
+#' If you want to manage a connection yourself — e.g. to open an existing
+#' duckdb database file, or to share a connection across other DBI-based
+#' code — create it directly and pass it to `duckdbfs` functions via
+#' the `conn` argument:
+#'
+#' ```r
+#' con <- DBI::dbConnect(duckdb::duckdb(), dbdir = "my.duckdb")
+#' open_dataset("s3://bucket/data", conn = con)
+#' ```
+#'
+#' See the "File-based vs database-based workflows" article for the broader
+#' design philosophy.
 #' @inheritParams duckdb::duckdb
 #' @param autoload_exts should we auto-load extensions?  TRUE by default,
 #' can be configured with `options(duckdbfs_autoload_extensions = FALSE)`
