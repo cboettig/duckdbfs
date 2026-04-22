@@ -9,3 +9,4 @@
 ^cran-comments\.md$
 ^CRAN-SUBMISSION$
 ^todo\.md$
+^vignettes/articles$
